@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-03 Wed 10:21 -->
+<!-- 2021-11-03 Wed 17:21 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Klotski: Efficient Obfuscated Execution against Controlled-Channel Attacks</title>
@@ -288,6 +288,16 @@ ul.no-bullet {list-style: none}
 <li><a href="#org9d0e5ce">6. 优化</a>
 <ul>
 <li><a href="#orgeb86567">6.1. 减少地址转化</a></li>
+<li><a href="#org0053655">6.2. 循环对齐</a></li>
+<li><a href="#org482a693">6.3. 常量嵌入</a></li>
+<li><a href="#orgeec642e">6.4. 可配置的迷你页和vCache大小</a></li>
+</ul>
+</li>
+<li><a href="#org4e6cdc5">7. 安全性分析</a>
+<ul>
+<li><a href="#org374cd2a">7.1. 基线设计</a></li>
+<li><a href="#orgfcb6cd5">7.2. 以性能为导向的配置</a></li>
+<li><a href="#orgd5b61c0">7.3. 其他的侧信道攻击</a></li>
 </ul>
 </li>
 </ul>
@@ -586,14 +596,122 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </p>
 
 <p>
-<i>大型对象</i> 。为了识别对大对象的内存访问，我们使用了基于LLVM的基于类型的别名分析（TBAA）的保守程序间字段敏感数据流分析。对于每个堆分配点，如果分配大小大于迷你页的大小，或者在编译时分配大小未知，我们就把返回值（指向分配对象的指针）标记为"污点"。然后，我们使用数据流分析来找到所有可能访问大对象的内存访问指令（即对污点指针的解引用）。因此，其余的内存访问是安全的，可以被优化。我们还修改了常见的数据访问库函数，如memset、memcpy、memmove，以支持越过迷你页的边界。
+<i>大型对象</i> 。为了识别对大型对象的内存访问，我们使用了基于LLVM的基于类型的别名分析（TBAA）的保守程序间字段敏感数据流分析。对于每个堆分配点，如果分配大小大于迷你页的大小，或者在编译时分配大小未知，我们就把返回值（指向分配对象的指针）标记为"污点"。然后，我们使用数据流分析来找到所有可能访问大型对象的内存访问指令（即对污点指针的解引用）。因此，其余的内存访问是安全的，可以被优化。我们还修改了常见的数据访问库函数，如memset、memcpy、memmove，以支持越过迷你页的边界。
+</p>
+
+<p>
+<i>小型对象</i> 。对小堆或全局对象的访问优化与代码类似：一旦翻译了一个对象的基础地址，未来对同一对象的访问就不需要额外的地址翻译了。Klotski使用经典的有效性分析来跟踪已经被翻译的逻辑地址。当检测代码时，对于每个内存访问（即加载、存储），Klotski首先检查目标地址是否来自于有效性集的虚拟地址。如果没有找到虚拟地址，Klotski会插入一个翻译指令对，并将结果添加到集合中（图4）。
+</p>
+
+<p>
+数据访问的第二个挑战是，当相应的迷你页被驱逐时，翻译的地址将变得无效。因为这需要非常复杂的分析来预测一个迷你页何时会被驱逐。为了解决这个问题，Klotski采取了一个简单的方法。(1）在调用另一个函数时，它使所有翻译的地址无效；（2）Klotski只在函数调用和返回时evict数据vCache。
+</p>
+
+<p>
+最后，Klotski通过将翻译逻辑更接近函数的入口，进一步减少翻译的数量，只要它不会被杀死。这对避免在一个循环内重复翻译地址特别有帮助（图4（b））。
+</p>
+</div>
+</div>
+<div id="outline-container-org0053655" class="outline-3">
+<h3 id="org0053655"><span class="section-number-3">6.2</span> 循环对齐</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+由于循环内的指令是重复执行的，它们占了程序执行时间的很大一部分。因此，优化循环对于提高程序的性能至关重要。在Klotski中，如果一个基本块和它的后续块不在同一个小页中，那么地址转换将被插入到这个基本块的末尾（§4.3）。如果这种情况发生在一个循环体中，那么就会产生非常高的性能开销。为了避免这种行为并提高程序的定位性，Klotski试图对齐循环，使大多数循环的主体不会跨越一个迷你页的边界。如果一个循环体太大，无法装入一个迷你页，那么Klotski仍然会将其基本块分割成两个迷你页。幸运的是，这样的大型循环很少见。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org482a693" class="outline-3">
+<h3 id="org482a693"><span class="section-number-3">6.3</span> 常量嵌入</h3>
+<div class="outline-text-3" id="text-6-3">
+<p>
+为了减少程序的大小和提高性能，常见的编译器优化是合并和移动常量值（特别是浮点常量）到程序的数据部分，此后在运行期间将这些常量从内存加载到寄存器。虽然这对普通程序来说是一种有效的优化策略，但对Klotski强化程序来说却带来了麻烦。首先，对这些常量的访问将导致地址转换，这很昂贵。其次，这些常量存储在数据部分，对一个常量值的访问需要将其从数据部分加载到数据vCache中。由于Klotski的数据vCache的大小有限，这也会导致额外的vCache加载和驱逐。
+</p>
+
+<p>
+为了最大限度地减少这种开销，Klotski采用了另一种优化方法：它将需要被基本块访问的常量嵌入到相应的迷你页的空余空间中。这种优化允许基本块使用PCrelative寻址来访问常量，而不用翻译地址和影响数据vCache。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgeec642e" class="outline-3">
+<h3 id="orgeec642e"><span class="section-number-3">6.4</span> 可配置的迷你页和vCache大小</h3>
+<div class="outline-text-3" id="text-6-4">
+<p>
+我们对Klotski的设计是通用的，所以迷你页面和vCache的大小是可以配置的。然而，在配置这些参数时，必须仔细考虑安全和性能之间的权衡。具体来说，较小的迷你页大小可能会提高安全性[2]和vCache的命中率，但它也会增加地址转换的数量以及每个转换的成本：较小的迷你页大小需要更多的PTE来索引，而ReadPTE（§4.4）的成本与页表的大小成正比。同样，从安全角度来看，在我们的威胁模型下，vCache的理想大小是一个物理页（即4KB）。然而，众所周知，当vCache的大小小于程序的工作集时，最终会出现 thrashing [17]，即系统将花费大部分时间将数据复制到/从ORAM。因为 thrashing不能通过vCache替换算法来避免，从性能的角度来看，更大的vCache大小是首选。较小的vCache通过频繁的替换隐式重新随机化，而较大的vCache则需要显式重新随机化（通过刷新）。Klotski允许用户配置刷新频率（例如，在固定数量的代码地址解引用后）。
 </p>
 </div>
 </div>
 </div>
+<div id="outline-container-org4e6cdc5" class="outline-2">
+<h2 id="org4e6cdc5"><span class="section-number-2">7</span> 安全性分析</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+在本章，我们对Klotski在我们的威胁模型下的安全性进行分析。
+</p>
+</div>
+
+<div id="outline-container-org374cd2a" class="outline-3">
+<h3 id="org374cd2a"><span class="section-number-3">7.1</span> 基线设计</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+我们首先分析了vCache大小为4KB的Klotski（§4）的基准线设计。我们从Klotski的每个重要步骤开始分析。
+</p>
+
+<p>
+<b>要求1</b> .访问ORAM树上的块不会泄露任何信息。环形ORAM的算法确保即使它的子程序，包括ReadPath、EvictPath和EarlyShuffle可能有外部可观察的行为，它们也不会泄露任何有用的信息。此外，Klotski使用ORead操作（见第4.4节）来防止攻击者区分真实/虚拟块并推断出桶内的剩余块。
+</p>
+
+<p>
+<b>要求2</b> .储藏室和vCache之间的数据交换不会泄露任何信息。Klotski利用ORead操作从储藏室加载块。因为ORead每次都会访问储藏室中的每一个块，所以在我们的威胁模型下，访问模式是被混淆的。当把一个vCache块驱逐到储藏室时，Klotski使用随机替换策略，所以驱逐的块与程序过去的访问模式无关。此外，Klotski使用WriteStash操作将块存储到储藏区，这个操作也没有透露任何访问信息，因为空槽的分布在洗牌过程中被重新随机化。因此，攻击者无法从数据交换步骤中获得有用的信息。
+</p>
+
+<p>
+<b>要求3</b> .访问页表（和虚拟位置图）不会泄露任何信息。Klotski使用ReadPTE和WritePTE操作来访问位置图。由于它们是被混淆，这一步不会泄露任何有用的信息（即，攻击者无法发现哪个逻辑块正在被访问）。
+</p>
+
+<p>
+<b>要求4</b> .在vCache内的执行过程不会泄露信息。当执行和数据vCache的大小都被设置为一个物理页时，执行过程对攻击者表现出相同的内存访问模式，因此在我们的威胁模型下没有执行信息泄露。这与Shinde等人[45]的要求相同。
+</p>
+
+<p>
+由于Klotski执行的每一步都没有泄露任何信息，我们得出结论，在我们的威胁模型下，Klotski是安全的（即页面访问被混淆）。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgfcb6cd5" class="outline-3">
+<h3 id="orgfcb6cd5"><span class="section-number-3">7.2</span> 以性能为导向的配置</h3>
+<div class="outline-text-3" id="text-7-2">
+<p>
+虽然Klotski的基线设计是安全的，但它也有很高的性能开销，特别是当工作集大于vCache大小时（见第7节）。在本小节中，我们分析了当开发者选择通过增加vCache大小来获得更好的性能时，Klotski的安全性。
+</p>
+
+<p>
+因为vCache的大小与要求1、2、3无关，因此它们在这种配置下仍然成立。唯一有问题的是权利要求4&#x2013;当vCache的大小大于一个物理页时，执行可能表现出不同的页面访问模式。当vCache包含整个工作集时，这种区别就特别危险。然而，我们认为，即使在这种配置下，对Klotski发起可控信道攻击在实际中仍然非常困难。首先，随机的vCache驱逐策略意味着相同的块可以被加载到vCache中随机的任何槽中。其次，由于Klotski中的迷你页大小通常小于物理页（例如，在原型实现中为2KB），两个任意块的组合将产生新的访问模式，引入额外的噪音从而使其更难被攻击。最后，当Klotskire-randomize vCache（通过vCache冲刷）时，通过以前的剖析获得的任何信息都将被废止。因此，即使是不频繁的重新随机化率，也会使人们很难携带从以前学到的信息（如可控信道攻击）到下一个输入。
+</p>
+
+<p>
+<b>实证评估</b> .我们用各种vCache大小的配置重放了JPEG和FreeType攻击[56]。一个主要的区别是，由于Klotski阻止我们使用原始攻击中的方式来推断感兴趣的函数的开始和结束，我们不得不手动修改这两个程序的源代码，插入一个特殊的OCall来通知我们感兴趣函数的开始和结束。
+</p>
+
+<p>
+图5展示了我们JPEG攻击的部分结果。在vCache大小为16KB（4+4个迷你页）的情况下，很难从恢复的图像中识别出内容；而且恢复的图像的像素值分布也非常平滑。当vCache的大小增加到128KB（32+32个迷你页）时，整个脆弱函数的工作集可以被装入vCache。在没有重新随机化的情况下，攻击成功地恢复了原始图像的许多像素。然而，即使重新随机化的频率很低（每1280个地址转换后一次），大多数细节也变得不可识别，其像素分布比没有重新随机化的相对更平滑。对于FreeType攻击，当vCache大小被设置为16、32和64KB并且没有随机刷新时，预测一个单词的准确率只有0.04%、0.23%和8.42%。
+</p>
+
+<p>
+我们想再次强调的是，在这两次攻击中，我们给了对手一个优势，那就是精确区分了目标函数的边界。在实际过程中，因为随着vCache被反复地重新随机化，很难区分哪些迷你页在vCache中。基于这些经验结果，我们建议执行vCache的驱逐率为2.5%，以达到安全（见图5）和性能（见§7.2）之间的平衡。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgd5b61c0" class="outline-3">
+<h3 id="orgd5b61c0"><span class="section-number-3">7.3</span> 其他的侧信道攻击</h3>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-03 Wed 10:21</p>
+<p class="date">Created: 2021-11-03 Wed 17:21</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

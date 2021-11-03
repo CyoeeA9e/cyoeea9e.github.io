@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-03 Wed 17:21 -->
+<!-- 2021-11-03 Wed 18:50 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Klotski: Efficient Obfuscated Execution against Controlled-Channel Attacks</title>
@@ -300,6 +300,14 @@ ul.no-bullet {list-style: none}
 <li><a href="#orgd5b61c0">7.3. 其他的侧信道攻击</a></li>
 </ul>
 </li>
+<li><a href="#org9553ed2">8. 性能评估</a>
+<ul>
+<li><a href="#orge9f91db">8.1. Nbench测试</a></li>
+</ul>
+</li>
+<li><a href="#org2db6ea5">9. 真实应用</a></li>
+<li><a href="#org39efff9">10. 总结</a></li>
+<li><a href="#org979f66a">11. 鸣谢</a></li>
 </ul>
 </div>
 </div>
@@ -707,11 +715,93 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 
 <div id="outline-container-orgd5b61c0" class="outline-3">
 <h3 id="orgd5b61c0"><span class="section-number-3">7.3</span> 其他的侧信道攻击</h3>
+<div class="outline-text-3" id="text-7-3">
+<p>
+基于缓存的侧信道攻击[9, 10, 19, 23, 42]和基于时间的攻击[11, 53]已被成功证明是能够对SGX飞地推断细粒度的访问模式。尽管Klotski不是为了完全缓解这些攻击而设计的，但它仍然使这些攻击很难成功。具体来说，所有的输入推理攻击都需要知道依赖输入的函数/指令何时被执行，这对于细粒度的攻击尤其重要，因为一次推理就需要大量的时间。为了加速攻击，他们通常在检测到一些感兴趣的特定函数的执行后，通过缺页[56]或专门的间谍线程[12]来抢占飞地，开始细粒度的攻击。通过定期执行vCache再随机化和使用随机vCache驱逐策略，Klotski的vCache中的迷你页不断变化。因此，攻击者很难知道感兴趣的函数何时会被换入或换出vCache。此外，由于Klotski的vCache中每一个4KB的物理页面是由两个任意的迷你页在运行时组合而成的，攻击者无法使用固定的页面访问模式来定位感兴趣的函数。因此，为了发动成功的攻击，攻击者需要找到好的方法来克服这些挑战。更重要的是，如果在攻击者能够确定感兴趣的函数之前，vCache被重新随机化，那么就几乎不可能发动攻击了。回顾一下，在我们的实证评估中，我们不得不修改目标程序，以便在感兴趣的函数被执行时通知我们，这在实践中是不现实的。
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org9553ed2" class="outline-2">
+<h2 id="org9553ed2"><span class="section-number-2">8</span> 性能评估</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+<b>环境设置</b> 所有的实验都是在一台配备英特尔Skylake i7-6700 @ 3.4GHz、16GB内存和128MB PRM的机器上进行的。该机器运行的操作系统是Ubuntu 14.04 64位，带有Linux内核4.4.0和Intel SGX SDK（版本1.9.100）[28]和IntelSGX-driver（版本1.8）[27]。
+</p>
+
+<p>
+我们在测试套件和实际应用上运行Klotski，其配置为一般的环形ORAM：每个桶包含6个槽，其中最多两个槽被保留给真正的迷你页（Z = 2），其余的槽是用于虚拟迷你页（S = 4）。每四次混淆访问（A = 4），就会进行一次路径驱逐操作。一个迷你页的大小被设定为2KB。所有程序都是用优化级别2（-O2）编译的。除非另有规定，执行vCache的大小和数据vCache的大小是相等的。
+</p>
+</div>
+
+<div id="outline-container-orge9f91db" class="outline-3">
+<h3 id="orge9f91db"><span class="section-number-3">8.1</span> Nbench测试</h3>
+<div class="outline-text-3" id="text-8-1">
+<p>
+我们和SGX-Shield和T-SGX一样选择Nbench测试套件来测试性能损耗。
+</p>
+
+<p>
+在Klotski中，开销的两个主要来源是软件地址转换和ORAM访问。为了证明这两个来源的开销和不同优化技术的好处，我们用多种配置评估了Klotski。对于每个配置，结果是在100次运行中测量的。对于每个测试案例，都选择了一个迭代数，以产生一个超过5秒的总时间。
+</p>
+
+<p>
+当混淆执行被启用时（表2），性能开销在不同的基准和配置中差异很大。一般来说，vCache命中率较低的测试表现出较高的性能开销。当vCache大小增加时，相对开销从10.22倍下降到3.46倍。在检查了测试的源代码后，我们发现：几乎每个测试都使用了一个定制的堆分配器，从一个大的内存缓冲区分配较小的数据块。由于没有意识到这一特性，Klotski将大的缓冲区作为一个单一的内存对象，并禁用了地址转换优化。因此，这个结果可以被认为是Klotski的最糟糕的情况之一。
+</p>
+
+<p>
+为了估计正常情况下的性能开销（即当小对象直接从我们修改后的堆分配器中分配时），我们在编译期间禁用了对大对象的检测（§5.1），并再次进行评估（表2的右半部分）。对于具有小工作集的基准（数值排序, 字符串排序, Assignment, 哈夫曼和LU分解），当vCache大小为4KB时，它们的EC命中率在98%以上，所以它们的性能开销与较大的vCache大小相对相同。对于具有中等工作集的基准（Fp.emu、Idea和神经网络），当vCache大小从4KB（2个小页）增加到8KB（4个小页）时，它们的EC命中率明显提高，所以它们的性能开销也明显下降。对于具有大型工作集的基准（傅立叶变换），只有当vCache大小增加到16KB（8个迷你页）时，开销才会明显下降。我们深入研究了这种情况，发现其根本原因：Fourier在其最内部的循环中调用pow、cos和sin函数。因为这三个函数的总大小超过了4个小页面，所以当vCache的大小小于4个小页面时，就会发生抖动。
+</p>
+
+<p>
+<b>优化的效果</b> .对于Klotski的优化，表3显示了它们对地址转换数量和整体性能的影响，其中禁用了大对象检测。总的来说，翻译减少是最普遍和有效的优化。当它被启用时，所有的测试显示一些数据翻译的减少（范围从4.50%到99.96%，几何平均为72.08%），同时性能与基线相比，有了很大的改善（几何平均速度提高2.09倍）。由于翻译的减少消除了大部分的数据翻译指令，它也减少了代码的大小并改变了代码的布局。一些测试（如数值排序）受益于代码大小的减少，因为更多的功能可以放在同一个小页面中。然而，其他测试（Fp emu、Assign和Idea）的代码翻译数量有所增加。这是因为他们的代码布局的变化导致一些函数/循环跨越了迷你页的边界，并导致额外的迷你页间控制流传输和额外的开销。常数嵌入大大减少了傅里叶（90.94%）和神经网（68.89%）的数据转换，因为在循环中有很多对常数的访问。然而，由于代码布局的改变，哈夫曼的代码地址翻译数量在这次优化后大幅上升（2468×）；而之前受影响的三个基准（Fp emu、Assign和Idea）的翻译数量则回落到正常水平。在应用循环对齐后，代码地址翻译的数量都下降到了正常水平。这个结果强调了结合所有三种优化的重要性。
+</p>
+
+<p>
+表4显示了Klotski的优化对代码vCache命中率的影响，当vCache大小被设置为4个迷你页时，数据vCache的命中率非常高，所以我们省略了数据vCache上的结果。这里，我们主要关注常数嵌入和循环对齐。这两种优化技术的目的是提高执行的局部性，所以它们的效果取决于目标程序。常数嵌入明显改善了傅立叶和神经网络的性能，因为它们包含大量的常数访问。然而，在每个小页面的开头插入常数也增加了代码的大小和发生抖动的可能性，所以神经网络的开销也增加了。循环对齐明显改善了神经网络的性能（2.3倍加速）。这是因为它的位置性得到了改善（代码vCache命中率从92.26%提高到99.99%）。然而，我们的循环对齐算法也增加了代码的大小，所以傅立叶的性能下降了（与没有循环对齐的算法相比，下降了0.81倍）。
+</p>
+
+<p>
+<b>与OBFSCURO进行比较</b> 我们还测试了[2]中使用的所有测试程序。由于这些基准程序非常简单，我们使用了4KB的vCache大小。Klotski的几何平均速度是88.08%（超过10亿次执行），这比OBFSCURO（51倍）低得多。 
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2db6ea5" class="outline-2">
+<h2 id="org2db6ea5"><span class="section-number-2">9</span> 真实应用</h2>
+<div class="outline-text-2" id="text-9">
+<p>
+第一个真实的应用是一个HTTPS服务器mbedTLS[5]，它是一个开源的传输层安全（TLS）库。这个项目包括一个HTTPS服务器的样本。在我们的测试中，这个HTML文件的大小为30KB。为了测量性能，我们用ab命令从这个HTTPs服务器上请求文件20000次，并报告了处理单个请求的总耗时的平均值。表5显示了这些结果。总的来说，当vCache大小被设置为4KB时，Klotski比本地的慢了15.4倍。随着vCache大小的增加，性能开销呈指数级减少（从15.4倍到48.02%）。我们还测量了具有重新随机化的更大的vCache配置，它的开销增加到153.10%。
+</p>
+
+<p>
+接下来的两个应用程序来自libjpeg[25]，它是一个广泛使用的用于读写JPEG图像文件的C语言库，被Xu等人[56]攻击。cjpeg和djpeg是项目中的两个例子，展示将BMP或PPM文件压缩成JPEG文件和将JPEG文件解压成另一种类型文件的处理。为了测量cjpeg的性能，我们随机下载了10张宽度和高度固定对的PPM图片（227*149像素）。cjpeg飞地程序一次将这十个文件全部压缩成PPM文件，并输出处理一张图片的平均时间。我们为每张图片运行了100次该程序，并计算出其平均值。对于djpeg，我们遵循cjpeg的相同程序，只是输入是10张JPEG图像，其输出是BMP文件。表6显示了性能开销。当vCache大小被设置为4KB时，我们看到Klotski分别造成了2.7倍和5.5倍的速度下降。与nbench和mbedtls的结果类似，性能开销随着vCache大小的增加而呈指数级下降。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org39efff9" class="outline-2">
+<h2 id="org39efff9"><span class="section-number-2">10</span> 总结</h2>
+<div class="outline-text-2" id="text-10">
+<p>
+在这项工作中，我们提出了Klotski，这是一种高效的混淆执行技术，用于对抗可控信道攻击，并能在安全性和性能之间进行调整。Klotski本质上模拟了一个安全的处理器，通过在两个内存vCache内以页面访问不透明的方式执行，并利用ORAM协议将内容加载/删除到vCache中。我们还设计并实施了一些优化技术以减少Klotski的开销。我们的安全分析表明，在我们的威胁模型下，Klotski对可控信道攻击是安全的。对我们的原型实现的性能评估也表明，Klotski的性能开销比以前的解决方案低得多，我们的优化技术非常有效。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org979f66a" class="outline-2">
+<h2 id="org979f66a"><span class="section-number-2">11</span> 鸣谢</h2>
+<div class="outline-text-2" id="text-11">
+<p>
+我们要感谢所有匿名审稿人的宝贵意见和建议。该工作得到了国家重点研发计划（批准号：2017YFB0802205）、深圳市基础研究计划（批准号：JCYJ20170413114215614）、广东省科技计划项目（批准号：2017B010124001）和广东省重点研发计划项目（批准号：2019B010139001），国家科学基金会（项目号：1718997），海军研究办公室（项目号：N000141712893）。本文所表达的任何意见、发现和结论或建议都是作者的观点，不一定反映资助机构的观点。
+</p>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-03 Wed 17:21</p>
+<p class="date">Created: 2021-11-03 Wed 18:50</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

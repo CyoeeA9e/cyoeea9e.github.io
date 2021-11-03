@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-10-28 Thu 10:38 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SpecTaint:Speculative Taint Analysis for Discovering Spectre Gadgets</title>
+<meta name="generator" content="Org mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://www.gnu.org/software/emacs/manual.css">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">SpecTaint:Speculative Taint Analysis for Discovering Spectre Gadgets</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgca9d687">1. 摘要</a></li>
+<li><a href="#org4455a73">2. 介绍</a>
+<ul>
+<li><a href="#org5ba1d4b">2.1. 相关工作的问题</a></li>
+<li><a href="#org35e20ec">2.2. 主要工作</a></li>
+</ul>
+</li>
+<li><a href="#org51de675">3. 概述</a>
+<ul>
+<li><a href="#org02dcf0b">3.1. 系统结构</a></li>
+<li><a href="#org1de906a">3.2. 工作流程</a></li>
+<li><a href="#org2f23348">3.3. 威胁模型和应用范围</a></li>
+</ul>
+</li>
+<li><a href="#orgf006f01">4. 预测执行动态模拟</a>
+<ul>
+<li><a href="#org12a041f">4.1. 错误预测模拟</a>
+<ul>
+<li><a href="#orgb43c92c">4.1.1. 异常处理</a></li>
+</ul>
+</li>
+<li><a href="#org9555a86">4.2. 预测执行路径探索</a>
+<ul>
+<li><a href="#org0ac4fa8">4.2.1. 执行状态回滚</a></li>
+<li><a href="#orgfc7bf2f">4.2.2. 路径探索</a></li>
+<li><a href="#org6509d5b">4.2.3. 筛选路径</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org5dd2e72">5. 检测</a>
+<ul>
+<li><a href="#org999e0bf">5.1. 动态污点追踪</a></li>
+<li><a href="#orga8fe551">5.2. Spectre Gadgets 模型</a>
+<ul>
+<li><a href="#org29f6f50">5.2.1. BCB</a></li>
+<li><a href="#org04f5a7c">5.2.2. BSBS</a></li>
+<li><a href="#org407eb04">5.2.3. Gadget 分类</a></li>
+</ul>
+</li>
+<li><a href="#org28cb587">5.3. Gadget 检测</a></li>
+</ul>
+</li>
+<li><a href="#org62b026c">6. 实现</a></li>
+<li><a href="#org1845539">7. 实验</a>
+<ul>
+<li><a href="#org7fb5c60">7.1. V2数据集对比测试结果</a></li>
+<li><a href="#orgf6d68e0">7.2. V1数据集对比测试结果</a></li>
+<li><a href="#org2390969">7.3. 补丁的性能开销</a></li>
+<li><a href="#orgad1f419">7.4. 分析效率</a></li>
+<li><a href="#orgabb29c7">7.5. 案例学习</a></li>
+</ul>
+</li>
+<li><a href="#org5ae09f5">8. 存在的问题</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgca9d687" class="outline-2">
+<h2 id="orgca9d687"><span class="section-number-2">1</span> 摘要</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+软件补丁是用来对抗Spectre Attack的有效手段，他通过插入序列化指令来避免潜在Spectre gadgets中的预测执行。
+但是，现在并没有有效的方法来检测Spectre gadget。
+文章设计了一种新的Spectre gadget检测方法,通过在预测执行路径中进行污点分析。
+在文章的末尾，我们通过CPU模拟器模拟并探索了预测执行。
+我们实现了一个原型，叫做SpecTaint来证明我们方法的有效性。
+我们在我们的Spectre样本数据集中对SpecTaint进行了评估，并与现存的最先进方法进行比较。
+我们的实验结果表明SpecTaint在检测精度和召回率的表现远远超过了现有方法。
+并且它还能在真实世界的应用如Caffe和Broftli中检测到新的Spectre gadgets。
+此外，SpecTaint显著降低了补丁带来的性能损耗。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4455a73" class="outline-2">
+<h2 id="org4455a73"><span class="section-number-2">2</span> 介绍</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org5ba1d4b" class="outline-3">
+<h3 id="org5ba1d4b"><span class="section-number-3">2.1</span> 相关工作的问题</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>Spectre V1 Scanner: 通过模式匹配进行检测。</li>
+<li>MSCV Spectre 1 pass：同上。</li>
+<li>Spectector：符号执行分析。</li>
+<li>oo7：静态污点分析。静态分析不精确，高假阳性，以及有时假阴。</li>
+<li><a href="20211018105946-specfuzz.html#ID-5cdd12c8-90b0-4633-98f8-0ef6fad5f1ea">SpecFuzz</a>：检测逻辑过于简单，导致高假阳和高假阴。
+越界的内存访问可能并不是由用户控制，也不一定构成Spectre V1 gadgets。
+Spectre V1 gadgets也不一定产生越界访问。
+没能很好地处理Exception,导致错失可能的Spectre gadgets。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org35e20ec" class="outline-3">
+<h3 id="org35e20ec"><span class="section-number-3">2.2</span> 主要工作</h3>
+<div class="outline-text-3" id="text-2-2">
+<ul class="org-ul">
+<li>设计了一种能对预测执行进行动态污点分析的平台，并根据该平台部署了一种语意学的spectre gadget检测工具。</li>
+<li>通过将已知的Spectre gadgets插入现实世界的程序中来建立了样本库。</li>
+<li>实现了原型SpecTaint,并且证明SpecTaint的有效性。</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org51de675" class="outline-2">
+<h2 id="org51de675"><span class="section-number-2">3</span> 概述</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org02dcf0b" class="outline-3">
+<h3 id="org02dcf0b"><span class="section-number-3">3.1</span> 系统结构</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+使用系统模拟器来模拟预测执行并对其进行动态污点分析。系统强制CPU模拟器执行预测路径，然后进行污点分析。
+</p>
+</div>
+</div>
+<div id="outline-container-org1de906a" class="outline-3">
+<h3 id="org1de906a"><span class="section-number-3">3.2</span> 工作流程</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+工作分为2个阶段：正常执行阶段和预测执行阶段。正常执行阶段，SpecTaint通过外部模糊种子生成器来生成种子，并运行目标程序，来探索尽可能多的执行路径。
+当遇到条件分支时，保存现有的运行状态为检查点，模拟预测执行。当预测执行窗口达到上限时。SpecTaint回滚到检查点。在预测执行阶段，一个Spectre gadget检测器对每个推测执行路径进行模式检查来检测gadgets。
+</p>
+</div>
+</div>
+<div id="outline-container-org2f23348" class="outline-3">
+<h3 id="org2f23348"><span class="section-number-3">3.3</span> 威胁模型和应用范围</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+文章使用和其他检测工具相同的威胁模型。
+也就是，文章的分析对象是良性但是是有漏洞的。文章并不处理恶意代码。
+文章只处理Spectre V1,并从侧信道中泄漏信息，不考虑Meltdown。
+文章只模拟二进制层中的Spectre V1 gadgets，不考虑模拟微操作，只考虑ROB的大小。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf006f01" class="outline-2">
+<h2 id="orgf006f01"><span class="section-number-2">4</span> 预测执行动态模拟</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+基于DECAF开发，基于虚拟机。
+</p>
+</div>
+<div id="outline-container-org12a041f" class="outline-3">
+<h3 id="org12a041f"><span class="section-number-3">4.1</span> 错误预测模拟</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+SpecTaint通过修改pc来修改跳转地址。
+在跳转之前，保存成检查点。在模拟过程中，所有对内存发生修改的行为都会被记录。
+当预测执行窗口达到上限时，模拟终止，回滚到检查点，或者发现序列化指令。
+</p>
+</div>
+<div id="outline-container-orgb43c92c" class="outline-4">
+<h4 id="orgb43c92c"><span class="section-number-4">4.1.1</span> 异常处理</h4>
+<div class="outline-text-4" id="text-4-1-1">
+<p>
+SpecFuzz使用的异常处理方法比较简单，直接结束模拟，但是可能会丢失异常后的Spectre gadgets，因为大多数的CPU都不会在触发预测执行过程中的异常时中断。
+相反，预测执行过程仍会继续。
+SpecTaint在模拟过程中遇到异常时会强制继续模拟。
+</p>
+
+<p>
+SpecTaint使用自定义的异常处理器来捕获预测执行过程中的异常。
+当出现侵权异常时，SpecTaint会无视该异常，然后继续执行。
+如果是跳转地址错误此类无法处理的异常，则会回滚到检查点。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org9555a86" class="outline-3">
+<h3 id="org9555a86"><span class="section-number-3">4.2</span> 预测执行路径探索</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+SE: Speculative Execution
+</p>
+
+<p>
+NE: Normal Execution
+</p>
+
+<p>
+SpecTaint以深度优先探索预测执行路径。
+</p>
+</div>
+<div id="outline-container-org0ac4fa8" class="outline-4">
+<h4 id="org0ac4fa8"><span class="section-number-4">4.2.1</span> 执行状态回滚</h4>
+<div class="outline-text-4" id="text-4-2-1">
+<p>
+SpecTaint在分支前保存当前执行状态。
+预测执行结束后使用保存的状态恢复。
+</p>
+
+<p>
+SpecTaint持续追踪内存区域，当发生修改时保存原本的值。
+SpecTaint使用动态污点追踪，因此还会记录执行过程中的污点信息。
+</p>
+</div>
+</div>
+<div id="outline-container-orgfc7bf2f" class="outline-4">
+<h4 id="orgfc7bf2f"><span class="section-number-4">4.2.2</span> 路径探索</h4>
+<div class="outline-text-4" id="text-4-2-2">
+<p>
+考虑2种路径覆盖率。
+</p>
+<ul class="org-ul">
+<li>普通执行路径覆盖率：使用<a href="20211026152446-afl.html#ID-fb6ddb5a-83de-411f-8e89-fb125b9e732d">AFL</a>来提高路径覆盖率。</li>
+<li>预测执行路径覆盖率。</li>
+</ul>
+<p>
+SpecTaint将条件分支视为从普通执行转化为预测执行的切换点。以深度优先遍历分支，每当进入一个新的分支，保存当前状态，并依次探索分支；当终止时，回滚到之前保存的状态，并继续执行下一条分支。
+</p>
+</div>
+</div>
+<div id="outline-container-org6509d5b" class="outline-4">
+<h4 id="org6509d5b"><span class="section-number-4">4.2.3</span> 筛选路径</h4>
+<div class="outline-text-4" id="text-4-2-3">
+<p>
+大多数路径爆炸是因为循环和递归函数。因此需要对路径进行筛选。SpecTaint限制同一条路径最有模拟5次。
+因为在现实中，在重复进行一条分支多次后就不太会产生预测错误，5次就足够训练分支预测器。
+该方法可能会遗漏gadgets。
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org5dd2e72" class="outline-2">
+<h2 id="org5dd2e72"><span class="section-number-2">5</span> 检测</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org999e0bf" class="outline-3">
+<h3 id="org999e0bf"><span class="section-number-3">5.1</span> 动态污点追踪</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+使用DECAF进行动态污点追踪分析。对NE和SE均进行动态污点追踪。
+对NE使用动态污点分析是为了确保污点的传播。对SE进行动态污点分析是为了找出Spectre gadgets。
+当SE结束时，污点信息也会被恢复，同时清除之前模拟过程中产生的污点信息。
+</p>
+</div>
+</div>
+<div id="outline-container-orga8fe551" class="outline-3">
+<h3 id="orga8fe551"><span class="section-number-3">5.2</span> Spectre Gadgets 模型</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+文章定义了2种类型的Spectre V1 gadgets。
+</p>
+<ul class="org-ul">
+<li>BCB: Bounds Check Bypass (BCB)</li>
+<li>BCBS: Bounds Check Bypass Store (BCBS)</li>
+</ul>
+<p>
+定义：
+</p>
+<ul class="org-ul">
+<li>\(c\) 是条件分支指令。</li>
+<li>\(\tau(c)\) 表示为从 \(c\) 开始进行预测执行的指令集。</li>
+<li>\(m(i)\) 表示 \(i\) 是个内存读取指令。</li>
+<li>\(str(i)\) 表示 \(i\) 是个内存写入指令。</li>
+<li>\([i]\) 表示内存读取指令 \(i\) 读取的值。</li>
+<li>\(dep(i,j)\) 表示指令 \(i\) 数据依赖于 \(j\) 。</li>
+<li>\(t(i)\) 表示指令 \(i\) 的操作被污染。</li>
+<li>\(\delta\) 表示预测执行窗口的大小。</li>
+</ul>
+</div>
+<div id="outline-container-org29f6f50" class="outline-4">
+<h4 id="org29f6f50"><span class="section-number-4">5.2.1</span> BCB</h4>
+<div class="outline-text-4" id="text-5-2-1">
+<p>
+BCB gadgets 包含一系列数组操作，并且后一个数组的索引和上一个数组之间存在数据依赖。
+但不是所有满足上述条件的就是BCB gadgets。BCB gadgets要求上一个数组的索引能够被控制。
+</p>
+
+<p>
+BCB gadget定义：
+</p>
+\begin{equation}
+\Phi_{bcb}(c):=\exists i,j \in \tau(c).m(i)\wedge m(j)\wedge dep(j,[i])\wedge t(i)\wedge|c,j| < \delta
+\end{equation}
+<p>
+翻译一下：
+</p>
+
+<p>
+从分支指令 \(c\) 开始的预测执行指令序列中，存在内存读取指令 \(i,j\) ，且 \(j\) 数据依赖 \(i\) 的读取结果，并且 \(i\) 进行污点传播，同时 \(c\) 与 \(j\) 之间的距离小于窗口大小，分支指令 \(c\) 存在BCB gadget。
+</p>
+</div>
+</div>
+<div id="outline-container-org04f5a7c" class="outline-4">
+<h4 id="org04f5a7c"><span class="section-number-4">5.2.2</span> BSBS</h4>
+<div class="outline-text-4" id="text-5-2-2">
+<p>
+在预测执行过程中对内存进行写入，通过控制数组索引，修改特定的内存数据，如返回地址。
+</p>
+
+<p>
+BCBS gadget定义：
+</p>
+\begin{equation}
+\Phi_{bcbs}:=\exists i \in \tau(c),str(i)\wedge t(i)\wedge |c,i| < \delta
+\end{equation}
+</div>
+</div>
+<div id="outline-container-org407eb04" class="outline-4">
+<h4 id="org407eb04"><span class="section-number-4">5.2.3</span> Gadget 分类</h4>
+<div class="outline-text-4" id="text-5-2-3">
+<p>
+文章的定义类似与oo7,但oo7认为分支应该被污染，并被输入控制。但分支预测的误导可以通过同一颗核心中的其他进程误导。
+攻击者可以控制其他进程在相同的虚拟地址进行训练来实现误导。
+</p>
+
+<p>
+文章考虑如下：
+</p>
+<ul class="org-ul">
+<li>当预测执行被污点分支触发，则考虑进程内Spectre gadget。</li>
+<li>否则，考虑为跨进程Spectre gadget。</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org28cb587" class="outline-3">
+<h3 id="org28cb587"><span class="section-number-3">5.3</span> Gadget 检测</h3>
+<div class="outline-text-3" id="text-5-3">
+<p>
+gadget检测是用来检查预测执行过程指令追踪过程是否匹配gadgets模式。
+文章只检查被标记为污点的内存访问指令。
+我们对内存读取和写入指令进行插装。对内存读取指令，我们检查它的读取位置是否被污染。
+对于BCB gadgets，为了确定指令的依赖，我们还需要追踪被标记的指令 \(j\) 是否由指令 \(i\) 传播而来。
+对于BCBS gadgets，将被标记的内存写入操作的目标地址标记为污点。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org62b026c" class="outline-2">
+<h2 id="org62b026c"><span class="section-number-2">6</span> 实现</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+SpecTaint为DECAF的一个插件。
+文章使用DECAF来进行污点分析。此外，为了提高代码的覆盖率，我们使用<a href="20211026152446-afl.html#ID-fb6ddb5a-83de-411f-8e89-fb125b9e732d">AFL</a> 2.52b和<a href="20211027185607-honggfuzz.html#ID-fe2fb307-5a41-4cce-8ff4-8cf197b9a24c">honggfuzz</a>来生成输入种子。
+</p>
+</div>
+</div>
+<div id="outline-container-org1845539" class="outline-2">
+<h2 id="org1845539"><span class="section-number-2">7</span> 实验</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+实验目的：
+</p>
+<ul class="org-ul">
+<li>SpecTaint在发现Spectre gadgets上的效率。</li>
+<li>SpecTaint在真实世界应用中发现Spectre gadgets的效率。</li>
+</ul>
+
+<p>
+对比对象：
+</p>
+<ul class="org-ul">
+<li>Red Hat的Spectre 1 Scanner。</li>
+<li>oo7。</li>
+<li>SpecFuzz。</li>
+</ul>
+
+<p>
+测试数据集：
+</p>
+<ul class="org-ul">
+<li>Spectre样本数据集，15个Spectre V1样本。</li>
+<li>SpecFuzz使用的数据集。</li>
+<li>将Spectre gadgets注入到程序中。</li>
+</ul>
+
+<p>
+评估标准：
+</p>
+<ul class="org-ul">
+<li>对V1数据集，准确率公式为：</li>
+</ul>
+\begin{equation}
+precision(P) = \frac{TP}{TP+FP}
+\end{equation}
+<p>
+TP为手工验证为真的gadgets,FP为手工验证为假的gadgets。
+</p>
+<ul class="org-ul">
+<li>对V2数据集，只考虑注入的Spectre gadgets,计算准确率和召回率。</li>
+</ul>
+\begin{equation}
+recall(R) = \frac{TP}{TP+FN}, FN为false negative\\
+
+precision(P) = \frac{TP}{TP+FP}，FP为false positive
+\end{equation}
+</div>
+
+<div id="outline-container-org7fb5c60" class="outline-3">
+<h3 id="org7fb5c60"><span class="section-number-3">7.1</span> V2数据集对比测试结果</h3>
+<div class="outline-text-3" id="text-7-1">
+
+<div id="orgc2fc6df" class="figure">
+<p><img src="./images/spectaint_dataset_result.png" alt="spectaint_dataset_result.png" />
+</p>
+</div>
+
+<p>
+与oo7相比，SpecTaint的FN和FP都要低，说明动态污点分析的准确率和效率都要优于静态污点分析。
+</p>
+
+<p>
+SpecFuzz未能发现部分Spectre gadgets,原因大致有2点：
+</p>
+<ul class="org-ul">
+<li>SpecFuzz会对分支进行优先级判断，因此可能会导致遗漏部分的Spectre gadgets。</li>
+<li>SpecFuzz并不会处理非法内存访问等异常，因此会丢失部分在这些异常之后的Spectre gadgets。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgf6d68e0" class="outline-3">
+<h3 id="orgf6d68e0"><span class="section-number-3">7.2</span> V1数据集对比测试结果</h3>
+<div class="outline-text-3" id="text-7-2">
+<p>
+SpecTaint检测得到的gadgets要小于SpecFuzz检测得到的。但是SpecFuzz的FP很高。
+还有些gadgets位于循环中，它的预测会被纠正。
+</p>
+
+<p>
+SpecFuzz也未能发现部分SpecTaint发现的Spectre gadgets。原因可能是因为SpecFuzz的fuzzing过程存在概率性，在fuzzing过程中没能触发内存错误。
+</p>
+</div>
+</div>
+<div id="outline-container-org2390969" class="outline-3">
+<h3 id="org2390969"><span class="section-number-3">7.3</span> 补丁的性能开销</h3>
+<div class="outline-text-3" id="text-7-3">
+<p>
+SpecTaint优于其他，因为它发现的gadgets更少，因此影响的范围更小。
+</p>
+</div>
+</div>
+<div id="outline-container-orgad1f419" class="outline-3">
+<h3 id="orgad1f419"><span class="section-number-3">7.4</span> 分析效率</h3>
+<div class="outline-text-3" id="text-7-4">
+
+<div id="org398262b" class="figure">
+<p><img src="./images/spectaint_runtime_performance.png" alt="spectaint_runtime_performance.png" />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgabb29c7" class="outline-3">
+<h3 id="orgabb29c7"><span class="section-number-3">7.5</span> 案例学习</h3>
+<div class="outline-text-3" id="text-7-5">
+<p>
+SpecTaint发现了11条SpecFuzz未能发现的gadgets,其中有10条是可以利用的。
+</p>
+
+
+<div id="orgb534794" class="figure">
+<p><img src="./images/spectaint_bcb_brotli.png" alt="spectaint_bcb_brotli.png" />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5ae09f5" class="outline-2">
+<h2 id="org5ae09f5"><span class="section-number-2">8</span> 存在的问题</h2>
+<div class="outline-text-2" id="text-8">
+<ul class="org-ul">
+<li>循环可能会将预测纠正，导致模拟时找到的gadgets并不能被利用。</li>
+<li>SEW太大，会导致部分gadgets不会被预测执行。</li>
+<li>路径覆盖不完整。</li>
+<li>控制依赖攻击。目前只考虑了用户输入作为数据流产生的Spectre gadgets.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2021-10-28 Thu 10:38</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

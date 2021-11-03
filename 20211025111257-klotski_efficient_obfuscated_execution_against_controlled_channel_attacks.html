@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-11-03 Wed 10:21 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Klotski: Efficient Obfuscated Execution against Controlled-Channel Attacks</title>
+<meta name="generator" content="Org mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://www.gnu.org/software/emacs/manual.css">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Klotski: Efficient Obfuscated Execution against Controlled-Channel Attacks</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org6a5fcec">1. 摘要</a></li>
+<li><a href="#orgecf1f9e">2. 介绍</a></li>
+<li><a href="#org0f8c6dd">3. 背景</a>
+<ul>
+<li><a href="#orgb5b76f5">3.1. 英特尔SGX</a></li>
+<li><a href="#org79beae5">3.2. ORAM</a></li>
+</ul>
+</li>
+<li><a href="#orgb59aea2">4. 相关工作和动机</a>
+<ul>
+<li><a href="#orge6147f3">4.1. 攻击SGX的侧信道攻击</a></li>
+<li><a href="#org54ad87a">4.2. 现有的防御方法</a></li>
+</ul>
+</li>
+<li><a href="#orgdb07dcf">5. 设计</a>
+<ul>
+<li><a href="#org76cccd8">5.1. 威胁模型</a></li>
+<li><a href="#org912c475">5.2. 概述</a></li>
+<li><a href="#orgae1afeb">5.3. 软件MMU</a></li>
+<li><a href="#orgc1bef48">5.4. ORAM Access</a></li>
+</ul>
+</li>
+<li><a href="#org9d0e5ce">6. 优化</a>
+<ul>
+<li><a href="#orgeb86567">6.1. 减少地址转化</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+<b>Klotski: 应对Controlled-Channel攻击的高效混淆执行</b>
+</p>
+<div id="outline-container-org6a5fcec" class="outline-2">
+<h2 id="org6a5fcec"><span class="section-number-2">1</span> 摘要</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+英特尔软件防护扩展（SGX）为安全敏感的计算提供了一个基于硬件的可信执行环境。
+计算提供一个基于硬件的可信执行环境。在可信域(飞地)内运行的程序受到保护，免受来自其他软件的直接攻击，
+包括特权软件，如操作系统（OS）、虚拟机管理程序和低级别的固件。然而，最近的研究表明，SGX会受到一类侧信道攻击的影响，
+使攻击者可以破坏飞地中执行的保密性，如可控制信道攻击。不幸的是，现有的防御措施要么提供不完整的保护，要么导致过多的性能开销。
+在这项工作中，我们提出了Klotski，一种有效的混淆执行技术来对抗可控制信道攻击，并在安全性和性能之间能够进行可调整的权衡。
+从高层次来看，Klotski模拟了一个安全的内存子系统。它利用了一个增强的ORAM协议，将代码和数据加载到两个可配置大小的缓存中。
+这些缓存地址在可配置的时间间隔后会被重新随机化。更重要的是，Klotski使用了多种优化手段来减少基于软件的地址转化和软件缓存替换带来的性能开销。
+评估结果显示Klotski在面对可控制信道攻击时是安全，同时它的性能开销比之前的解决方案低的多。
+</p>
+
+<p>
+<b>关键字</b>: 英特尔SGX;Oblivious Execution;运行时随机化；页错误通道;
+</p>
+</div>
+</div>
+<div id="outline-container-orgecf1f9e" class="outline-2">
+<h2 id="orgecf1f9e"><span class="section-number-2">2</span> 介绍</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+可信执行环境（TEE）旨在保障在潜在的敌对平台（如公共云）上程序执行的保密性和完整性，以应对各种程序开发者未曾考虑的安全威胁。
+这些威胁包括恶意软件、恶意或受损的操作系统（OS）、恶意的云管理员等。TEE可以通过软件[16,24,32]或者硬件[4,21,33]提供。
+在这些解决方案中，英特尔的软件防护扩展（SGX）[33]是最有前景的，因为它已经在英特尔的商用CPU（从Skylake架构开始）中使用，同时它具有强大的基于硬件的安全保证。
+具体来说，一个运行在SGX保护的TEE(又称“飞地”)中的程序只需要信任处理器。与基于软件的解决方案相比，处理器是一个小的多的可信计算基（TCB）。
+同时，英特尔也做了很大的努力来正式验证SGX的硬件规范以及其密码学操作的实现[26]。
+基于这些理由，大量基于SGX的应用程序被开发，包括数据分析[34,40]，机器学习[36]，Tor[29]，容器[6]以及支持传统程序的库操作系统[7,46,52]。
+</p>
+
+<p>
+然而，SGX依旧存在问题。尤其是因为侧信道攻击不在其设计的威胁模型中，研究人员已经证明了几种针对在飞地内运行的应用程序的侧信道攻击的可行性，包括基于内存缺页的攻击（如可控制信道攻击）[45,60]，基于缓存的攻击[9,19,23,42,54]，基于分支预测的攻击[30]和瞬时攻击[1,14,31,41]。
+在这些攻击中，我们认为可控制信道攻击是最严重的，因为其他更细粒度的攻击[10,14,23,30,31,41,53,54]中的大多数（除了Meltdown[31]）的成本都很高。
+因此，攻击者通常依靠可控制信道攻击来准确定位感兴趣的函数，并只在目标函数被执行时才进行更细粒度的攻击。
+</p>
+
+<p>
+可控制信道攻击是可能的，因为(1)攻击者可以观察到内存访问模式[51]和(2)应用程序的内存访问模式取决于输入。
+因此，可控制信道攻击可以通过上述2个根本原因来解决。
+用户空间的缺页检测方法旨在防止攻击者通过故意注入的缺页来获取页面访问模式。
+不幸的是，它们对不依赖缺页的可控制信道攻击（例如基于访问位的攻击[54]）。SGX-Shield[43]试图通过随机化内存布局来混淆内存访问。
+但是由于它只在加载时随机化一次，因此会被在线分析[30]攻击。
+遗忘执行技术[2,3,37,39,45]能够防御在线分析，但是会带来更高的性能开销。
+例如，确定性多路复用技术[45]的运行性能开销超过4000倍，多程序路径执行[37]的开销为9倍，而OBFSCURO[2]在简单测试中有51倍的性能开销。
+</p>
+
+<p>
+在这项工作中，我们的目标是在击败可控制信道攻击的同时，能够在安全保障和性能开销之间进行可调整的权衡。在高层次上看，我们提出的Klotski系统是作为一个内存子系统工作。
+它包括2个软件缓存（一个执行vCache和一个数据vCache）、一个软件内存管理单元（sMMU），以及一个虚拟主内存。
+与物理CPU类似，所有的执行指令都是从执行vCache中获取，所有的数据都是从执行vCache中读取/写入。
+sMMU将编译时的虚拟地址，也被称作逻辑地址，翻译成运行时虚拟地址（即硬件MMU的线性地址）。这种机制允许我们将一个内存块加载到vCache中的任何槽中。
+为了混淆执行过程中的内存访问模式，sMMU使用Ring ORAM协议[38]来访问主内存。
+此外，因为“客户端”的ORAM操作包括对元数据的访问（例如，储存区和位置图）很容易受到侧信道攻击，Klotski使用了额外的保护措施来确保这些操作在我们的威胁模型中会被混淆的。
+最后，vCache通过随机替换策略和强制刷新来重新随机化。
+</p>
+
+<p>
+虽然上述设计是安全的，但是和之前的工作类似，直接实现会带来很高的性能开销。Klotski的另一个重要贡献是几个优化技术，
+首先，Klotski通过缓存减少了地址转换的数量。与硬件转译后备缓冲器类似，Klotski利用程序定位性来避免多余的地址转换。
+第二，Klotski改善了程序的定位性，以减少缓存替换，包括对齐循环以避免跨缓存块的循环体，并将常量重新定位到同一代码块。
+最后，Klotski通过可配置的参数在性能和安全之间提供了一个可调整的权衡。
+在一种极端情况下，Klotski可以允许开发者选择一个小的vCache大小（例如，4 KB），但代价是更高的性能开销（约10倍）。另一种极端情况，开发者可以选择较大的vCache（例如，工作集大小）来降低性能开销，代价是减少安全保证。然而，在实践中，随着vCache的重新随机化，即使减少的安全保证对大多数应用来说也是合理的（见§6）。
+</p>
+
+<p>
+我们已经基于linux上的英特尔SDK，LLVM工具链和musl-libc实现了Klotsk。我们的实验评估表明：(1) Klotski能有效地对付已知的针对飞地的可控信道推理攻击，
+(2) Klotski与飞地程序有很好的兼容性，以及(3)Klotski在实际程序上的性能开销可以减少到1.3倍，同时提供合理的安全保证。
+</p>
+
+<p>
+总的来说，这篇文章做出了以下贡献：
+</p>
+<ul class="org-ul">
+<li><b>基于ORAM的新防御措施来对抗可控信道攻击</b> 。我们设计并实现了一种新的混淆执行技术，以保护飞地中的程序免受可控信道攻击。我们的安全评估表明，我们的设计能够阻止我们的威胁模型下的所有攻击。</li>
+<li><b>优化技术</b> 。我们开发了几种优化技术来减少开销。评估还表明，我们的优化技术是非常有效的，它可以将性能提高多达6.7倍。对于现实世界的应用，Klotski的的性能也是可以接受的，只有2.3倍，并且在安全方面有一个很好的平衡。</li>
+<li><b>开源实现</b> 。我们实现了一个端到端的工具链，支持各种飞地的程序。源代码和文档将在这项工作被接受后，将向公众开放。</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org0f8c6dd" class="outline-2">
+<h2 id="org0f8c6dd"><span class="section-number-2">3</span> 背景</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgb5b76f5" class="outline-3">
+<h3 id="orgb5b76f5"><span class="section-number-3">3.1</span> 英特尔SGX</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+SGX提供两种安全保证：保密性和完整性。
+首先，它可以防止属于 "飞地 "的代码和数据被 "飞地 "以外的人访问。包括特权软件，如操作系统和虚拟机管理程序。
+第二，它使用内存加密[22]来防止内存攻击如窥探和冷启动。它还维护飞地内存的完整性措施，以防止恶意篡改和重放攻击。
+当硬件异常/中断在飞地内发生时，处理器会产生一个异步飞地退出（AEX），然后再调用系统软件的异常处理程序。SGX首先将飞地的执行状态保存到状态保存区（SSA），并将所有寄存器重置为预定义的值，以避免泄密。例如，当一个缺页发生时，SGX将清除缺页地址的最低12位地址。然后，控制权被转移到异常处理程序。最后，在完成这个过程后，处理程序恢复了飞地程序。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org79beae5" class="outline-3">
+<h3 id="org79beae5"><span class="section-number-3">3.2</span> ORAM</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Oblivious RAM（ORAM）[18]，提供了一个正式和通用的模型，以防止对手从程序的访问模式中了解任何有关程序的输入的信息。
+也就是说，给定两个输入 \(i\) 和 \(i′\) ，的时候，它们的内存访问轨迹在计算上是无法区分的。
+ORAM通过混淆内存访问模式来实现这一目标，如添加噪音、排列组合和重新洗牌等。
+有许多方法可以构建ORAM。一种简单但效率极低的构造是，对于每一个内存访问都要访问整个存储器。
+因此，目前已经提出了几种不同的ORAM方案[38, 49, 50, 55]，以提高ORAM的效率。
+在本小节中，我们将重点介绍解释Klotski使用的环形ORAM[38]。
+环形ORAM是对Path ORAM[50]的一种优化。它包括三个部分：
+</p>
+<ul class="org-ul">
+<li><b>ORAM 树</b> :一个不受信任的服务器中的一个完整的二进制树在来存储加密的内存块。这个树的深度是典型的O(log N)，其中N是真实内存块的数量。这棵树的每个节点，也被称为桶，有固定数量的槽来容纳块（Z+S，最多有Z个槽可以包含实数块，而至少有S个槽是由假块填充的），以及一个包含基本信息的小型元数据。由于所有的真实区块和虚拟区块都是加密的，攻击者是无法区分它们的。</li>
+<li><b>Position Map</b> :一个查询表，该表由受信任的客户保留，并用于记录一个真实块在ORAM树中的映射路径。</li>
+<li><b>储存区</b> :在受信任的客户端有一个缓冲区，用来存储未被驱逐到ORAM树中的块。一个区块要么在ORAM树中，要么在储存区中。</li>
+</ul>
+
+<p>
+环形ORAM通过下面4步来访问一个块：
+</p>
+<ol class="org-ol">
+<li>查询Position Map：ORAM通过查找Position Map来了解目标区块 \(b\) 目前在哪条路径 \(l\) 上，并将新的路径 \(l′\) 分配给并为该块。</li>
+<li>ReadPath：ORAM读取所有路径 \(l\) 上的桶，并将 \(b\) 储存到储存区中。与之前的树状方案不同，只从路径上的每个桶中读取一个块。
+除了b所在的桶之外，读取一个随机的假块。</li>
+<li>EvictPath：为了保持较低的储存区空间占用率，在每A次ReadPath后，EvictPath会选择一个路径，从每个桶中读取Z个块（所有剩余的真实块和可能的假块）到储存区，然后将区块按照反向字典序填充到路径中[38]。</li>
+<li>早期重新洗牌：为了避免一个桶在EvictPath重新洗牌之前被读取 &gt; S次。对于每个ReadPath操作，对被访问超过S次的桶进行EarlyReshuffle。与EvictPath类似，EarlyReshuffle读取Z个块，并写回Z+S个的混合块。</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb59aea2" class="outline-2">
+<h2 id="orgb59aea2"><span class="section-number-2">4</span> 相关工作和动机</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-orge6147f3" class="outline-3">
+<h3 id="orge6147f3"><span class="section-number-3">4.1</span> 攻击SGX的侧信道攻击</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+表1总结并比较了现有的对SGX的侧信道攻击方法。Xu等人[56]首次证明了一个恶意的操作系统可以通过观察程序在页粒度上的访问来提取程序的敏感信息。
+在这种攻击中，他们使用页故障作为一个无噪音的受控信道。为了减少频繁的页面故障所带来的特殊开销，他们使用几组缺页序列来识别感兴趣的函数的开始和结束，并且只对这些函数进行大量的页面故障来追踪这些功能。即使进行了这种优化，他们的攻击也会导致了209.6倍到354.9倍的额外开销。J.Bulck等人[12]随后提出了一个基于页表，能产生较少的页面故障的攻击。他们精心挑选了一些触发页，并收集两次访问触发页之间的访问页集，使用A(ccessed)/D(irty)标志在页表条目中。使用这种方法，受害者的飞地只有在访问触发页时才会被中断。TLBleed[20]测量了dTLB的延迟，以收集数据页的页格信号。这种攻击在单次签名操作期间收集TLB中2毫秒的活动。
+</p>
+
+<p>
+基于页表的攻击面临着一个根本性的限制，即时间和空间分辨率，攻击者无法观察到在一个4KB的页面内的内存访问。
+因此提出了更细粒度的侧面通道攻击。基于缓存的攻击[9, 19, 23, 35, 48]表明Prime+Probe仍然可以被利用来观察飞地的缓存线级内存访问。
+分支阴影[30]利用分支预测的延迟来收集精确的控制流信息。与传统的侧信道攻击类似，这些攻击的关键挑战是噪音。
+这些攻击的关键挑战是由其他在探测阶段由其他不感兴趣的访问造成的噪音。上述的大多数的攻击通过利用x86的本地APIC定时器来试图缓解这个问题,通过触发尽可能频繁的中断来接近单步执行[11]，所以恶意的操作系统可以在访问感兴趣的内存之前和之后闯入SGX应用程序以减少污染。然而，这也使这些攻击变得极其缓慢。即使在使用页级的侧信道来识别感兴趣的目标函数。
+Hähnel等人[23]报告说，观察到单个数组的查询速度降低了3532倍。
+</p>
+
+<p>
+最后，Foreshadow[10]展示了一种新的瞬时执行攻击，它可以转存一个受害者飞地的全部内容，即使没有和该飞地内有任何关系。
+</p>
+
+<p>
+<b>观测</b> 大多数SGX侧信道攻击依靠频繁的AEX来暂停飞地的执行以减少噪音，这也增加了程序的整体执行时间。这个问题在细粒度的侧信道攻击中变得更加严重。为了使其实用，攻击者只有在利用粗粒度的侧信道来确定感兴趣的函数后才会发起细粒度的攻击。因此，我们可以通过阻止粗粒度的侧信道来阻碍细粒度的攻击。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org54ad87a" class="outline-3">
+<h3 id="org54ad87a"><span class="section-number-3">4.2</span> 现有的防御方法</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+T-SGX[44]使用英特尔事务性同步扩展（TSX）来限制关键代码执行时飞地AEX的生成。Chen等人[15]也利用TSX来实现基于执行的参考时钟，用于检测关键执行的中断。基于TSX的解决方案的问题是，一些攻击[9, 19, 20, 54]获得访问模式而不触发AEXs。SGX-Shield[43]在飞地程序的加载时引入了代码块级的随机化。然而，恶意的操作系统仍然可以通过观察操作系统输入的内存访问模式来推断出飞地的内存布局[30]。
+Zigzagger[30]将一组分支指令混淆成一个间接分支，以防止基于分支的侧信道攻击，但它只能保护代码的执行，并被一些细粒度的攻击所击败[11, 53]。ENCLANG[47]混淆了不调用其他函数的叶子函数。
+DR.SGX[8]在一个飞地的执行过程中，以缓存行的粒度不断重新随机化所有飞地数据。但它只关注数据访问，并没有混淆代码的执行。
+Shinde等人[45]引入了一种被称为确定性复用的遗忘执行方法，通过将敏感代码和数据放在一个页面上，以隐藏页面访问模式。他们的方案带来了非常高的性能开销（超过4000倍），并且需要人工优化。OBLIVIATE[3]、ZeroTrace[39]和OBFSCURO[2]使用ORAM协议来混淆内存访问。ZeroTrace只考虑数据的遗忘性。OBLIVIATE为飞地提供了一个混淆的文件系统，但并没有根除其执行过程的可控信道。OBFSCURO混淆了对代码和数据的访问。虽然它提供了强大的保护，防护缓存和定时的侧信道，但它只能支持代码和数据大小较小（8KB）的程序，因此对真正的程序来说是不实用的。此外，它的性能开销明显较高：在他们定制的基准上为55倍。
+</p>
+
+<p>
+InvisiPage[1]提出了一种类似于Klotski的新硬件设计，飞地内的程序可以填充自己的页表，其页访问模式受ORAM协议保护。虽然硬件实现可以提供更好的性能，但Klotski可以应用于现有的硬件，Klotski的所有编译时优化也适用于InvisiPage。
+</p>
+
+<p>
+<b>观察</b>: 现有的防御措施有三个限制。(1）对粗粒度的侧信道攻击的保护不完整，（2）对代码和数据的保护不完整，或者（3）性能开销大。Klotski旨在通过为代码和数据提供一个子页面级别的运行时随机化方案来解决这些限制。这个方案打破了程序地址和内容的固定关系。此外，Klotski使用基于ORAM的洗牌方法来防止运行时重新随机化过程中可能的信息泄露。因此，Klotski可以防止攻击者通过粗粒度的侧信道攻击定位感兴趣的代码/数据的访问。虽然Klotski不能直接缓解细粒度的侧信道攻击，但它迫使攻击者一直监控代码/数据的访问，这将使攻击变得极其缓慢和不切实际。
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgdb07dcf" class="outline-2">
+<h2 id="orgdb07dcf"><span class="section-number-2">5</span> 设计</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org76cccd8" class="outline-3">
+<h3 id="org76cccd8"><span class="section-number-3">5.1</span> 威胁模型</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+我们假设的威胁模型与之前的可控信道工作[44, 45, 56]相同。首先，除了飞地本身，软件堆栈中的所有其他组件都不被信任，所以页面访问模式对对手来说是可见的。其次，我们假设目标程序的代码，包括它的源代码和二进制代码，对对手来说是已知的；所以攻击者可以对程序进行任何自动或手动分析，以提取必要的信息。此外，我们假设攻击者可以向目标程序提供攻击者控制的输入，以便进行在线训练，学习内存访问模式。最后，由于我们的重点是防止侧信道攻击，我们认为任何利用目标程序内的软件漏洞（如缓冲区溢出）的攻击都不属于范围。任何缓解这些漏洞的防御措施都是对我们工作的补充。
+</p>
+
+<p>
+虽然我们的解决方案利用ORAM来缓解侧信道攻击，但我们的威胁模型要强大得多。现有的ORAM解决方案假定了一个客户-服务器模型。在这个模型中，服务器是不受信任的，但客户端是受信任的。这意味着所有的客户端操作都不会受到侧信道的攻击。相反，在我们的方案中，所有组件都在同一个飞地内运行，因此会受到侧信道攻击。
+</p>
+</div>
+</div>
+<div id="outline-container-org912c475" class="outline-3">
+<h3 id="org912c475"><span class="section-number-3">5.2</span> 概述</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+在这项工作中，我们使用一种基于运行时重新随机化的混淆方法来缓解侧信道攻击。图1说明了Klotski的概况，它包括两个主要部分：一个编译器扩展和一个基于ORAM的运行时。编译器扩展执行两个转换。首先，它记录所有的内存访问指令，包括飞地程序运行时的控制转移（代码访问）指令。其次，它将程序的代码和数据划分为小块，可以重定位到任何虚拟地址。运行时作为一个内存子系统，使用增强的环形ORM协议混淆内存访问[38]。为了加快执行速度，运行时还包括两个可配置大小的内存缓冲区，作为代码缓冲区和数据缓冲区。注意，为了避免混淆Klotski的软件缓存和架构/硬件缓存，我们将使用vCache来表示Klotski的缓存。代码和数据块使用ORAM协议被取到vCache中。vCache的重新随机化是通过自然替换（使用随机替换策略）或强制刷新完成的。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgae1afeb" class="outline-3">
+<h3 id="orgae1afeb"><span class="section-number-3">5.3</span> 软件MMU</h3>
+<div class="outline-text-3" id="text-5-3">
+<p>
+Klotski用修改过的编译器将目标程序的源代码构建成Klotsk增强版。总体目标是插装内存访问指令，请求软件MMU将原始逻辑地址转换为vCache中的真实虚拟地址。这个阶段是在一个可信的机器上进行的。
+</p>
+
+<p>
+<b>转换数据结构</b> 为了减少每个地址转换的开销，Klotski的软件MMU只使用一级页表。每个页表项（PTE）的长度为4个字节。在翻译过程中，一个输入地址（64位）被分割成两部分：页索引（针对飞地的基址）和页偏移。这种分割取决于ORAM块的大小。注意，为了避免混淆程序的基本块和ORAM块，我们将交替使用迷你页和ORAM块。例如，在我们的原型实现中，迷你页的大小是2KB。软件MMU使用迷你页的索引来查找相应的PTE。一个有效的PTE记录了编译时的逻辑地址和运行时的虚拟地址之间的偏移。因此，软件MMU可以有效地计算出运行时的虚拟地址，只需将偏移量（即PTE的值）加入到逻辑地址中。Klotski保证所有偏移量都在32位PTE的有效范围内。 
+</p>
+
+<p>
+由于只有已经加载到vCache中的mini-page才有有效的PTE，所以我们也将页表作为一个虚拟位置图，类似于操作系统内核实现虚拟内存的方式（如图2）。如果一个迷你页在vCache中（有效，00），那么它的PTE记录了偏移量，如上所述。如果一个mini-page在存储区（01），那么它的PTE就会记录它在ORAM树中的新路径。如果一个迷你页在ORAM树中（11），那么它的PTE记录它在树中的当前路径。
+</p>
+
+<p>
+<b>显式的内存访问</b> 显式内存访问包括分支（jmp, call, ret）和数据访问（load, store）。由于迷你页的有效虚拟地址在运行时发生变化，除了对内存访问操作进行检测外，我们还需要确保存储在内存中的所有地址（指针）是原始逻辑地址，而不是虚拟地址。因此，我们需要特别处理call、ret、jcc和lea指令。call指令将有效的虚拟地址作为返回地址压入栈中。为了解决这个问题，在插装过程中，Klotski将用一条push指令和一条jmp指令来替换每条call指令。这样一来，逻辑地址被压入栈，而jmp指令将有效的虚拟地址作为操作数，并将执行转移到目标函数。为了修正ret指令，Klotski用pop和jmp指令替换了每条ret指令，并在中间插入了地址转换逻辑。条件跳转指令更复杂，因为它们使用相对地址（即操作数是当前地址和目标地址之间的偏移）。为了处理它们，Klotski用一个跳板代码代替了目标，以执行地址转换和控制转移。
+</p>
+
+<p>
+lea指令可以将虚拟地址加载到一个寄存器中。在Klotski中，由于代码没有被编译为位置无关，因此代码指针是静态生成的，而不是用lea生成的，所以唯一的特殊情况是获得堆栈地址。在这种情况下，我们需要在将被加载的虚拟地址在存储到内存或传递给另一个函数之前将其翻译回逻辑地址。因为堆栈地址不是在编译时确定的，所以转换的方法是：（1）为堆栈保留一个区域（即一组PTE），（2）分配一个唯一的PTE作为堆栈的逻辑基点，（3）将堆栈的逻辑基点存储在线程本地存储中，以便将来转换。&lt;?&gt;
+</p>
+
+<p>
+<b>隐式内存访问</b> 当处理器试图获取下一条指令时，就会发生隐含的内存访问。如果下一条指令是在同一个小页中，就不需要插装；否则，应该插入一个显式控制转移。这要分两步完成。首先，当发射机器代码时，Klotski确保没有基本块会跨越迷你页的边界。其次，类似于条件跳转，Klotski在每个存在隐式fall-through基本块的末尾插入一对mov + jmp指令。在目标代码生成过程中，如果源码和目标基本块都在同一个迷你页中，Klotski就会丢弃显式fall-through指令以避免不必要的翻译。
+</p>
+
+<p>
+<b>OCalls</b> 外部库函数、系统调用和I/O指令，如sendto()和recvfrom()在飞地内不被支持，因此需要被包装成Ocalls。因为这些包装器可能会访问跨越多个非连续小页面的数据对象，所以我们也需要对它们进行修改，以便与Klotski兼容。具体来说，对于从飞地向外部传输数据的Ocalls（例如，sendto），它们将首先分配一个连续的缓冲区，然后将数据对象从Klotski的vCache复制到缓冲区。对于从外部向飞地传输数据的Ocalls（如recvfrom），它们将调用软件MMU，小心地将数据写回数据vCache。
+</p>
+
+<p>
+<b>引导</b> 为了构建所需的内存布局，Klotski分两步初始化了飞地。(1）由不受信任的操作系统部署的飞地引导，为SGX程序创建并初始化一个飞地，以及（2）安全的飞地内引导，在飞地内初始化SGX程序的内存布局和Klotski的数据结构。在 "飞地 "引导过程中，两个连续页面的区域被分配了读写权限（RW），一个是飞地内程序的数据（即数据vCache和堆栈），另一个是ORAM（即储藏室和ORAM树），ORAM树将被用来存储飞地程序的所有数据和代码部分，以及堆。固定数量的具有读、写和执行权限（RWX）的页被分配作为执行vCache。飞地内加载器、软件MMU和ORAM模块将被映射为程序的一部分，但由于它们会经常被调用，它们将一直在最初的加载地址。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc1bef48" class="outline-3">
+<h3 id="orgc1bef48"><span class="section-number-3">5.4</span> ORAM Access</h3>
+<div class="outline-text-3" id="text-5-4">
+<p>
+当在vCache中没有找到迷你页时，控制流被转移到ORAM组件中，将迷你页加载到vCache中。整个过程与§2中描述的Ring ORAM协议相似。然而，传统ORAM的威胁模型和Klotski的威胁模型之间的一个很大的区别是，我们没有一个受信任的"客户端"；所以对储藏室和位置图的访问也会受到侧信道的攻击。为了减轻这些威胁，Klotski增加了额外的遗忘操作并增强了一些现有的操作。
+</p>
+
+<ul class="org-ul">
+<li><b>ORead</b> 是一个基本操作，从目标迷你页中读取数据而不透露哪个mini-page是目标。与cmov操作类似，在一次迭代中，所有相关的mini-page都被访问，但只有真正的mini-page中的数据被读入256位ymm寄存器，而其他mini-page中的数据被读入一个假寄存器；然后再次迭代，直到所有可用的ymm寄存器被填满。</li>
+<li><b>OShuffle</b> 更改一个迷你页面列表的顺序，但不显示新的顺序。</li>
+<li><b>WriteStash</b> ReadPath、EvictPath和EvictCache都需要将迷你页写入储藏室中。在这个操作过程中，有两类信息可能被泄露：(1)向一个槽写迷你页意味着该槽是空的，所以它之前一定被驱逐了；(2)如果一个槽被写了不止一次而没有被读，那么它之前存储的内容一定是假的。为了减轻这种威胁，Klotski重新随机化了存储空间，以混淆真实槽、假槽和空槽的位置。具体来说，Klotski记住了最后写入的槽的索引（图3中的备用储藏室指针）。当试图找到下一个空槽时，Klotski从这个位置扫描到贮藏室的末端。如果找到一个空槽，那么它将被用来存储迷你页面，指针也将被更新。如果指针到达了存储区的末端，就会执行一个OShuffle操作，然后指针会被重置到存储区的起点。</li>
+<li><b>ReadPath</b> 从每个桶中读取一个迷你页，并选择一个路径，然后只将感兴趣的迷你页存储到储藏室。在传统的ORAM威胁模型中，存储操作对对手来说是不可观察的，所以他们无法知道哪个桶里有目标迷你页。然而，在Klotski中，直接将目标迷你页复制到储藏室会泄露当前桶中包含真正的迷你页的信息。为了减轻这种风险，Klotski使用ORead操作来读取路径上的所有桶，然后使用WriteStash将目标迷你页写入存储库。</li>
+<li><b>EvictPath</b> 确定性地从路径上的每个桶中读取Z个小页到储藏室，所以它不需要ORead。然而，它确实使用WriteStash来写到储藏室。在洗牌之后，为了避免泄露哪些存储槽被驱逐，EvictPath使用ORead来加载要被驱逐的迷你页并将其写回目标桶。</li>
+<li><b>LoadCache</b> 使用ORead来"扫描"储藏室，如果目标mini-page在储藏室中，则将其加载到一个空的vCache槽中；否则，它调用ReadPath来直接将目标mini-page加载到一个空的vCache槽。最后，LoadCache更新mini-page的PTE，将其路径信息替换为偏移信息（见§4.3）。</li>
+<li><b>EvictCache</b> 当vCache满了，需要加载新的mini-page时，随机挑选一个mini-page，使用WriteStash将其驱逐到储藏室。我们使用随机替换（RR），而不是更常用的策略，如最近使用（LRU）或伪LRU，因为我们的（a）RR可以避免泄漏信息，（b）Klotski的vCache相对较小。由于路径信息在LoadCache期间丢失，所以当块从缓存中被驱逐时，会分配一个新的路径。</li>
+<li><b>ReadPTE</b> 从软件页表中读取一个PTE。因为页表（虚拟位置图）是在一个固定的地址上映射的，攻击者可能会通过对位置图的访问而弄清哪个逻辑地址被访问。为了减轻这种威胁，Klotski使用了一个基于Oget函数混淆访问操作，该函数来自[? ]，它反复应用vpgatherdd指令，混淆从一个对齐的512字节数组中读取一个元素。</li>
+<li><b>WritePTE</b> 利用非时间性的写指令[8]来更新PTE。非时间性的写指令会立即影响到DRAM，并且不会将数据缓冲到缓存层次中。因此，更新对攻击者来说是不可见的。</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org9d0e5ce" class="outline-2">
+<h2 id="org9d0e5ce"><span class="section-number-2">6</span> 优化</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+Klotski的基线设计产生了很高的运行时开销，这主要来自两个方面。(1）额外的软件地址转换逻辑和（2）vCache缺失（即ORAM访问）。在本节中，我们介绍了几种优化技术，以减少Klotski的性能开销。
+</p>
+
+<p>
+请注意，这些技术只是优化了对vCaches的访问，而不是ORAM协议本身（例如，加快ORAM的访问速度），所以它们不会影响ORAM协议的安全保障。
+</p>
+</div>
+
+<div id="outline-container-orgeb86567" class="outline-3">
+<h3 id="orgeb86567"><span class="section-number-3">6.1</span> 减少地址转化</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski通过消除冗余的地址翻译来减少地址翻译的数量：当一个新的指针从一个地址已经被翻译过的旧指针派生（增加或减少一个偏移量）时，只要（1）新的指针被保证在同一个迷你页内，并且（2）相应的迷你页没有被从vCache驱逐，我们就可以重复使用已经翻译过的地址。基于这一观察，Klotski执行了以下优化。
+</p>
+
+<p>
+<b>Code</b> 为了优化代码访问，Klotski首先尝试将整个函数放入一个迷你页中。接下来，对于每个控制变化，Klotski检查其目标地址是否在同一个迷你页内；如果是，它就会消除地址转换。
+</p>
+
+<p>
+<b>Data</b> 优化数据访问则更为复杂。第一个挑战是毗连策略。特别是，虽然有可能强制要求小对象永远不跨越一个迷你页的边界，但大于一个迷你页大小的对象将不可避免地占据多个迷你页。因此，优化数据访问的第一步是确定哪些内存访问可以被优化。
+</p>
+
+<p>
+<i>大型对象</i> 。为了识别对大对象的内存访问，我们使用了基于LLVM的基于类型的别名分析（TBAA）的保守程序间字段敏感数据流分析。对于每个堆分配点，如果分配大小大于迷你页的大小，或者在编译时分配大小未知，我们就把返回值（指向分配对象的指针）标记为"污点"。然后，我们使用数据流分析来找到所有可能访问大对象的内存访问指令（即对污点指针的解引用）。因此，其余的内存访问是安全的，可以被优化。我们还修改了常见的数据访问库函数，如memset、memcpy、memmove，以支持越过迷你页的边界。
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2021-11-03 Wed 10:21</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

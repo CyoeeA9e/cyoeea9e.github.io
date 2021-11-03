@@ -1,0 +1,1234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-11-01 Mon 10:23 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FSCDetect Code</title>
+<meta name="generator" content="Org mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://www.gnu.org/software/emacs/manual.css">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">FSCDetect Code</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org09afaa2">1. LLVM</a>
+<ul>
+<li><a href="#org7d72fa2">1.1. lib/Transforms/Instrumentation/FSCDTrace.cpp</a>
+<ul>
+<li>
+<ul>
+<li><a href="#orgb565214">1.1.0.1. AFL_R</a></li>
+<li><a href="#orgc491d55">1.1.0.2. FSCDDataAccessInfoTy</a></li>
+</ul>
+</li>
+<li><a href="#org2565fb7">1.1.1. FSCDTrace</a>
+<ul>
+<li><a href="#orgedb2713">1.1.1.1. isInterestingMemoryAccess</a></li>
+<li><a href="#org919efeb">1.1.1.2. hasUsersOutsideBlock</a></li>
+<li><a href="#orgf1236d7">1.1.1.3. needSplitTail</a></li>
+<li><a href="#org6ad5d97">1.1.1.4. initCBs</a></li>
+<li><a href="#orgc1bf642">1.1.1.5. collectAllocaInfo</a></li>
+<li><a href="#org7b30ca1">1.1.1.6. cloneInline</a></li>
+<li><a href="#org477cd05">1.1.1.7. injectTrace</a></li>
+<li><a href="#org9d33731">1.1.1.8. handleInterestingMemoryAccesses</a></li>
+<li><a href="#org681a10d">1.1.1.9. _handle_memory_access_core</a></li>
+<li><a href="#orgba8bd0d">1.1.1.10. injectAFLBitMapOperation</a></li>
+<li><a href="#orga8ece8f">1.1.1.11. runInlineClone</a></li>
+<li><a href="#org996810c">1.1.1.12. injectAFLBitMapOperation</a></li>
+<li><a href="#org5626026">1.1.1.13. FSCDSplitBasicBlock</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orged56d48">1.2. lib/Transforms/Instrumentation/SanitizerCoverage.cpp</a>
+<ul>
+<li><a href="#org674a08c">1.2.1. ModuleSanitizerCoverage</a>
+<ul>
+<li><a href="#orgbfe155c">1.2.1.1. instrumentModule</a></li>
+<li><a href="#orga4bc1dd">1.2.1.2. instrumentFunction</a></li>
+</ul>
+</li>
+<li><a href="#org0793247">1.2.2. ModuleSanitizerCoverageLegacyPass</a>
+<ul>
+<li><a href="#org580e837">1.2.2.1. runOnModule</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org09afaa2" class="outline-2">
+<h2 id="org09afaa2"><span class="section-number-2">1</span> LLVM</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org7d72fa2" class="outline-3">
+<h3 id="org7d72fa2"><span class="section-number-3">1.1</span> lib/Transforms/Instrumentation/FSCDTrace.cpp</h3>
+<div class="outline-text-3" id="text-1-1">
+</div>
+<div id="outline-container-orgb565214" class="outline-5">
+<h5 id="orgb565214"><span class="section-number-5">1.1.0.1</span> AFL_R</h5>
+<div class="outline-text-5" id="text-1-1-0-1">
+<p>
+产生一个随机数
+</p>
+<div class="org-src-container">
+<pre class="src src-C"><span style="font-weight: bold;">#define</span> <span style="font-weight: bold;">AFL_R</span>(<span style="font-weight: bold; font-style: italic;">x</span>) (random() % (x))
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc491d55" class="outline-5">
+<h5 id="orgc491d55"><span class="section-number-5">1.1.0.2</span> FSCDDataAccessInfoTy</h5>
+<div class="outline-text-5" id="text-1-1-0-2">
+<p>
+保存内存访问指令的信息
+</p>
+<div class="org-src-container">
+<pre class="src src-C++">FSCDDataAccessInfoTy {
+  <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">start_addr</span>;
+  <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">offset</span>;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2565fb7" class="outline-4">
+<h4 id="org2565fb7"><span class="section-number-4">1.1.1</span> FSCDTrace</h4>
+<div class="outline-text-4" id="text-1-1-1">
+</div>
+<div id="outline-container-orgedb2713" class="outline-5">
+<h5 id="orgedb2713"><span class="section-number-5">1.1.1.1</span> isInterestingMemoryAccess</h5>
+<div class="outline-text-5" id="text-1-1-1-1">
+<p>
+内存访问指令，但不是alloca相关地址
+</p>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">isInterestingMemoryAccess</span>(<span style="font-weight: bold; text-decoration: underline;">Instruction</span> *<span style="font-weight: bold; font-style: italic;">I</span>, <span style="font-weight: bold; text-decoration: underline;">bool</span> *<span style="font-weight: bold; font-style: italic;">IsWrite</span>,
+                                            <span style="font-weight: bold; text-decoration: underline;">uint64_t</span> *<span style="font-weight: bold; font-style: italic;">TypeSize</span>,
+                                            <span style="font-weight: bold; text-decoration: underline;">unsigned</span> *<span style="font-weight: bold; font-style: italic;">Alignment</span>) {
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Skip memory accesses inserted by another instrumentation.</span>
+  <span style="font-weight: bold;">if</span> (I-&gt;hasMetadata(<span style="font-style: italic;">"nosanitize"</span>)) <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+
+  <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">PtrOperand</span> = <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+  <span style="font-weight: bold;">const</span> <span style="font-weight: bold; text-decoration: underline;">DataLayout</span> &amp;<span style="font-weight: bold; font-style: italic;">DL</span> = I-&gt;getModule()-&gt;getDataLayout();
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#20869;&#23384;&#35835;&#21462;&#25351;&#20196;</span>
+  <span style="font-weight: bold;">if</span> (<span style="font-weight: bold; text-decoration: underline;">LoadInst</span> *<span style="font-weight: bold; font-style: italic;">LI</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">LoadInst</span>&gt;(I)) {
+    *IsWrite = <span style="font-weight: bold; text-decoration: underline;">false</span>;
+    *TypeSize = DL.getTypeStoreSizeInBits(LI-&gt;getType());
+    *Alignment = LI-&gt;getAlignment();
+    PtrOperand = LI-&gt;getPointerOperand();
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#20869;&#23384;&#20889;&#20837;  </span>
+  } <span style="font-weight: bold;">else</span> <span style="font-weight: bold;">if</span> (<span style="font-weight: bold; text-decoration: underline;">StoreInst</span> *<span style="font-weight: bold; font-style: italic;">SI</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">StoreInst</span>&gt;(I)) {
+    *IsWrite = <span style="font-weight: bold; text-decoration: underline;">true</span>;
+    *TypeSize = DL.getTypeStoreSizeInBits(SI-&gt;getValueOperand()-&gt;getType());
+    *Alignment = SI-&gt;getAlignment();
+    PtrOperand = SI-&gt;getPointerOperand();
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21407;&#23376;</span>
+  } <span style="font-weight: bold;">else</span> <span style="font-weight: bold;">if</span> (<span style="font-weight: bold; text-decoration: underline;">AtomicRMWInst</span> *<span style="font-weight: bold; font-style: italic;">RMW</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">AtomicRMWInst</span>&gt;(I)) {
+    *IsWrite = <span style="font-weight: bold; text-decoration: underline;">true</span>;
+    *TypeSize = DL.getTypeStoreSizeInBits(RMW-&gt;getValOperand()-&gt;getType());
+    *Alignment = 0;
+    PtrOperand = RMW-&gt;getPointerOperand();
+  } <span style="font-weight: bold;">else</span> <span style="font-weight: bold;">if</span> (<span style="font-weight: bold; text-decoration: underline;">AtomicCmpXchgInst</span> *<span style="font-weight: bold; font-style: italic;">XCHG</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">AtomicCmpXchgInst</span>&gt;(I)) {
+    *IsWrite = <span style="font-weight: bold; text-decoration: underline;">true</span>;
+    *TypeSize = DL.getTypeStoreSizeInBits(XCHG-&gt;getCompareOperand()-&gt;getType());
+    *Alignment = 0;
+    PtrOperand = XCHG-&gt;getPointerOperand();
+  }
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#19981;&#25910;&#38598;alloca&#30456;&#20851;&#30340;&#22320;&#22336;</span>
+  <span style="font-weight: bold;">if</span>(isAllocaInst.find(PtrOperand) != isAllocaInst.end()){
+    omitNum++;
+    <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+  }
+  <span style="font-weight: bold;">return</span> PtrOperand;
+}
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org919efeb" class="outline-5">
+<h5 id="org919efeb"><span class="section-number-5">1.1.1.2</span> hasUsersOutsideBlock</h5>
+<div class="outline-text-5" id="text-1-1-1-2">
+<p>
+判断value是否有基本块的use
+</p>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold;">inline</span> hasUsersOutsideBlock(<span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">value</span>, <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">bb</span>){
+  <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">count</span> = 0;
+  <span style="font-weight: bold;">for</span>(<span style="font-weight: bold; text-decoration: underline;">Value</span>::<span style="font-weight: bold; text-decoration: underline;">use_iterator</span> <span style="font-weight: bold; font-style: italic;">UI</span>=value-&gt;use_begin(), <span style="font-weight: bold; font-style: italic;">E</span>=value-&gt;use_end(); UI!=E; ++UI){
+    <span style="font-weight: bold; text-decoration: underline;">Use</span> &amp;<span style="font-weight: bold; font-style: italic;">U</span> = *UI;
+    <span style="font-weight: bold;">auto</span> *<span style="font-weight: bold; font-style: italic;">I</span> = dyn_cast&lt;Instruction&gt;(U.getUser());
+    <span style="font-weight: bold;">if</span>(I &amp;&amp; I-&gt;getParent() != bb){
+      count++;
+    }
+  }
+  <span style="font-weight: bold;">return</span> count&gt;0;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf1236d7" class="outline-5">
+<h5 id="orgf1236d7"><span class="section-number-5">1.1.1.3</span> needSplitTail</h5>
+<div class="outline-text-5" id="text-1-1-1-3">
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold;">inline</span> needSplitTail(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">OrgBlock</span>){
+  <span style="font-weight: bold;">for</span>(<span style="font-weight: bold;">auto</span> &amp;<span style="font-weight: bold; font-style: italic;">I</span> : *OrgBlock){
+    <span style="font-weight: bold;">if</span>(hasUsersOutsideBlock(dyn_cast&lt;Value&gt;(&amp;I), OrgBlock))
+      <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">true</span>;
+  }
+  <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">false</span>;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org6ad5d97" class="outline-5">
+<h5 id="org6ad5d97"><span class="section-number-5">1.1.1.4</span> initCBs</h5>
+<div class="outline-text-5" id="text-1-1-1-4">
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">initCBs</span>(<span style="font-weight: bold; text-decoration: underline;">Module</span> &amp;<span style="font-weight: bold; font-style: italic;">M</span>) {
+  VoidTy   = <span style="font-weight: bold; text-decoration: underline;">Type</span>::getVoidTy(*C);
+  Int8Ty   = <span style="font-weight: bold; text-decoration: underline;">Type</span>::getInt8Ty(*C);
+  Int32Ty  = <span style="font-weight: bold; text-decoration: underline;">Type</span>::getInt32Ty(*C);
+  IntPtrTy = <span style="font-weight: bold; text-decoration: underline;">Type</span>::getIntNTy(*C, LongSize);
+  Int64Ty  = <span style="font-weight: bold; text-decoration: underline;">Type</span>::getInt64Ty(*C);
+  IntptrTy = <span style="font-weight: bold; text-decoration: underline;">Type</span>::getIntNTy(*C, DL-&gt;getPointerSizeInBits());
+  BoolTy   = <span style="font-weight: bold; text-decoration: underline;">Type</span>::getInt1Ty(*C);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21019;&#24314;FSCDDataAccessInfo&#32467;&#26500;&#20307;&#65292;&#25104;&#21592;&#20026;64&#20301;Int&#21644;32&#20301;Int</span>
+  FSCDDataAccessInfoTy = <span style="font-weight: bold; text-decoration: underline;">StructType</span>::create(*C, <span style="font-style: italic;">"FSCDDataAccessInfo"</span>);
+  FSCDDataAccessInfoTy-&gt;setBody({Int64Ty, Int32Ty});
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21019;&#24314;FSCD&#30456;&#20851;&#25554;&#35013;&#20989;&#25968;</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#24490;&#29615;&#20837;&#21475;</span>
+  FSCD_TraceLoopLatch = 
+      M.getOrInsertFunction(FSCD_TraceLoopLatchName, VoidTy, Int8Ty, Int32Ty);
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">void __fscd_trace_loop_exit(u8 loop_id, u32 cnt)</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#24490;&#29615;&#32467;&#26463;</span>
+  FSCD_TraceLoopExit = 
+      M.getOrInsertFunction(FSCD_TraceLoopExitName, VoidTy, Int8Ty);
+
+  <span style="font-weight: bold; font-style: italic;">//  </span><span style="font-weight: bold; font-style: italic;">void __fscd_trace_pc_entry_bb(int bb_hash_idx)</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22522;&#26412;&#22359;&#20837;&#21475;</span>
+  FSCD_TracePCBBEntry =
+      M.getOrInsertFunction(FSCD_TracePC_EntryBBName, VoidTy, IntptrTy);
+
+  <span style="font-weight: bold; font-style: italic;">//  </span><span style="font-weight: bold; font-style: italic;">void __fscd_trace_pc_normal_bb(int bb_hash_idx)</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22522;&#26412;&#22359;&#20869;&#37096;</span>
+  FSCD_TracePCBB =
+      M.getOrInsertFunction(FSCD_TracePC_NormalBBName, VoidTy, IntptrTy);
+
+  <span style="font-weight: bold; font-style: italic;">//  </span><span style="font-weight: bold; font-style: italic;">void __fscd_trace_pc_term_bb(int bb_hash_idx)</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22522;&#26412;&#22359;&#32467;&#26463;</span>
+  FSCD_TracePCBBRet =
+      M.getOrInsertFunction(FSCD_TracePC_TermBBName, VoidTy, IntptrTy);
+
+  <span style="font-weight: bold; font-style: italic;">//  </span><span style="font-weight: bold; font-style: italic;">void __fscd_trace_pc_ins_ret()</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">ret&#25351;&#20196;</span>
+  FSCD_TracePCInsRet =
+      M.getOrInsertFunction(FSCD_TracePC_InstRetName, VoidTy);
+
+  <span style="font-weight: bold; font-style: italic;">//  </span><span style="font-weight: bold; font-style: italic;">void __fscd_trace_pc_ins_tail_call()</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">call&#25351;&#20196;</span>
+  FSCD_TracePCInsTailCall =
+      M.getOrInsertFunction(FSCD_TracePC_InstTailCallName, VoidTy);
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21019;&#24314;FSCD&#30456;&#20851;&#20840;&#23616;&#21464;&#37327;</span>
+  <span style="font-weight: bold; text-decoration: underline;">ArrayType</span> *<span style="font-weight: bold; font-style: italic;">ArrayTy</span> = <span style="font-weight: bold; text-decoration: underline;">ArrayType</span>::get(<span style="font-weight: bold; text-decoration: underline;">PointerType</span>::get(Int8Ty, 0), 2);
+  BlockAddrRep = <span style="font-weight: bold;">new</span> <span style="font-weight: bold; text-decoration: underline;">GlobalVariable</span>(M, ArrayTy, <span style="font-weight: bold; text-decoration: underline;">false</span>,
+                                    <span style="font-weight: bold; text-decoration: underline;">GlobalValue</span>::LinkOnceAnyLinkage, <span style="font-weight: bold; text-decoration: underline;">Constant</span>::getNullValue(ArrayTy), <span style="font-style: italic;">"fscd_tmp_block_addr_rep"</span>);
+
+  <span style="font-weight: bold; text-decoration: underline;">PointerType</span> * <span style="font-weight: bold; font-style: italic;">ptType</span> = FSCDDataAccessInfoTy-&gt;getPointerTo();
+  DataRecordAreaPtr = <span style="font-weight: bold;">new</span> <span style="font-weight: bold; text-decoration: underline;">GlobalVariable</span>(M, ptType, <span style="font-weight: bold; text-decoration: underline;">false</span>,
+                                    <span style="font-weight: bold; text-decoration: underline;">GlobalValue</span>::LinkOnceAnyLinkage, <span style="font-weight: bold; text-decoration: underline;">Constant</span>::getNullValue(ptType), <span style="font-style: italic;">"fscd_data_record_ptr"</span>);
+
+  branchFlag = <span style="font-weight: bold;">new</span> <span style="font-weight: bold; text-decoration: underline;">GlobalVariable</span>(M, BoolTy, <span style="font-weight: bold; text-decoration: underline;">false</span>,
+  <span style="font-weight: bold; text-decoration: underline;">GlobalValue</span>::LinkOnceAnyLinkage, <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::getTrue(*C), <span style="font-style: italic;">"fscd_br_flag"</span>);
+
+  AFLMapPtr =
+      <span style="font-weight: bold;">new</span> <span style="font-weight: bold; text-decoration: underline;">GlobalVariable</span>(M, <span style="font-weight: bold; text-decoration: underline;">PointerType</span>::get(Int8Ty, 0), <span style="font-weight: bold; text-decoration: underline;">false</span>,
+                         <span style="font-weight: bold; text-decoration: underline;">GlobalValue</span>::ExternalLinkage, 0, <span style="font-style: italic;">"__afl_area_ptr"</span>);
+
+  AFLPrevLoc = <span style="font-weight: bold;">new</span> <span style="font-weight: bold; text-decoration: underline;">GlobalVariable</span>(
+      M, Int32Ty, <span style="font-weight: bold; text-decoration: underline;">false</span>, <span style="font-weight: bold; text-decoration: underline;">GlobalValue</span>::ExternalLinkage, 0, <span style="font-style: italic;">"__afl_prev_loc"</span>,
+      0, <span style="font-weight: bold; text-decoration: underline;">GlobalVariable</span>::GeneralDynamicTLSModel, 0, <span style="font-weight: bold; text-decoration: underline;">false</span>);
+
+  exitStatus = <span style="font-weight: bold;">new</span> <span style="font-weight: bold; text-decoration: underline;">GlobalVariable</span>(M, Int32Ty, <span style="font-weight: bold; text-decoration: underline;">false</span>, 
+     <span style="font-weight: bold; text-decoration: underline;">GlobalValue</span>::ExternalLinkage, 0, <span style="font-style: italic;">"fscd_exit_status"</span>);
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc1bf642" class="outline-5">
+<h5 id="orgc1bf642"><span class="section-number-5">1.1.1.5</span> collectAllocaInfo</h5>
+<div class="outline-text-5" id="text-1-1-1-5">
+<p>
+该函数用于收集函数中的alloc指令信息。
+</p>
+<ul class="org-ul">
+<li><a href="20211021164705-llvm.html#ID-75a2c42f-3d69-411c-874c-7a84e394ae2a">dyn_cast&lt;&gt;</a></li>
+<li><a href="20211021164705-llvm.html#ID-cd9761ae-58a7-496c-b0b7-cab6453acf7f">AllocaInst</a></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">collectAllocaInfo</span>(<span style="font-weight: bold; text-decoration: underline;">Function</span> &amp;<span style="font-weight: bold; font-style: italic;">F</span>){
+  isAllocaInst.clear();
+  <span style="font-weight: bold; text-decoration: underline;">std</span>::<span style="font-weight: bold; text-decoration: underline;">vector</span>&lt;<span style="font-weight: bold; text-decoration: underline;">GetElementPtrInst</span>*&gt; <span style="font-weight: bold; font-style: italic;">GEPs</span>;
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#25910;&#38598;gep&#19982;alloca</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#36845;&#20195;&#20989;&#25968;&#20013;&#30340;&#22522;&#26412;&#22359;</span>
+  <span style="font-weight: bold;">for</span>(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span> : F){
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#36845;&#20195;&#22522;&#26412;&#22359;&#20013;&#30340;&#25351;&#20196;</span>
+    <span style="font-weight: bold;">for</span>(<span style="font-weight: bold; text-decoration: underline;">Instruction</span> &amp;<span style="font-weight: bold; font-style: italic;">I</span> : BB){
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21028;&#26029;&#25351;&#20196;&#31867;&#22411;&#65292;&#22914;&#26524;&#25351;&#20196;&#26159;Alloca&#25351;&#20196;&#65292;&#21017;&#32487;&#32493;&#12290;</span>
+      <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">AllocaInst</span> *<span style="font-weight: bold; font-style: italic;">alloca</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">AllocaInst</span>&gt;(&amp;I)){
+        <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21028;&#26029;Alloca&#25351;&#20196;&#26159;&#21542;&#26159;&#38745;&#24577;&#20869;&#23384;&#20998;&#37197;&#65292;&#22914;&#26524;&#26159;&#21017;&#32487;&#32493;&#12290;</span>
+        <span style="font-weight: bold;">if</span>(alloca-&gt;isStaticAlloca()){
+          <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">v</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">Value</span>&gt;(alloca)){
+            <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">1. &#28155;&#21152; alloca</span>
+            isAllocaInst.insert(<span style="font-weight: bold; text-decoration: underline;">std</span>::make_pair(v, <span style="font-weight: bold; text-decoration: underline;">true</span>));
+            <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">2. &#28155;&#21152; alloca&#20316;&#20026;pointer&#30340;gep</span>
+            <span style="font-weight: bold;">for</span>(<span style="font-weight: bold;">auto</span> <span style="font-weight: bold; font-style: italic;">itr</span>: v-&gt;users()){
+              <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">GetElementPtrInst</span> *<span style="font-weight: bold; font-style: italic;">gep</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">GetElementPtrInst</span>&gt;(&amp;*itr)){
+                <span style="font-weight: bold;">if</span>(gep-&gt;getPointerOperand() == v)
+                  isAllocaInst.insert(<span style="font-weight: bold; text-decoration: underline;">std</span>::make_pair(dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">Value</span>&gt;(gep), <span style="font-weight: bold; text-decoration: underline;">true</span>));
+              }<span style="font-weight: bold;">else</span> <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">GEPOperator</span> *<span style="font-weight: bold; font-style: italic;">gepOper</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">GEPOperator</span>&gt;(&amp;*itr)){
+                <span style="font-weight: bold;">if</span>(gepOper-&gt;getPointerOperand() == v)
+                  isAllocaInst.insert(<span style="font-weight: bold; text-decoration: underline;">std</span>::make_pair(dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">Value</span>&gt;(gepOper), <span style="font-weight: bold; text-decoration: underline;">true</span>));
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7b30ca1" class="outline-5">
+<h5 id="org7b30ca1"><span class="section-number-5">1.1.1.6</span> cloneInline</h5>
+<div class="outline-text-5" id="text-1-1-1-6">
+<p>
+将基本块分割成3份，中间一份复制，并根据条件选择执行的基本块，返回生成的Head，Clone,Org,Tail基本块
+</p>
+
+<p>
+图示：
+</p>
+<pre class="example">
+    [Head]
+      |
+   -------
+   |     |
+[Clone] [Org]
+   |     |
+   -------
+      |
+  [Tail or Succ]
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">CloneInfo</span>* <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">cloneInline</span>(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>, <span style="font-weight: bold; text-decoration: underline;">ValueToValueMapTy</span> &amp;<span style="font-weight: bold; font-style: italic;">VMap</span>, <span style="font-weight: bold; text-decoration: underline;">bool</span> &amp;<span style="font-weight: bold; font-style: italic;">isEntryBB</span>) {
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21028;&#26029;&#26159;&#21542;&#26159;&#20837;&#21475;&#22522;&#26412;&#22359;</span>
+  <span style="font-weight: bold;">if</span> ( &amp;BB == &amp;BB.getParent()-&gt;getEntryBlock()) {
+    isEntryBB = <span style="font-weight: bold; text-decoration: underline;">true</span>;
+  }
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;&#25554;&#20837;&#28857;&#65292;&#36820;&#22238;&#22522;&#26412;&#22359;&#20013;&#33021;&#29992;&#26469;&#25554;&#20837;non-PHI&#25351;&#20196;&#30340;&#36845;&#20195;&#22120;&#12290;</span>
+  <span style="font-weight: bold;">auto</span> <span style="font-weight: bold; font-style: italic;">IP</span> = BB.getFirstInsertionPt();
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22914;&#26524;&#26159;&#20837;&#21475;&#22522;&#26412;&#22359;</span>
+  <span style="font-weight: bold;">if</span>(isEntryBB){
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#20998;&#21106;&#21069;&#30340;&#20934;&#22791;&#65292;&#26377;&#20123;&#25351;&#20196;&#24517;&#39035;&#35201;&#34987;&#30041;&#22312;&#20837;&#21475;&#22522;&#26412;&#22359;</span>
+    IP = PrepareToSplitEntryBlock(BB, IP);
+  }
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;&#28304;&#30721;&#20013;&#30340;&#20301;&#32622;</span>
+  <span style="font-weight: bold; text-decoration: underline;">DebugLoc</span> <span style="font-weight: bold; font-style: italic;">Loc</span> = IP-&gt;getDebugLoc();
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">2. &#20808;&#20999;&#20998;&#22909;head&#19982;org&#65292;&#20351;&#29992;splitBB&#33021;&#33258;&#21160;&#22788;&#29702;phinode</span>
+  <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">HeadBlock</span> = &amp;BB;
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">BasicBlock *OrgBlock = HeadBlock-&gt;splitBasicBlock(IP, "org."+HeadBlock-&gt;getName());</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">OrgBlock: Original Block, &#21407;&#26469;&#30340;&#22522;&#26412;&#22359;&#12290;</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#20998;&#21106;HeadBlock, &#23558;&#26032;&#21019;&#24314;&#30340;&#22522;&#26412;&#22359;&#20043;&#21518;&#30340;&#22522;&#26412;&#22359;&#20462;&#25913;&#20026;splitBB&#12290;</span>
+  <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">OrgBlock</span> = FSCDSplitBasicBlock(HeadBlock, IP, <span style="font-style: italic;">"org."</span>+HeadBlock-&gt;getName(), splitBB);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22312;BB&#30340;&#21407;&#20301;&#32622;&#21019;&#24314;&#26032;&#30340;&#22522;&#26412;&#22359;</span>
+  <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">ClnBlock</span> = <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span>::Create(*C, <span style="font-style: italic;">"cln."</span> + BB.getName() , BB.getParent());
+  <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">TailBlock</span> = <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">3. &#26681;&#25454;use&#20999;&#20998;Tail</span>
+  <span style="font-weight: bold;">if</span>(needSplitTail(OrgBlock)){
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#27492;&#26102;&#65292;&#25152;&#26377;&#21518;&#32487;&#20013;&#30340; x = phi [value_from_org, org]&#21464;&#20026;</span>
+    <span style="font-weight: bold; font-style: italic;">//                 </span><span style="font-weight: bold; font-style: italic;">x = phi [value_from_org, tail]</span>
+<span style="font-weight: bold; font-style: italic;">//    </span><span style="font-weight: bold; font-style: italic;">TailBlock = OrgBlock-&gt;splitBasicBlock(OrgBlock-&gt;getTerminator()-&gt;getIterator(), "term." + BB.getName());</span>
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#23558;&#24050;&#32463;&#34987;&#20998;&#21106;&#21518;&#30340;&#22522;&#26412;&#22359;OrgBlock&#20877;&#27425;&#20998;&#21106;&#65292;&#20174;OrgBlock&#30340;&#32456;&#27490;&#31526;&#24320;&#22987;&#12290;</span>
+    TailBlock = FSCDSplitBasicBlock(OrgBlock,OrgBlock-&gt;getTerminator()-&gt;getIterator(), <span style="font-style: italic;">"term."</span> + BB.getName(),
+                                    HeadBlock-&gt;getNextNode());
+  }
+
+  <span style="font-weight: bold; text-decoration: underline;">ValueToValueMapTy</span> <span style="font-weight: bold; font-style: italic;">localVMap</span>;
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#23545;OrgBlock&#20013;&#30340;&#25351;&#20196;&#36827;&#34892;&#22797;&#21046;</span>
+  <span style="font-weight: bold;">for</span>(<span style="font-weight: bold;">auto</span> &amp; <span style="font-weight: bold; font-style: italic;">i</span> : *OrgBlock){
+    <span style="font-weight: bold; text-decoration: underline;">Instruction</span> *<span style="font-weight: bold; font-style: italic;">new_inst</span> = i.clone();
+    ClnBlock-&gt;getInstList().push_back(new_inst);
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#26032;&#26087;&#22522;&#26412;&#22359;&#20013;&#30340;&#25351;&#20196;&#19968;&#19968;&#23545;&#24212;</span>
+    localVMap[&amp;i] = new_inst;
+    RemapInstruction(new_inst, localVMap,
+                     RF_NoModuleLevelChanges | RF_IgnoreMissingLocals);
+  }
+  <span style="font-weight: bold;">if</span>(TailBlock){
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#26377;tail&#30340;&#24773;&#20917;&#19979;&#65292;&#38656;&#35201;&#22312;tail&#23545;&#25152;&#26377;&#23384;&#22312;use&#30340;value&#21019;&#24314;&#19968;&#20010;&#26032;&#30340;phi</span>
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#27492;&#26102;&#65292;&#25152;&#26377;&#21518;&#32487;&#20013;&#30340; x = phi [value_from_org, tail]&#21464;&#20026;</span>
+    <span style="font-weight: bold; font-style: italic;">//                </span><span style="font-weight: bold; font-style: italic;">x = phi [new_phi, tail]</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#36941;&#21382;&#25152;&#26377;&#25351;&#20196;</span>
+    <span style="font-weight: bold;">for</span>(<span style="font-weight: bold;">auto</span> &amp; <span style="font-weight: bold; font-style: italic;">i</span> : *OrgBlock){
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;value</span>
+      <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">v</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">Value</span>&gt;(&amp;i);
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22806;&#37096;&#26377;&#35813;value&#30340;use&#65292;&#36825;&#34920;&#26126;&#21487;&#33021;&#38656;&#35201;&#21152;&#20837;phi</span>
+      <span style="font-weight: bold;">if</span>(hasUsersOutsideBlock(v,OrgBlock)){
+        <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21019;&#24314;phi&#33410;&#28857;&#65292;&#22312;TailBlock&#30340;&#31532;&#19968;&#20010;&#25351;&#20196;&#21069;</span>
+        <span style="font-weight: bold; text-decoration: underline;">PHINode</span> *<span style="font-weight: bold; font-style: italic;">phi</span> = <span style="font-weight: bold; text-decoration: underline;">PHINode</span>::Create(v-&gt;getType(), 2, <span style="font-style: italic;">""</span>, &amp;*TailBlock-&gt;getFirstInsertionPt());
+        <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#23558;&#22806;&#38754;&#22522;&#26412;&#22359;&#30340;use&#26367;&#25442;&#25104;phi&#33410;&#28857;</span>
+        v-&gt;replaceUsesOutsideBlock(phi, OrgBlock);
+        <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">phi&#30340;&#19968;&#20010;&#20540;&#26469;&#28304;&#20026;OrgBlock&#20013;&#30340;v</span>
+        phi-&gt;addIncoming(v, OrgBlock);
+        <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21478;&#19968;&#20010;&#26469;&#28304;&#20026;OrgBlock&#20013;&#30340;v</span>
+        phi-&gt;addIncoming(localVMap[v], ClnBlock);
+      }
+    }
+  }<span style="font-weight: bold;">else</span>{
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#26080;tail&#65292;&#22312;&#21518;&#32487;&#20013;&#30340;phi&#21152;&#20837;&#36890;&#36807;cln&#20256;&#36882;&#30340;value</span>
+    <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">Instruction</span> *<span style="font-weight: bold; font-style: italic;">TI</span> = OrgBlock-&gt;getTerminator()){
+      <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">1. &#36941;&#21382;tail&#30340;successors</span>
+      <span style="font-weight: bold; text-decoration: underline;">llvm</span>::for_each(successors(TI), [<span style="font-weight: bold; text-decoration: underline;">OrgBlock</span>, <span style="font-weight: bold; text-decoration: underline;">ClnBlock</span>](<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">Succ</span>) {
+        <span style="font-weight: bold;">for</span> (<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span>::<span style="font-weight: bold; text-decoration: underline;">iterator</span> <span style="font-weight: bold; font-style: italic;">II</span> = Succ-&gt;begin(), <span style="font-weight: bold; font-style: italic;">IE</span> = Succ-&gt;end(); II != IE; ++II) {
+          <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">2. &#36941;&#21382;successor&#30340; phinode&#65292;&#32473;&#27599;&#20010;&#22522;&#26412;&#22359;&#22686;&#21152;fscd &#22522;&#26412;&#22359;&#30340;phi&#33410;&#28857;</span>
+          <span style="font-weight: bold; text-decoration: underline;">PHINode</span> *<span style="font-weight: bold; font-style: italic;">PN</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">PHINode</span>&gt;(II);
+          <span style="font-weight: bold;">if</span> (!PN)
+            <span style="font-weight: bold;">break</span>;
+          <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">incomingValue</span> = PN-&gt;getIncomingValueForBlock(OrgBlock);
+          <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#23558;clone&#30340;block&#20013;&#30340;&#20540;&#22686;&#21152;&#21040;phi&#33410;&#28857;&#20013;</span>
+          PN-&gt;addIncoming(incomingValue, ClnBlock);
+        }
+      });
+    }
+  }
+
+  assert(dyn_cast&lt;BranchInst&gt;(HeadBlock-&gt;getTerminator()) &amp;&amp; <span style="font-style: italic;">"HeadBlock not end with BranchInst??"</span>);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21024;&#38500;HeadBlock&#30340;Terminator</span>
+  HeadBlock-&gt;getTerminator()-&gt;eraseFromParent();
+  <span style="font-weight: bold; text-decoration: underline;">IRBuilder</span>&lt;&gt; <span style="font-weight: bold; font-style: italic;">IRB</span>(HeadBlock);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21019;&#24314;&#26465;&#20214;&#20998;&#25903;&#25351;&#20196;</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">cond: branchFlag, True: OrgBlock, False: ClnBlock</span>
+  <span style="font-weight: bold; text-decoration: underline;">BranchInst</span> * <span style="font-weight: bold; font-style: italic;">brInst</span> = IRB.CreateCondBr(IRB.CreateLoad(branchFlag), OrgBlock, ClnBlock);
+  brInst-&gt;setDebugLoc(Loc);
+  brInst-&gt;setMetadata(<span style="font-style: italic;">"fscd.bb.jumptable"</span>, <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C, None));
+  <span style="font-weight: bold;">return</span> <span style="font-weight: bold;">new</span> <span style="font-weight: bold; text-decoration: underline;">CloneInfo</span>(&amp;BB, TailBlock, OrgBlock, ClnBlock);
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org477cd05" class="outline-5">
+<h5 id="org477cd05"><span class="section-number-5">1.1.1.7</span> injectTrace</h5>
+<div class="outline-text-5" id="text-1-1-1-7">
+<ol class="org-ol">
+<li>向基本块中插装函数，根据基本块的类型插入不同的函数：
+<ul class="org-ul">
+<li>在入口基本块中插入FSCD_TracePCBBEntry</li>
+<li>在结束基本块中插入FSCD_TracePCBBRet
+<ul class="org-ul">
+<li>如果是TailCall则插入FSCD_TracePCInsTailCall</li>
+<li>如果是Ret则插入FSCD_TracePCInsRet</li>
+</ul></li>
+<li>其他基本块则插入FSCD_tracePCBB</li>
+</ul></li>
+<li>统计基本块中的内存访问指令，排除alloca相关指令。</li>
+<li>记录这些指令访问的地址以及offset。</li>
+</ol>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">injectTrace</span>(<span style="font-weight: bold; text-decoration: underline;">Function</span> &amp;<span style="font-weight: bold; font-style: italic;">F</span>, <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>, <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; font-style: italic;">IsEntryBB</span>, <span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">cur_loc</span>, <span style="font-weight: bold; text-decoration: underline;">int</span> &amp;<span style="font-weight: bold; font-style: italic;">callee_count</span>){
+
+  <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span>::<span style="font-weight: bold; text-decoration: underline;">iterator</span> <span style="font-weight: bold; font-style: italic;">IP</span> = BB.getFirstInsertionPt();
+  <span style="font-weight: bold; text-decoration: underline;">DebugLoc</span> <span style="font-weight: bold; font-style: italic;">EntryLoc</span> = IP-&gt;getDebugLoc();
+  <span style="font-weight: bold; text-decoration: underline;">IRBuilder</span>&lt;&gt; <span style="font-weight: bold; font-style: italic;">IRB</span>(&amp;*IP);
+  IRB.SetCurrentDebugLocation(EntryLoc);
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">lambda &#20989;&#25968;&#21028;&#26029;&#26159;&#21542;&#20026;&#24863;&#20852;&#36259;&#30340;TailCall &#20989;&#25968;</span>
+  <span style="font-weight: bold;">auto</span> <span style="font-weight: bold; font-style: italic;">isTailCall</span> = [](<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>, <span style="font-weight: bold; text-decoration: underline;">Instruction</span> *<span style="font-weight: bold; font-style: italic;">ins</span>)-&gt;Instruction *{
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21028;&#26029;&#26159;&#21542;&#26159;returninst,&#22914;&#26524;&#19981;&#26159;&#21017;&#36820;&#22238;nullptr</span>
+    <span style="font-weight: bold; text-decoration: underline;">ReturnInst</span> *<span style="font-weight: bold; font-style: italic;">RI</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">ReturnInst</span>&gt;(ins);
+    <span style="font-weight: bold;">if</span>(!RI || RI == &amp;BB.front())
+      <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22312;&#27492;&#20043;&#21069;&#26159;&#21542;&#23384;&#22312;Node</span>
+    <span style="font-weight: bold; text-decoration: underline;">Instruction</span> *<span style="font-weight: bold; font-style: italic;">Prev</span> = RI-&gt;getPrevNode();
+    <span style="font-weight: bold;">if</span>(!Prev)
+      <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">tailcall&#30340;&#36820;&#22238;&#20540;&#35201;&#20026;&#24403;&#21069;&#20989;&#25968;&#30340;&#36820;&#22238;&#20540;</span>
+    <span style="font-weight: bold;">if</span> (<span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">RV</span> = RI-&gt;getReturnValue()) {
+      <span style="font-weight: bold;">if</span> (RV != Prev)
+        <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Look through the optional bitcast.</span>
+      <span style="font-weight: bold;">if</span> (<span style="font-weight: bold;">auto</span> *<span style="font-weight: bold; font-style: italic;">BI</span> = dyn_cast&lt;BitCastInst&gt;(Prev)) {
+        RV = BI-&gt;getOperand(0);
+        Prev = BI-&gt;getPrevNode();
+        <span style="font-weight: bold;">if</span> (!Prev || RV != Prev)
+          <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+      }
+    }
+
+    <span style="font-weight: bold;">if</span> (<span style="font-weight: bold;">auto</span> *<span style="font-weight: bold; font-style: italic;">CI</span> = dyn_cast&lt;CallInst&gt;(Prev)) {
+      <span style="font-weight: bold;">if</span> (CI-&gt;isTailCall())
+        <span style="font-weight: bold;">return</span> CI;
+    }
+    <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+  };
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#26356;&#26032;AFLPrevLoc&#65307;</span>
+  <span style="font-weight: bold; text-decoration: underline;">StoreInst</span> *<span style="font-weight: bold; font-style: italic;">Store</span> =
+      IRB.CreateStore(<span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(Int32Ty, cur_loc &gt;&gt; 1), AFLPrevLoc);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#35774;&#32622;Metadata</span>
+  Store-&gt;setMetadata(BB.getModule()-&gt;getMDKindID(<span style="font-style: italic;">"nosanitize"</span>), <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C, None));
+  Store-&gt;setMetadata(<span style="font-style: italic;">"fscd.bb.instrumented"</span>, <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C, None));
+
+  <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">cur_bb_loc</span>;
+  cur_bb_loc = IRB.CreatePointerCast(BlockAddrRep, IntptrTy);
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#25195;&#25551;&#26377;&#22810;&#23569;&#20010;call &#24573;&#30053; dbg&#30340;</span>
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#27880;&#24847;&#36825;&#20010;&#22320;&#26041;&#26159;&#23558;&#22522;&#26412;&#22359;&#20869;&#30340;&#25152;&#26377;&#20989;&#25968;&#37117;&#25195;&#25551;&#20986;&#65292;&#20294;&#26159;&#27492;&#26102;&#24182;&#19981;&#30693;&#36947;&#21738;&#20010;&#20989;&#25968;&#26159;&#22806;&#37096;&#20989;&#25968;&#65292;&#25353;&#24403;&#21069;&#30340;&#31639;&#27861;</span>
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22806;&#37096;&#20989;&#25968;&#24182;&#19981;&#20250;&#34987;&#35760;&#24405;&#65292;&#22240;&#27492;&#20381;&#28982;&#39044;&#30041;&#20102;slot&#29992;&#20110;&#35760;&#24405;&#36825;&#20123;&#20989;&#25968;&#22320;&#22336;&#65292;&#20294;&#21487;&#33021;&#24182;&#19981;&#20250;&#34987;&#29992;&#21040;</span>
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">TODO&#65292;&#23384;&#22312;&#24773;&#20917;&#26159;&#65292;&#19968;&#26465;trace&#35843;&#29992;&#20102;&#20869;&#37096;&#20989;&#25968;&#65292;&#19968;&#26465;&#35843;&#29992;&#20102;&#22806;&#37096;&#20989;&#25968;&#65292;&#32467;&#26524;&#23548;&#33268;&#36712;&#36857;&#21305;&#37197;&#19981;&#23545;&#31216;</span>
+  <span style="font-weight: bold;">for</span> (<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span>::<span style="font-weight: bold; text-decoration: underline;">iterator</span> <span style="font-weight: bold; font-style: italic;">I</span> = BB.begin(), <span style="font-weight: bold; font-style: italic;">E</span> = BB.end(); I != E; ++I) {
+    <span style="font-weight: bold;">if</span> (I-&gt;hasMetadata(<span style="font-style: italic;">"nosanitize"</span>))
+      <span style="font-weight: bold;">continue</span>;
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Ignore non-calls.</span>
+    <span style="font-weight: bold; text-decoration: underline;">CallInst</span> *<span style="font-weight: bold; font-style: italic;">CI</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">CallInst</span>&gt;(I);
+
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Ignore intrinsics that do not become real instructions.</span>
+    <span style="font-weight: bold;">if</span> (!CI || isa&lt;DbgInfoIntrinsic&gt;(CI) || CI-&gt;isLifetimeStartOrEnd())
+      <span style="font-weight: bold;">continue</span>;
+
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Ignore indirect calls.</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Function *Callee = CI-&gt;getCalledFunction();</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">if (Callee == 0) continue;</span>
+
+    callee_count++;
+  }  
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21028;&#26029;&#26159;&#21542;&#26159;&#32467;&#26463;&#22522;&#26412;&#22359;</span>
+  <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; font-style: italic;">IsTerminatorBB</span> = succ_begin(&amp;BB) == succ_end(&amp;BB);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22788;&#29702;entry</span>
+  <span style="font-weight: bold;">if</span>(IsEntryBB){
+    IRB.CreateCall(FSCD_TracePCBBEntry, cur_bb_loc)-&gt;setCannotMerge();
+  }
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22788;&#29702;terminator,&#36319;&#22312;entry&#21518;&#38754;</span>
+  <span style="font-weight: bold;">if</span>(IsTerminatorBB){
+    <span style="font-weight: bold;">if</span>(!IsEntryBB){<span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22312;&#22522;&#26412;&#22359;&#21448;&#26159;entry &#21448;&#26159; terminator&#30340;&#26102;&#20505;&#65292;&#21482;&#22312;entry&#36827;&#34892;&#19968;&#27425;&#35760;&#24405;</span>
+      IRB.CreateCall(FSCD_TracePCBBRet, cur_bb_loc)-&gt;setCannotMerge();
+    }
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22312;&#22522;&#26412;&#22359;&#30340;&#26411;&#23614;&#25554;&#20837;&#20989;&#25968;</span>
+    <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">Instruction</span>* <span style="font-weight: bold; font-style: italic;">lastInst</span> = BB.getTerminator()){
+      <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">ReturnInst</span> *<span style="font-weight: bold; font-style: italic;">RI</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">ReturnInst</span>&gt;(lastInst)){
+        <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">Instruction</span> *<span style="font-weight: bold; font-style: italic;">callIns</span> = isTailCall(BB,lastInst)){
+          <span style="font-weight: bold; text-decoration: underline;">IRBuilder</span>&lt;&gt; <span style="font-weight: bold; font-style: italic;">IRBC</span>(callIns);
+          <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#25554;&#20837;FSCD TailCall&#20989;&#25968;</span>
+          IRBC.CreateCall(FSCD_TracePCInsTailCall)-&gt;setCannotMerge();
+        }<span style="font-weight: bold;">else</span>{
+          <span style="font-weight: bold; text-decoration: underline;">IRBuilder</span>&lt;&gt; <span style="font-weight: bold; font-style: italic;">IRBC</span>(RI);
+          <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#25554;&#20837;FSCD Ret&#20989;&#25968;</span>
+          IRBC.CreateCall(FSCD_TracePCInsRet)-&gt;setCannotMerge();
+        }
+      }<span style="font-weight: bold;">else</span> <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">UnreachableInst</span> *<span style="font-weight: bold; font-style: italic;">unreachIns</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">UnreachableInst</span>&gt;(lastInst)){
+        <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">TODO: unreachableInst after exit() abort() or sth else;</span>
+      }
+    }
+  }
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22788;&#29702;normal</span>
+  <span style="font-weight: bold;">if</span>(!IsEntryBB &amp;&amp; !IsTerminatorBB)
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22522;&#26412;&#22359;&#30340;&#24320;&#22836;&#25554;&#20837;FSCD&#36861;&#36394;&#20989;&#25968;</span>
+    IRB.CreateCall(FSCD_TracePCBB, cur_bb_loc)-&gt;setCannotMerge();
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#23545;BB&#20869;&#23384;&#35835;&#20889;&#25968;&#37327;&#36827;&#34892;&#32479;&#35745;</span>
+  <span style="font-weight: bold; text-decoration: underline;">std</span>::<span style="font-weight: bold; text-decoration: underline;">vector</span>&lt;<span style="font-weight: bold; text-decoration: underline;">std</span>::<span style="font-weight: bold; text-decoration: underline;">pair</span>&lt;<span style="font-weight: bold; text-decoration: underline;">Instruction</span> *,<span style="font-weight: bold; text-decoration: underline;">Value</span>*&gt;&gt; <span style="font-weight: bold; font-style: italic;">interestingMemoryAccessList</span>;
+
+  <span style="font-weight: bold;">for</span>(<span style="font-weight: bold; text-decoration: underline;">Instruction</span> &amp;<span style="font-weight: bold; font-style: italic;">I</span> : BB){
+    <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; font-style: italic;">IsWrite</span>;
+    <span style="font-weight: bold; text-decoration: underline;">uint64_t</span> <span style="font-weight: bold; font-style: italic;">TypeSize</span>;
+    <span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; font-style: italic;">Alignment</span>;
+    <span style="font-weight: bold;">if</span> (I.hasMetadata(<span style="font-style: italic;">"nosanitize"</span>))
+      <span style="font-weight: bold;">continue</span>;
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">instrument for memory access</span>
+    <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">Addr</span> = isInterestingMemoryAccess(&amp;I, &amp;IsWrite, &amp;TypeSize, &amp;Alignment)){
+      interestingMemoryAccessList.push_back(<span style="font-weight: bold; text-decoration: underline;">std</span>::make_pair(&amp;I,Addr));
+      <span style="font-weight: bold;">continue</span>;
+    }
+  }
+  <span style="font-weight: bold;">if</span>(interestingMemoryAccessList.size()&gt;0){
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">1.&#21152;&#36733;&#24403;&#21069;DataRecordAreaPtr</span>
+    <span style="font-weight: bold; text-decoration: underline;">LoadInst</span> *<span style="font-weight: bold; font-style: italic;">loadPtr</span> = IRB.CreateLoad(DataRecordAreaPtr);
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">2.&#35760;&#24405;&#25968;&#25454;&#35775;&#38382;</span>
+    handleInterestingMemoryAccesses(interestingMemoryAccessList, loadPtr);
+  }
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">BB.getTerminator()-&gt;setMetadata("fscd.bb.instrumented",</span>
+  <span style="font-weight: bold; font-style: italic;">//                             </span><span style="font-weight: bold; font-style: italic;">MDNode::get(*C, None));</span>
+
+  <span style="font-weight: bold;">return</span> interestingMemoryAccessList.size();
+}
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org9d33731" class="outline-5">
+<h5 id="org9d33731"><span class="section-number-5">1.1.1.8</span> handleInterestingMemoryAccesses</h5>
+<div class="outline-text-5" id="text-1-1-1-8">
+<p>
+获取内存访问的地址和offset
+</p>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">handleInterestingMemoryAccesses</span>(<span style="font-weight: bold; text-decoration: underline;">std</span>::<span style="font-weight: bold; text-decoration: underline;">vector</span>&lt;<span style="font-weight: bold; text-decoration: underline;">std</span>::<span style="font-weight: bold; text-decoration: underline;">pair</span>&lt;<span style="font-weight: bold; text-decoration: underline;">Instruction</span> *, <span style="font-weight: bold; text-decoration: underline;">Value</span> *&gt;&gt; &amp;<span style="font-weight: bold; font-style: italic;">list</span>,
+                                                <span style="font-weight: bold; text-decoration: underline;">LoadInst</span> *<span style="font-weight: bold; font-style: italic;">loadStoreStructPtr</span>) {
+
+  <span style="font-weight: bold;">for</span>(<span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; font-style: italic;">i</span>=0; i&lt;list.size(); i++){
+    <span style="font-weight: bold;">auto</span> &amp;<span style="font-weight: bold; font-style: italic;">itr</span>= list[i];
+
+    <span style="font-weight: bold; text-decoration: underline;">IRBuilder</span>&lt;&gt; <span style="font-weight: bold; font-style: italic;">IRB</span>(itr.first);
+    <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">start_pointer</span>, *<span style="font-weight: bold; font-style: italic;">offset</span>;
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">2.1 &#33719;&#21462;&#35775;&#38382;&#30340;&#30446;&#26631;&#22320;&#22336;&#20449;&#24687;&#65288;start_pointer, offset&#65289;</span>
+    <span style="font-weight: bold; text-decoration: underline;">std</span>::tie(start_pointer, offset) = _handle_memory_access_core(itr.first, itr.second);
+
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">2.2 &#33719;&#21462;&#23384;&#25918;&#22320;&#22336;&#20449;&#24687;&#30340;&#32467;&#26500;&#20307;&#30340;&#22320;&#22336;</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#24471;&#21040;loadStoreStructPtr&#20013;&#31532;i&#20010;&#20803;&#32032;&#30340;&#25351;&#38024;</span>
+    <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">_data_record_ptr</span>   = IRB.CreateGEP(loadStoreStructPtr, <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(Int64Ty, i));
+
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#23384;&#25918;start_pointer</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22312;_data_record_ptr&#22788;&#24471;&#21040;FSCDDataAccessInfoTy&#31867;&#22411;&#30340;&#30340;&#31532;&#19968;&#20010;&#20803;&#32032;&#30340;&#25351;&#38024;</span>
+    <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">_store_start_addr</span>  = IRB.CreateGEP(FSCDDataAccessInfoTy, _data_record_ptr,
+                                             {<span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(Int32Ty, 0), <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(Int32Ty,0)});
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#23558;start_addr&#23384;&#25918;&#21040; _store_start_addr&#22788;</span>
+    IRB.CreateStore(start_pointer,_store_start_addr);
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#23384;&#25918;offset</span>
+    <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">_store_offset_addr</span>= IRB.CreateGEP(FSCDDataAccessInfoTy, _data_record_ptr,
+                                             {<span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(Int32Ty, 0), <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(Int32Ty,1)});
+    IRB.CreateStore(offset, _store_offset_addr);
+  }
+
+  <span style="font-weight: bold;">return</span>;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org681a10d" class="outline-5">
+<h5 id="org681a10d"><span class="section-number-5">1.1.1.9</span> _handle_memory_access_core</h5>
+<div class="outline-text-5" id="text-1-1-1-9">
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">std</span>::<span style="font-weight: bold; text-decoration: underline;">pair</span>&lt;<span style="font-weight: bold; text-decoration: underline;">Value</span>*,<span style="font-weight: bold; text-decoration: underline;">Value</span>*&gt; <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">_handle_memory_access_core</span>(<span style="font-weight: bold; text-decoration: underline;">Instruction</span> * <span style="font-weight: bold; font-style: italic;">I</span>, <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">value</span>){
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">I&#20026;&#20869;&#23384;&#35775;&#38382;&#25351;&#20196;, Value&#20026;Operand</span>
+  <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">access_start_addr</span>, *<span style="font-weight: bold; font-style: italic;">offset</span>;
+  <span style="font-weight: bold; text-decoration: underline;">IRBuilder</span>&lt;&gt; <span style="font-weight: bold; font-style: italic;">IRB</span>(I);
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">2.1 &#33719;&#21462;&#35775;&#38382;&#30340;&#22320;&#22336;</span>
+  <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">GetElementPtrInst</span> * <span style="font-weight: bold; font-style: italic;">GEPi</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">GetElementPtrInst</span>&gt;(value)) {
+    access_start_addr = IRB.CreatePointerCast(GEPi-&gt;getPointerOperand(), Int64Ty);
+
+    <span style="font-weight: bold; text-decoration: underline;">APInt</span> <span style="font-weight: bold; font-style: italic;">GEPOffset</span>(DL-&gt;getIndexTypeSizeInBits(GEPi-&gt;getType()), 0);
+    <span style="font-weight: bold;">if</span>(GEPi-&gt;accumulateConstantOffset(*DL,GEPOffset)){
+      <span style="font-weight: bold; font-style: italic;">//</span>
+      offset = <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(*C, GEPOffset);
+    }<span style="font-weight: bold;">else</span>{
+      <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#23454;&#29616;1&#65292;&#36890;&#36807;&#20943;&#27861;</span>
+      offset = IRB.CreateSub(IRB.CreatePointerCast(value,Int64Ty), access_start_addr);
+    }
+    offset = IRB.CreateIntCast(offset, Int32Ty, <span style="font-weight: bold; text-decoration: underline;">true</span>);
+
+  }<span style="font-weight: bold;">else</span> <span style="font-weight: bold;">if</span>(<span style="font-weight: bold; text-decoration: underline;">GEPOperator</span> *<span style="font-weight: bold; font-style: italic;">GEPo</span> = dyn_cast&lt;<span style="font-weight: bold; text-decoration: underline;">GEPOperator</span>&gt;(value)){
+    access_start_addr = IRB.CreatePointerCast(GEPo-&gt;getPointerOperand(), Int64Ty);
+
+    <span style="font-weight: bold; text-decoration: underline;">APInt</span> <span style="font-weight: bold; font-style: italic;">GEPOffset</span>(DL-&gt;getIndexTypeSizeInBits(GEPo-&gt;getType()), 0);
+    <span style="font-weight: bold;">if</span>(GEPo-&gt;accumulateConstantOffset(*DL,GEPOffset)){
+      offset = <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(*C, GEPOffset);
+    }<span style="font-weight: bold;">else</span>{
+      <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#23454;&#29616;1&#65292;&#36890;&#36807;&#20943;&#27861;</span>
+      offset = IRB.CreateSub(IRB.CreatePointerCast(value,Int64Ty), access_start_addr);
+    }
+    offset = IRB.CreateIntCast(offset, Int32Ty, <span style="font-weight: bold; text-decoration: underline;">true</span>);
+
+  }<span style="font-weight: bold;">else</span>{
+<span style="font-weight: bold; font-style: italic;">//        </span><span style="font-weight: bold; font-style: italic;">PHINode *PHIn = dyn_cast&lt;PHINode&gt;(itr.second);</span>
+<span style="font-weight: bold; font-style: italic;">//        </span><span style="font-weight: bold; font-style: italic;">BitCastInst *bci = dyn_cast&lt;BitCastInst&gt;(itr.second);</span>
+<span style="font-weight: bold; font-style: italic;">//        </span><span style="font-weight: bold; font-style: italic;">LoadInst *li = dyn_cast&lt;LoadInst&gt;(itr.second);</span>
+<span style="font-weight: bold; font-style: italic;">//        </span><span style="font-weight: bold; font-style: italic;">GlobalValue *gv = dyn_cast&lt;GlobalValue&gt;(itr.second);</span>
+<span style="font-weight: bold; font-style: italic;">//        </span><span style="font-weight: bold; font-style: italic;">GlobalVariable *gv = dyn_cast&lt;GlobalVariable&gt;(itr.second)</span>
+<span style="font-weight: bold; font-style: italic;">//        </span><span style="font-weight: bold; font-style: italic;">errs()&lt;&lt;"FSCD_others:";itr.second-&gt;print(errs());errs()&lt;&lt;"\n";</span>
+    access_start_addr = IRB.CreatePointerCast(value, Int64Ty);
+    offset = <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(Int32Ty, 0);
+  }
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#36820;&#22238;&#35775;&#38382;&#30340;&#22320;&#22336;&#65292;&#20197;&#21450;offset</span>
+  <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">std</span>::make_pair(access_start_addr, offset);
+}
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgba8bd0d" class="outline-5">
+<h5 id="orgba8bd0d"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
+<div class="outline-text-5" id="text-1-1-1-10">
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">injectAFLBitMapOperation</span>(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>, <span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">cur_loc</span>) {
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">BB&#65306; CloneInfo.head,&#23601;&#26159;&#25335;&#36125;&#22522;&#26412;&#22359;&#21518;&#30340;&#21069;&#39537;&#22522;&#26412;&#22359;</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">cur_loc: &#28304;&#20195;&#30721;&#20301;&#32622;</span>
+  <span style="font-weight: bold; text-decoration: underline;">Module</span> &amp;<span style="font-weight: bold; font-style: italic;">M</span> = *BB.getModule();
+  <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span>::<span style="font-weight: bold; text-decoration: underline;">iterator</span> <span style="font-weight: bold; font-style: italic;">IP</span> = BB.getFirstInsertionPt();
+  <span style="font-weight: bold; text-decoration: underline;">IRBuilder</span>&lt;&gt; <span style="font-weight: bold; font-style: italic;">IRB</span>(&amp;(*IP));
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Make up cur_loc</span><span style="font-weight: bold; font-style: italic;"> */</span>
+  <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span> *<span style="font-weight: bold; font-style: italic;">CurLoc</span> = <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(<span style="font-weight: bold; text-decoration: underline;">IntegerType</span>::getInt32Ty(*C), cur_loc);
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Load prev_loc</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  <span style="font-weight: bold; text-decoration: underline;">LoadInst</span> *<span style="font-weight: bold; font-style: italic;">PrevLoc</span> = IRB.CreateLoad(AFLPrevLoc);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#19981;&#23545;&#20854;&#36827;&#34892;&#36861;&#36394;</span>
+  PrevLoc-&gt;setMetadata(M.getMDKindID(<span style="font-style: italic;">"nosanitize"</span>), <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C, None));
+  <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">PrevLocCasted</span> = IRB.CreateZExt(PrevLoc, IRB.getInt32Ty());
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Load SHM pointer</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  <span style="font-weight: bold; text-decoration: underline;">LoadInst</span> *<span style="font-weight: bold; font-style: italic;">MapPtr</span> = IRB.CreateLoad(AFLMapPtr);
+  MapPtr-&gt;setMetadata(M.getMDKindID(<span style="font-style: italic;">"nosanitize"</span>), <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C, None));
+  <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">MapPtrIdx</span> =
+      IRB.CreateGEP(MapPtr, IRB.CreateXor(PrevLocCasted, CurLoc));
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Update bitmap</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  <span style="font-weight: bold; text-decoration: underline;">LoadInst</span> *<span style="font-weight: bold; font-style: italic;">Counter</span> = IRB.CreateLoad(MapPtrIdx);
+  Counter-&gt;setMetadata(M.getMDKindID(<span style="font-style: italic;">"nosanitize"</span>), <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C, None));
+  <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">Incr</span> = IRB.CreateAdd(Counter, <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(Int8Ty, 1));
+  IRB.CreateStore(Incr, MapPtrIdx)
+      -&gt;setMetadata(M.getMDKindID(<span style="font-style: italic;">"nosanitize"</span>), <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C, None));
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Set prev_loc to cur_loc &gt;&gt; 1</span><span style="font-weight: bold; font-style: italic;"> */</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">IRB.CreateCall(FSCD_DEBUG_PREVLOC, ConstantInt::get(Int64Ty, cur_loc &gt;&gt; 1));</span>
+  <span style="font-weight: bold; text-decoration: underline;">StoreInst</span> *<span style="font-weight: bold; font-style: italic;">Store</span> =
+      IRB.CreateStore(<span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(<span style="font-weight: bold; text-decoration: underline;">IntegerType</span>::getInt32Ty(*C), cur_loc &gt;&gt; 1), AFLPrevLoc);
+  Store-&gt;setMetadata(M.getMDKindID(<span style="font-style: italic;">"nosanitize"</span>), <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C, None));
+  <span style="font-weight: bold;">return</span> ;
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orga8ece8f" class="outline-5">
+<h5 id="orga8ece8f"><span class="section-number-5">1.1.1.11</span> runInlineClone</h5>
+<div class="outline-text-5" id="text-1-1-1-11">
+<ul class="org-ul">
+<li><a href="#org2565fb7">FSCDTrace</a>::<a href="#org7b30ca1">cloneInline</a></li>
+<li><a href="#orgb565214">AFL_R</a></li>
+<li><a href="#org477cd05">injectTrace</a></li>
+<li><a href="#org996810c">injectAFLBitMapOperation</a></li>
+</ul>
+<p>
+对基本块进行插装。
+</p>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">runInlineClone</span>(<span style="font-weight: bold; text-decoration: underline;">Function</span> &amp;<span style="font-weight: bold; font-style: italic;">F</span>, <span style="font-weight: bold; text-decoration: underline;">SmallVector</span>&lt;<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *, 32&gt; &amp; <span style="font-weight: bold; font-style: italic;">BasicBlocksToInstrument</span>,
+                                 <span style="font-weight: bold; text-decoration: underline;">ValueToValueMapTy</span> &amp;<span style="font-weight: bold; font-style: italic;">VMap</span>){
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21482;&#23545;clone&#30340;&#22522;&#26412;&#22359;&#36827;&#34892;&#25554;&#26729;</span>
+  <span style="font-weight: bold;">for</span>(<span style="font-weight: bold; text-decoration: underline;">size_t</span> <span style="font-weight: bold; font-style: italic;">idx</span> = 0;idx &lt; BasicBlocksToInstrument.size();idx++){
+    <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; font-style: italic;">isEntryBB</span> = <span style="font-weight: bold; text-decoration: underline;">false</span>;
+    <span style="font-weight: bold; text-decoration: underline;">CloneInfo</span>* <span style="font-weight: bold; font-style: italic;">cinfo</span> = <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+    <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">BBptr</span> = BasicBlocksToInstrument[idx];
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#23545;BBptr&#36827;&#34892;&#22522;&#26412;&#22359;&#30340;&#20998;&#21106;</span>
+    cinfo = cloneInline(*BBptr, VMap, isEntryBB);
+    CloneMap[BBptr] = cinfo;
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#29983;&#25104;&#19968;&#20010;&#38543;&#26426;&#25968;</span>
+    <span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">cur_loc</span> = AFL_R(MAP_SIZE);
+    <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">callee_count</span> = 0;
+    <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">instrumented_data_count</span> = injectTrace(F,*cinfo-&gt;cln, isEntryBB, cur_loc, callee_count);
+    injectAFLBitMapOperation(*cinfo-&gt;head, cur_loc);
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">injectAFLBitMapOperation(*cinfo-&gt;cln, cur_loc);</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Instruction *first_insn = &amp;(*cinfo-&gt;cln-&gt;getFirstInsertionPt());</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">first_insn-&gt;setMetadata("fscd.bb.instrumented", MDNode::get(*C, None));</span>
+
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#35760;&#24405;&#22522;&#26412;&#22359;&#20013;&#34987;&#36861;&#36394;&#30340;&#25968;&#25454;&#25968;&#37327;</span>
+    <span style="font-weight: bold; text-decoration: underline;">MDNode</span> *<span style="font-weight: bold; font-style: italic;">mdNode</span> = <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C,
+                                <span style="font-weight: bold; text-decoration: underline;">ConstantAsMetadata</span>::get(
+                                    <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(
+                                        <span style="font-weight: bold; text-decoration: underline;">Type</span>::getInt32Ty(*C), instrumented_data_count)
+                                        ));
+    BBptr-&gt;getTerminator()-&gt;setMetadata(<span style="font-style: italic;">"fscd.data.num"</span>, mdNode);
+
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#35760;&#24405;&#22522;&#26412;&#22359;&#20013;&#35843;&#29992;&#30340;&#20989;&#25968;&#25968;&#37327;</span>
+    <span style="font-weight: bold; text-decoration: underline;">MDNode</span> *<span style="font-weight: bold; font-style: italic;">mdNode2</span> = <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C,
+                                <span style="font-weight: bold; text-decoration: underline;">ConstantAsMetadata</span>::get(
+                                    <span style="font-weight: bold; text-decoration: underline;">ConstantInt</span>::get(
+                                        <span style="font-weight: bold; text-decoration: underline;">Type</span>::getInt32Ty(*C), callee_count)
+                                        ));
+    BBptr-&gt;getTerminator()-&gt;setMetadata(<span style="font-style: italic;">"fscd.callee.num"</span>, mdNode2);
+  }
+  splitBB-&gt;removeFromParent();
+  splitBB = <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+
+<span style="font-weight: bold; font-style: italic;">//  </span><span style="font-weight: bold; font-style: italic;">if(F.getName().startswith("jpeg_getc")){</span>
+<span style="font-weight: bold; font-style: italic;">//    </span><span style="font-weight: bold; font-style: italic;">errs()&lt;&lt;"org---------------------"&lt;&lt;F.getName()&lt;&lt;"--------------------------\n";</span>
+<span style="font-weight: bold; font-style: italic;">//    </span><span style="font-weight: bold; font-style: italic;">F.print(errs());</span>
+<span style="font-weight: bold; font-style: italic;">//  </span><span style="font-weight: bold; font-style: italic;">}</span>
+  <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">true</span>;
+
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org996810c" class="outline-5">
+<h5 id="org996810c"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
+<div class="outline-text-5" id="text-1-1-1-12">
+</div>
+</div>
+
+<div id="outline-container-org5626026" class="outline-5">
+<h5 id="org5626026"><span class="section-number-5">1.1.1.13</span> FSCDSplitBasicBlock</h5>
+<div class="outline-text-5" id="text-1-1-1-13">
+<p>
+新建基本块，将原基本块bb中指令I及其之后的指令移动到新的基本块中，并返回新基本块
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> * <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">FSCDSplitBasicBlock</span>(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">bb</span>, <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span>::<span style="font-weight: bold; text-decoration: underline;">iterator</span> <span style="font-weight: bold; font-style: italic;">I</span>, <span style="font-weight: bold;">const</span> <span style="font-weight: bold; text-decoration: underline;">Twine</span> &amp;<span style="font-weight: bold; font-style: italic;">BBName</span>,
+                                            <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">InsertBefore</span>= <span style="font-weight: bold; text-decoration: underline;">nullptr</span>) {
+  <span style="font-weight: bold;">if</span>(!bb) <span style="font-weight: bold;">return</span> <span style="font-weight: bold; text-decoration: underline;">nullptr</span>;
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21028;&#26029;&#26159;&#21542;&#20026;&#36864;&#21270;&#30340;&#22522;&#26412;&#22359; </span>
+  assert(bb-&gt;getTerminator() &amp;&amp; <span style="font-style: italic;">"Can't use splitBasicBlock on degenerate BB!"</span>);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21028;&#26029;&#25351;&#20196;&#26159;&#21542;&#22312;&#22522;&#26412;&#22359;&#26411;&#23614;&#12290;</span>
+  assert(I != bb-&gt;end() &amp;&amp;
+         <span style="font-style: italic;">"Trying to get me to create degenerate basic block!"</span>);
+  <span style="font-weight: bold;">if</span>(!InsertBefore) InsertBefore = bb-&gt;getNextNode();
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22312;bb&#30340;&#19979;&#19968;&#20010;Node&#21069;&#21644;bb&#30340;parent&#20043;&#38388;&#25554;&#20837;&#22522;&#26412;&#22359;</span>
+  <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">New</span> = <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span>::Create(*C, BBName, bb-&gt;getParent(),
+                                       InsertBefore);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Save DebugLoc of split point before invalidating iterator.</span>
+  <span style="font-weight: bold; text-decoration: underline;">DebugLoc</span> <span style="font-weight: bold; font-style: italic;">Loc</span> = I-&gt;getDebugLoc();
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Move all of the specified instructions from the original basic block into</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">the new basic block.</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#23558;bb&#20013;&#20174;I&#24320;&#22987;&#30340;&#25351;&#20196;&#31227;&#21160;&#21040;&#26032;&#24314;&#22522;&#26412;&#22359;&#20013;</span>
+  New-&gt;getInstList().splice(New-&gt;end(), bb-&gt;getInstList(), I, bb-&gt;end());
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Add a branch instruction to the newly formed basic block.</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#27492;&#26102;bb&#30340;end &#20026;I&#20043;&#38388;&#30340;&#25351;&#20196;</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">if true &#36339;&#36716;&#21040;&#26032;&#30340;&#22522;&#26412;&#22359;&#20013;</span>
+  <span style="font-weight: bold; text-decoration: underline;">BranchInst</span> *<span style="font-weight: bold; font-style: italic;">BI</span> = <span style="font-weight: bold; text-decoration: underline;">BranchInst</span>::Create(New, bb);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#26356;&#26032;&#20998;&#25903;&#25351;&#20196;&#30340;&#20301;&#32622;&#65292;&#23601;&#26159;&#21407;&#26469;&#30340;I&#20301;&#32622;&#12290;</span>
+  BI-&gt;setDebugLoc(Loc);
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Now we must loop through all of the successors of the New block (which</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">_were_ the successors of the 'this' block), and update any PHI nodes in</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">successors.  If there were PHI nodes in the successors, then they need to</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">know that incoming branches will be from New, not from Old (this).</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#26367;&#25442;&#21407;&#26469;bb&#30340;phi&#20989;&#25968;&#20026;&#26032;&#21019;&#24314;&#30340;&#22522;&#26412;&#22359;</span>
+  New-&gt;replaceSuccessorsPhiUsesWith(bb, New);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#36820;&#22238;&#26032;&#21019;&#24314;&#30340;&#22522;&#26412;&#22359;</span>
+  <span style="font-weight: bold;">return</span> New;
+} 
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orged56d48" class="outline-3">
+<h3 id="orged56d48"><span class="section-number-3">1.2</span> lib/Transforms/Instrumentation/SanitizerCoverage.cpp</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+SanitizerCoverage是llvm自带的一个代码覆盖插装工具，它能在函数、基本块和边上进行插装。
+</p>
+</div>
+<div id="outline-container-org674a08c" class="outline-4">
+<h4 id="org674a08c"><span class="section-number-4">1.2.1</span> ModuleSanitizerCoverage</h4>
+<div class="outline-text-4" id="text-1-2-1">
+</div>
+<div id="outline-container-orgbfe155c" class="outline-5">
+<h5 id="orgbfe155c"><span class="section-number-5">1.2.1.1</span> instrumentModule</h5>
+<div class="outline-text-5" id="text-1-2-1-1">
+<p>
+instrumentModule主要用于初始化SanCov需要插装的相关函数内容，如传入参数、返回值等。
+</p>
+<ul class="org-ul">
+<li><a href="#org2565fb7">FSCDTrace</a>::<a href="#org6ad5d97">initCBs</a></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; text-decoration: underline;">ModuleSanitizerCoverage</span>::<span style="font-weight: bold;">instrumentModule</span>(
+    <span style="font-weight: bold; text-decoration: underline;">Module</span> &amp;<span style="font-weight: bold; font-style: italic;">M</span>, <span style="font-weight: bold; text-decoration: underline;">DomTreeCallback</span> <span style="font-weight: bold; font-style: italic;">DTCallback</span>, <span style="font-weight: bold; text-decoration: underline;">PostDomTreeCallback</span> <span style="font-weight: bold; font-style: italic;">PDTCallback</span>, 
+    <span style="font-weight: bold; text-decoration: underline;">LoopInfoCallback</span> <span style="font-weight: bold; font-style: italic;">LICallback</span>, <span style="font-weight: bold; text-decoration: underline;">ScalarEvolutionCallback</span> <span style="font-weight: bold; font-style: italic;">SECallback</span>) {
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">...</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#35843;&#29992;fscdTrace.initCBS, &#21021;&#22987;&#21270;fscd&#20013;&#33258;&#23450;&#20041;&#30340;&#25554;&#35013;&#20989;&#25968;&#12290;</span>
+  fscdTrace.initCBs(M);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#35843;&#29992;</span>
+}
+</pre>
+</div>
+<p>
+调用<a href="#org674a08c">ModuleSanitizerCoverage</a>::<a href="#orga4bc1dd">instrumentFunction</a>
+</p>
+</div>
+</div>
+<div id="outline-container-orga4bc1dd" class="outline-5">
+<h5 id="orga4bc1dd"><span class="section-number-5">1.2.1.2</span> instrumentFunction</h5>
+<div class="outline-text-5" id="text-1-2-1-2">
+<ul class="org-ul">
+<li><a href="20211021164705-llvm.html#ID-9acea3a5-44a2-43f2-a666-fc59f8a56d85">isa&lt;&gt;</a></li>
+<li><a href="#org2565fb7">FSCDTrace</a>::<a href="#orgc1bf642">collectAllocaInfo</a></li>
+<li><a href="#org2565fb7">FSCDTrace</a>::<a href="#orga8ece8f">runInlineClone</a></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">ModuleSanitizerCoverage</span>::<span style="font-weight: bold;">instrumentFunction</span>(<span style="font-weight: bold; text-decoration: underline;">Function</span> &amp;<span style="font-weight: bold; font-style: italic;">F</span>, <span style="font-weight: bold; text-decoration: underline;">DomTreeCallback</span> <span style="font-weight: bold; font-style: italic;">DTCallback</span>, <span style="font-weight: bold; text-decoration: underline;">PostDomTreeCallback</span> <span style="font-weight: bold; font-style: italic;">PDTCallback</span>,
+                                                 <span style="font-weight: bold; text-decoration: underline;">LoopInfoCallback</span> <span style="font-weight: bold; font-style: italic;">LICallback</span>, <span style="font-weight: bold; text-decoration: underline;">ScalarEvolutionCallback</span> <span style="font-weight: bold; font-style: italic;">SECallback</span>) {
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">...</span>
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22788;&#29702;exit&#30340;&#24773;&#20917;&#65292;&#36991;&#20813;&#22240;Unreachable&#30340;&#25351;&#20196;&#23548;&#33268;&#22522;&#26412;&#22359;&#19981;&#34987;instrument</span>
+  <span style="font-weight: bold;">if</span> (isa&lt;UnreachableInst&gt;(F.getEntryBlock().getTerminator())){
+    <span style="font-weight: bold;">if</span>(Options.FSCD){
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#21021;&#22987;&#21270;&#38656;&#35201;&#25554;&#35013;&#30340;&#22522;&#26412;&#22359;&#38598;&#21512;</span>
+      <span style="font-weight: bold; text-decoration: underline;">SmallVector</span>&lt;<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *, 32&gt; <span style="font-weight: bold; font-style: italic;">FSCDBasicBlocksToInstrument</span>;
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;alloc&#20449;&#24687;</span>
+      fscdTrace.collectAllocaInfo(F);
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#23558;&#27599;&#20010;&#22522;&#26412;&#22359;&#21387;&#20837;FSCDBasicBlockToInstrument&#20013;&#12290;</span>
+      <span style="font-weight: bold;">for</span> (<span style="font-weight: bold;">auto</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>: F){
+        <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">if(FSCDShouldInstrumeBlock(F,&amp;BB, DT, PDT, Options))</span>
+        FSCDBasicBlocksToInstrument.push_back(&amp;BB);
+      }
+      <span style="font-weight: bold; text-decoration: underline;">ValueToValueMapTy</span> <span style="font-weight: bold; font-style: italic;">VMap</span>;
+      fscdTrace.runInlineClone(F,FSCDBasicBlocksToInstrument, VMap);
+      F.setMetadata(<span style="font-style: italic;">"fscd.supported"</span>, <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C, None));
+    }
+    <span style="font-weight: bold;">return</span>;
+  }
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">...</span>
+  <span style="font-weight: bold; text-decoration: underline;">SmallVector</span>&lt;<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *, 32&gt; <span style="font-weight: bold; font-style: italic;">FSCDBasicBlocksToInstrument</span>;
+  <span style="font-weight: bold;">if</span>(Options.FSCD){
+    <span style="font-weight: bold; text-decoration: underline;">LoopInfo</span> *<span style="font-weight: bold; font-style: italic;">LI</span> = LICallback(F);
+    <span style="font-weight: bold; text-decoration: underline;">ScalarEvolution</span> *<span style="font-weight: bold; font-style: italic;">SE</span> = SECallback(F);
+    fscdTrace.collectLoopInfo(F, *LI, *DT, *SE);
+    fscdTrace.collectAllocaInfo(F);
+
+    <span style="font-weight: bold;">for</span> (<span style="font-weight: bold;">auto</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>: F){
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">if(FSCDShouldInstrumeBlock(F,&amp;BB, DT, PDT, Options))</span>
+        FSCDBasicBlocksToInstrument.push_back(&amp;BB);
+    }
+    <span style="font-weight: bold; text-decoration: underline;">ValueToValueMapTy</span> <span style="font-weight: bold; font-style: italic;">VMap</span>;
+    fscdTrace.runInlineClone(F,FSCDBasicBlocksToInstrument, VMap);
+    fscdTrace.runInjectLoopTrace(F);
+    fscdTrace.handleExitFunc(F);
+    F.setMetadata(<span style="font-style: italic;">"fscd.supported"</span>, <span style="font-weight: bold; text-decoration: underline;">MDNode</span>::get(*C, None));
+
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">covert basic blocks</span>
+  }<span style="font-weight: bold;">else</span>{
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org0793247" class="outline-4">
+<h4 id="org0793247"><span class="section-number-4">1.2.2</span> ModuleSanitizerCoverageLegacyPass</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<p>
+继承自<a href="20211021164705-llvm.html#ID-47d3da53-865c-41bc-a9db-4fa8907fd036">ModulePass</a>。
+</p>
+</div>
+<div id="outline-container-org580e837" class="outline-5">
+<h5 id="org580e837"><span class="section-number-5">1.2.2.1</span> runOnModule</h5>
+<div class="outline-text-5" id="text-1-2-2-1">
+<p>
+声明各种Pass，然后调用ModuleSanitizerCoverage::instrumentModule。
+</p>
+
+<p>
+ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-be64-4907-b9b3-de3eb28a8bb2">Scalar Evolution</a>
+</p>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold;">class</span> <span style="font-weight: bold; text-decoration: underline;">ModuleSanitizerCoverageLegacyPass</span> : <span style="font-weight: bold;">public</span> <span style="font-weight: bold; text-decoration: underline;">ModulePass</span> {
+<span style="font-weight: bold;">public</span>:
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#20837;&#21475;&#20989;&#25968;</span>
+  <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold;">runOnModule</span>(<span style="font-weight: bold; text-decoration: underline;">Module</span> &amp;<span style="font-weight: bold; font-style: italic;">M</span>) <span style="font-weight: bold;">override</span> {
+    <span style="font-weight: bold; text-decoration: underline;">ModuleSanitizerCoverage</span> <span style="font-weight: bold; font-style: italic;">ModuleSancov</span>(Options, Allowlist.get(),
+                                         Blocklist.get());
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22768;&#26126;DominatorTreeWrapperPass&#31867;&#22411;&#21464;&#37327;DTCallback&#65292;&#29992;&#20110;&#33719;&#21462;&#25903;&#37197;&#26641;&#20449;&#24687;&#12290;</span>
+    <span style="font-weight: bold;">auto</span> <span style="font-weight: bold; font-style: italic;">DTCallback</span> = [<span style="font-weight: bold;">this</span>](<span style="font-weight: bold; text-decoration: underline;">Function</span> &amp;<span style="font-weight: bold; font-style: italic;">F</span>) -&gt; <span style="font-weight: bold;">const</span> DominatorTree * {
+      <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; font-style: italic;">changed</span> = <span style="font-weight: bold; text-decoration: underline;">false</span>;
+      <span style="font-weight: bold;">return</span> &amp;<span style="font-weight: bold;">this</span>-&gt;getAnalysis&lt;DominatorTreeWrapperPass&gt;(F, &amp;changed).getDomTree();
+    };
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22768;&#26126;PostDominatorTreeWrapperPass&#31867;&#22411;&#21464;&#37327;PDTCallback&#65292;&#29992;&#20110;&#33719;&#21462;&#21518;&#24207;&#25903;&#37197;&#26641;&#20449;&#24687;&#12290;</span>
+    <span style="font-weight: bold;">auto</span> <span style="font-weight: bold; font-style: italic;">PDTCallback</span> = [<span style="font-weight: bold;">this</span>](<span style="font-weight: bold; text-decoration: underline;">Function</span> &amp;<span style="font-weight: bold; font-style: italic;">F</span>) -&gt; <span style="font-weight: bold;">const</span> PostDominatorTree * {
+      <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; font-style: italic;">changed</span> = <span style="font-weight: bold; text-decoration: underline;">false</span>;
+      <span style="font-weight: bold;">return</span> &amp;<span style="font-weight: bold;">this</span>-&gt;getAnalysis&lt;PostDominatorTreeWrapperPass&gt;(F, &amp;changed)
+                  .getPostDomTree();
+    };
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22768;&#26126;LoopInfoWrapperPass&#31867;&#22411;&#21464;&#37327;LICallback&#65292;&#29992;&#26469;&#33719;&#21462;&#24490;&#29615;&#20449;&#24687;&#65292;&#35813;&#37096;&#20998;&#20026;&#26032;&#22686;&#12290;</span>
+    <span style="font-weight: bold;">auto</span> <span style="font-weight: bold; font-style: italic;">LICallback</span> = [<span style="font-weight: bold;">this</span>](<span style="font-weight: bold; text-decoration: underline;">Function</span> &amp;<span style="font-weight: bold; font-style: italic;">F</span>) -&gt; LoopInfo * {
+      <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; font-style: italic;">changed</span> = <span style="font-weight: bold; text-decoration: underline;">false</span>;
+      <span style="font-weight: bold;">return</span> &amp;<span style="font-weight: bold;">this</span>-&gt;getAnalysis&lt;LoopInfoWrapperPass&gt;(F, &amp;changed)
+                  .getLoopInfo();
+    };
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22768;&#26126;ScalarEvolutionWrapperPass&#31867;&#22411;SECallback&#65292;&#29992;&#26469;&#20248;&#21270;&#26631;&#37327;&#65292;&#35813;&#37096;&#20998;&#20026;&#26032;&#22686;&#12290;</span>
+    <span style="font-weight: bold;">auto</span> <span style="font-weight: bold; font-style: italic;">SECallback</span> = [<span style="font-weight: bold;">this</span>](<span style="font-weight: bold; text-decoration: underline;">Function</span> &amp;<span style="font-weight: bold; font-style: italic;">F</span>) -&gt; ScalarEvolution * {
+      <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; font-style: italic;">changed</span> = <span style="font-weight: bold; text-decoration: underline;">false</span>;
+      <span style="font-weight: bold;">return</span> &amp;<span style="font-weight: bold;">this</span>-&gt;getAnalysis&lt;ScalarEvolutionWrapperPass&gt;(F, &amp;changed)
+                  .getSE();
+    };
+    <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#25191;&#34892;instrumentModule</span>
+    <span style="font-weight: bold;">return</span> ModuleSancov.instrumentModule(M, DTCallback, PDTCallback, LICallback, SECallback);
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2021-11-01 Mon 10:23</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

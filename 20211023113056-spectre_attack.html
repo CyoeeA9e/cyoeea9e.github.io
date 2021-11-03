@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-10-27 Wed 16:07 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spectre Attack</title>
+<meta name="generator" content="Org mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://www.gnu.org/software/emacs/manual.css">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Spectre Attack</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org79355d0">1. 背景介绍</a>
+<ul>
+<li><a href="#org87490f6">1.1. 乱序执行 (out-of-order execution)</a></li>
+<li><a href="#org60b73e4">1.2. 预测执行(speculative execution)</a></li>
+<li><a href="#org05b9859">1.3. 缓存</a></li>
+<li><a href="#org68642b5">1.4. 微架构侧信道攻击</a></li>
+<li><a href="#org4b5bad9">1.5. ROP</a></li>
+</ul>
+</li>
+<li><a href="#org736ecf8">2. Spectre攻击过程介绍</a></li>
+<li><a href="#orgf30546e">3. 信息转化通道</a></li>
+<li><a href="#org095d62d">4. Spectre V1</a>
+<ul>
+<li><a href="#org1b2dacf">4.1. 利用</a>
+<ul>
+<li><a href="#org76966af">4.1.1. JavaScript</a></li>
+<li><a href="#org75eedb6">4.1.2. eBPF</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org0bbb0ac">5. Spectre V2</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org79355d0" class="outline-2">
+<h2 id="org79355d0"><span class="section-number-2">1</span> 背景介绍</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org87490f6" class="outline-3">
+<h3 id="org87490f6"><span class="section-number-3">1.1</span> 乱序执行 (out-of-order execution)</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+现代CPU为了提高整体的利用效率，在执行指令时并不按照指令的顺序执行，而是并行甚至提前执行指令。
+</p>
+</div>
+</div>
+<div id="outline-container-org60b73e4" class="outline-3">
+<h3 id="org60b73e4"><span class="section-number-3">1.2</span> 预测执行(speculative execution)</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+又或者叫投机执行，是乱序执行的一种。
+</p>
+
+<p>
+因为内存读取的速度较慢，需要上百个时间周期，因此为了提高整体的速度，CPU会猜测一个可能的分支，然后执行该分支。当数据从内存读取完成后，再确定应该执行的分支。如果猜测的分支正确，那CPU保留已经执行的内容，因此能够大幅提高运行速度；如果猜测的分支错误，那么CPU会放弃已经执行的内容，恢复成原始状态，再执行分支内容。
+</p>
+
+<p>
+当CPU分支预测错误时，会将寄存器等CPU组件恢复成初始状态，但微架构中的其他组件并没有恢复，如缓存，因此可能导致侧信道信息的泄漏。
+</p>
+
+<p>
+现代CPU可能会提前执行上百条指令，具体数量由CPU recorder buffer大小决定。
+</p>
+</div>
+</div>
+<div id="outline-container-org05b9859" class="outline-3">
+<h3 id="org05b9859"><span class="section-number-3">1.3</span> 缓存</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+由于内存的读取速度较慢，为了提高CPU的执行速度，现代CPU中还包括了更小但是更快的缓存。现代CPU一般共有L1, L2, L3三级缓存，速度由快到慢，大小由小到大。
+</p>
+
+<p>
+缓存中的最小单位称为cache line,它的大小固定，一般是64或128字节。
+</p>
+
+<p>
+当CPU读取数据时首先会查看L1 cache中是否存在数据，如果在则被成为缓存命中（cache hit），CPU直接读取；如果不在则被称为缓存丢失（cache miss），然后查看下一级cache，如果都未命中则查看内存。
+</p>
+
+<p>
+数据是否在缓存会导致CPU读取时间的显著区别，微架构侧信道攻击就是利用这种信息差来进行攻击。
+</p>
+
+<p>
+L1,L2缓存位于同一个核心中，不与其他核心共享，L3共享。
+</p>
+</div>
+</div>
+<div id="outline-container-org68642b5" class="outline-3">
+<h3 id="org68642b5"><span class="section-number-3">1.4</span> 微架构侧信道攻击</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+由于数据是否在cache中会导致CPU读取速度的显著差异，这种差异可以被利用来泄漏信息。
+</p>
+
+<p>
+目前存在很多攻击方法，文中主要使用了2种攻击方法，<a href="20211023113705-microarchitectural_side_channel_attacks.html#ID-460e2428-8106-4600-b584-d54994b48722">Flush+Reload</a>和<a href="20211023113705-microarchitectural_side_channel_attacks.html#ID-3bfa683a-defb-43a9-a2dc-2ed887b990e6">Evict+Reload</a>。
+</p>
+</div>
+</div>
+<div id="outline-container-org4b5bad9" class="outline-3">
+<h3 id="org4b5bad9"><span class="section-number-3">1.5</span> ROP</h3>
+<div class="outline-text-3" id="text-1-5">
+<p>
+非常常用的漏洞利用方法，搜索内存中的指令来构造gadgets,然后执行。在Spectre攻击中，gadgets的目的是泄漏数据。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org736ecf8" class="outline-2">
+<h2 id="org736ecf8"><span class="section-number-2">2</span> Spectre攻击过程介绍</h2>
+<div class="outline-text-2" id="text-2">
+<ol class="org-ol">
+<li>初始化阶段。攻击者训练CPU进行错误预测。</li>
+<li>攻击者迫使受害者执行，如果攻击者和受害者在同一个进程中，如浏览器、JIT编译器、沙箱等，攻击者可以自己执行攻击代码。</li>
+<li>受害者错误预测执行，执行错误的代码并将数据从侧信道中传递出来。</li>
+<li>攻击者使用Flush+Reload等手段接收数据。</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgf30546e" class="outline-2">
+<h2 id="orgf30546e"><span class="section-number-2">3</span> 信息转化通道</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+在Spectre攻击中，受害者在执行错误代码时不但需要访问敏感数据，还需要将敏感数据通过侧信道的方式传递出来。
+</p>
+</div>
+</div>
+<div id="outline-container-org095d62d" class="outline-2">
+<h2 id="org095d62d"><span class="section-number-2">4</span> Spectre V1</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+变种1针对条件分支。
+典型的代码如下，其中array2需要位于共享内存中。
+</p>
+<div class="org-src-container">
+<pre class="src src-C"><span style="font-weight: bold;">if</span> (x &lt; array1_size)
+    y = array2[array1[x] * 4096];
+</pre>
+</div>
+<p>
+预测执行情况：
+</p>
+
+
+<div id="orgfa56bec" class="figure">
+<p><img src="./images/spectre_sc.png" alt="spectre_sc.png" />
+</p>
+</div>
+
+<p>
+考虑攻击者能够控制x，那么array1[x]指向一个字节的敏感数据k。
+</p>
+
+<p>
+array1_size和array2未被缓存，但k被缓存。
+</p>
+
+<p>
+由于之前获取的x都是&lt;array1_size,因此预测为真。
+</p>
+
+<p>
+由于array1_size未缓存，因此需要从内存中读，CPU预测执行分支为真的内容。
+</p>
+
+<p>
+CPU访问array1[x]，得到字节k。
+</p>
+
+<p>
+CPU再访问array2[k\*4096]，使得array2[k\*4096]加载到缓存中，读取速度变快。
+</p>
+
+<p>
+攻击者通过访问array2 k‘=0,1,&#x2026;,255，并测量不同k’下的访问速度，当k=k'时，访问速度明显增快，因此，攻击者可以获取k的值。
+</p>
+</div>
+<div id="outline-container-org1b2dacf" class="outline-3">
+<h3 id="org1b2dacf"><span class="section-number-3">4.1</span> 利用</h3>
+<div class="outline-text-3" id="text-4-1">
+</div>
+<div id="outline-container-org76966af" class="outline-4">
+<h4 id="org76966af"><span class="section-number-4">4.1.1</span> JavaScript</h4>
+<div class="outline-text-4" id="text-4-1-1">
+<p>
+攻击者可以在Web中构造如下代码来攻击Chrome。
+</p>
+
+<div class="org-src-container">
+<pre class="src src-C"><span style="font-weight: bold;">if</span> (index &lt; simpleByteArray.length) {
+    index = simpleByteArray[index | 0];
+    index = (((index * 4096)|0) &amp; (32*1024*1024 - 1)) | 0;
+    localJunk ^= probeTable[index|0]|0;
+}
+</pre>
+</div>
+
+<p>
+Chrome的V8引擎会将JavaScript代码JIT编译成机器码运行。
+虽然clflush指令在JavaScript中不能使用，但可以使用Evict-Reload方法来进行攻击。
+</p>
+
+
+<div id="org3a51e0d" class="figure">
+<p><img src="./images/spectre_js_dis.png" alt="spectre_js_dis.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org75eedb6" class="outline-4">
+<h4 id="org75eedb6"><span class="section-number-4">4.1.2</span> eBPF</h4>
+<div class="outline-text-4" id="text-4-1-2">
+<p>
+eBPF是Linux内核的一个接口，基于Berkeley Packer Filter（BPF）扩展，常用来进行包过滤。
+</p>
+
+<p>
+eBPF允许普通用户在内核状态下运行代码，内核会使用解释器或者JIT编译器来运行eBPF代码。
+</p>
+
+<p>
+对eBPF的攻击类似JavaScript，但不同的是攻击者的接收端可以是用户空间中的二进制程序，并不需要运行在内核中。
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0bbb0ac" class="outline-2">
+<h2 id="org0bbb0ac"><span class="section-number-2">5</span> Spectre V2</h2>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2021-10-27 Wed 16:07</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

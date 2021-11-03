@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-11-01 Mon 10:23 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LLVM</title>
+<meta name="generator" content="Org mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://www.gnu.org/software/emacs/manual.css">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">LLVM</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orga671580">1. LLVM IR</a>
+<ul>
+<li><a href="#org91454c7">1.1. Identifiers</a></li>
+<li><a href="#orgebf957a">1.2. Module</a></li>
+<li><a href="#org4d3ad0f">1.3. Linkage Types</a></li>
+<li><a href="#org0d08da7">1.4. Call Conventions（调用约定）</a></li>
+<li><a href="#orgb52aafd">1.5. Visibility Styles</a></li>
+<li><a href="#orgca807d4">1.6. DLL Storage Classes</a></li>
+<li><a href="#org8714c8e">1.7. Thread Local Storage Models</a></li>
+<li><a href="#org4621e65">1.8. AllocaInst</a></li>
+<li><a href="#orgb87a69a">1.9. GetElementPtrInst</a></li>
+<li><a href="#org915a3ad">1.10. PHI</a></li>
+</ul>
+</li>
+<li><a href="#org7dbe0d5">2. IR</a>
+<ul>
+<li><a href="#org3c4ab5b">2.1. IRBuilder</a>
+<ul>
+<li><a href="#orgde43254">2.1.1. CreateCondBr</a></li>
+<li><a href="#orge15e6c2">2.1.2. CreateStore</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org9563788">3. Important and useful LLVM APIS</a>
+<ul>
+<li><a href="#org3e57919">3.1. isa&lt;&gt;</a></li>
+<li><a href="#orga436ec3">3.2. cast&lt;&gt;</a></li>
+<li><a href="#org2c2261a">3.3. dyn_cast&lt;&gt;</a></li>
+</ul>
+</li>
+<li><a href="#orgc2b3aa1">4. Scalar Evolution</a></li>
+<li><a href="#org506ff0b">5. Module</a>
+<ul>
+<li><a href="#org474db6c">5.1. getOrInsertFunction</a></li>
+<li><a href="#orga775cfe">5.2. getVoidTy</a></li>
+</ul>
+</li>
+<li><a href="#org2b2e6d4">6. StructType</a>
+<ul>
+<li><a href="#org11401a0">6.1. create</a></li>
+<li><a href="#org48dabb6">6.2. setBody</a></li>
+</ul>
+</li>
+<li><a href="#org639ab02">7. ArrayType</a>
+<ul>
+<li><a href="#org20d3cd7">7.1. get</a></li>
+</ul>
+</li>
+<li><a href="#orge2a3155">8. Metadata</a>
+<ul>
+<li><a href="#orge532acf">8.1. Instruction</a></li>
+</ul>
+</li>
+<li><a href="#org5d6b4e9">9. ModulePass</a></li>
+<li><a href="#orgcf485df">10. BasicBlock</a>
+<ul>
+<li><a href="#org8dbbf69">10.1. Create</a></li>
+<li><a href="#org7fc806a">10.2. getFirstInsertionPt</a></li>
+</ul>
+</li>
+<li><a href="#org21b7908">11. Instrumentation</a>
+<ul>
+<li><a href="#org2bf813b">11.1. PrepareToSplitEntryBlock</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orga671580" class="outline-2">
+<h2 id="orga671580"><span class="section-number-2">1</span> LLVM IR</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org91454c7" class="outline-3">
+<h3 id="org91454c7"><span class="section-number-3">1.1</span> Identifiers</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li>Global identifier（全局标识符）：
+@开头，函数、全局值(Global Value)</li>
+<li>Local identifier（本地标识符）:
+%开头，寄存器名、类型</li>
+</ul>
+
+<p>
+命名变量，使用字符串标识，未命名变量，使用无符号整数标识。
+命名变量的运算过程中可能会产生未命名临时变量。
+未命名变量的序号从0开始，基本块以及未命名函数的变量也会占用序号。
+</p>
+</div>
+</div>
+<div id="outline-container-orgebf957a" class="outline-3">
+<h3 id="orgebf957a"><span class="section-number-3">1.2</span> Module</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+LLVM程序由模块组成，每个模块都是输入程序的翻译单元。每个模块由函数、全局变量和符号表项组成。模块可以和LLVM链接器结合在一起，链接器会合并函数（和全局变量）的定义，解决前向声明，并合并符号表项。
+</p>
+
+<p>
+Module由全局值，包括函数和全局变量(Global Variable)组成, 全局值通过指针来表示，并有一种<a href="#org4d3ad0f">Linkage Types</a>
+</p>
+</div>
+</div>
+<div id="outline-container-org4d3ad0f" class="outline-3">
+<h3 id="org4d3ad0f"><span class="section-number-3">1.3</span> Linkage Types</h3>
+<div class="outline-text-3" id="text-1-3">
+<ul class="org-ul">
+<li>private
+全局值只能被同一个模块的对象访问。，并且不会在object文件的符号表中显示。</li>
+<li>internal
+和private近似，但值会在object文件的本地符号表中显示，类似C语言中的static关键字。</li>
+<li>available_externally
+linkage类型为available_externally的全局值不会被释放到LLVM模块对应的对象文件中。从链接器的角度来看，available_externally全局相当于一个外部声明。它们的存在是为了让内联和其他优化在知道全局定义的情况下进行，而全局定义是在模块之外的某个地方。带有available_externally链接的全局允许被随意丢弃，并允许内联和其他优化。这种链接类型只允许在定义中使用，而不是在声明中。</li>
+<li>linkonce</li>
+<li>weak</li>
+<li>common</li>
+<li>appending</li>
+<li>extern_weak</li>
+<li>linkonce_odr, weak_odr</li>
+<li>external</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org0d08da7" class="outline-3">
+<h3 id="org0d08da7"><span class="section-number-3">1.4</span> Call Conventions（调用约定）</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+调用约定是指函数调用的传参方式以及返回值和栈的处理方式。function,call,invoke选项。
+</p>
+<ul class="org-ul">
+<li>ccc: The C calling convention</li>
+<li>fastcc: The fast calling convention</li>
+<li>coldcc: The cold calling convention</li>
+<li>cc 10: GHC convention</li>
+<li>cc 11: The HiPE calling convention</li>
+<li>&#x2026;</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb52aafd" class="outline-3">
+<h3 id="orgb52aafd"><span class="section-number-3">1.5</span> Visibility Styles</h3>
+<div class="outline-text-3" id="text-1-5">
+<p>
+所有的全局变量和函数都具有一种可见样式
+</p>
+<ul class="org-ul">
+<li>default</li>
+<li>hidden</li>
+<li>protected</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgca807d4" class="outline-3">
+<h3 id="orgca807d4"><span class="section-number-3">1.6</span> DLL Storage Classes</h3>
+<div class="outline-text-3" id="text-1-6">
+<p>
+所有全局变量、函数和别名都具有一种DLL储存类型。
+</p>
+<ul class="org-ul">
+<li>dllimport</li>
+<li>dllexport</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org8714c8e" class="outline-3">
+<h3 id="org8714c8e"><span class="section-number-3">1.7</span> Thread Local Storage Models</h3>
+<div class="outline-text-3" id="text-1-7">
+<p>
+TLS模型
+</p>
+<ul class="org-ul">
+<li>localdynamic</li>
+<li>initialexec</li>
+<li>localexec</li>
+</ul>
+<p>
+都没有则会使用general dynamic模型。
+</p>
+</div>
+</div>
+<div id="outline-container-org4621e65" class="outline-3">
+<h3 id="org4621e65"><span class="section-number-3">1.8</span> AllocaInst</h3>
+<div class="outline-text-3" id="text-1-8">
+<p>
+表示内存申请
+</p>
+</div>
+</div>
+<div id="outline-container-orgb87a69a" class="outline-3">
+<h3 id="orgb87a69a"><span class="section-number-3">1.9</span> GetElementPtrInst</h3>
+<div class="outline-text-3" id="text-1-9">
+<p>
+表示获取数据结构中的子元素操作
+</p>
+
+<p>
+GetElementPtrInst的第一个索引i访问从该地址开始的第i个元素，因此如果需要访问地址处的元素，需要令i=0。
+</p>
+
+<p>
+个人认为，这是为了避免产生混淆。如p[1]，访问的是p所在地址的第2个元素，还是p所在地址处的第2个成员，后者应该表示为p[0][1]
+</p>
+</div>
+</div>
+<div id="outline-container-org915a3ad" class="outline-3">
+<h3 id="org915a3ad"><span class="section-number-3">1.10</span> PHI</h3>
+<div class="outline-text-3" id="text-1-10">
+<p>
+:PROPERTIES:
+:ID:       5fd0b0c3-47d5-4f34-b0c4-a229a1b6d403
+:END
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org7dbe0d5" class="outline-2">
+<h2 id="org7dbe0d5"><span class="section-number-2">2</span> IR</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org3c4ab5b" class="outline-3">
+<h3 id="org3c4ab5b"><span class="section-number-3">2.1</span> IRBuilder</h3>
+<div class="outline-text-3" id="text-2-1">
+</div>
+<div id="outline-container-orgde43254" class="outline-4">
+<h4 id="orgde43254"><span class="section-number-4">2.1.1</span> CreateCondBr</h4>
+<div class="outline-text-4" id="text-2-1-1">
+<p>
+插入条件分支指令
+</p>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">BranchInst</span> *<span style="font-weight: bold;">CreateCondBr</span>(<span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">Cond</span>, <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">True</span>, <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">False</span>,
+                         <span style="font-weight: bold; text-decoration: underline;">MDNode</span> *<span style="font-weight: bold; font-style: italic;">BranchWeights</span> = <span style="font-weight: bold; text-decoration: underline;">nullptr</span>,
+                         <span style="font-weight: bold; text-decoration: underline;">MDNode</span> *<span style="font-weight: bold; font-style: italic;">Unpredictable</span> = <span style="font-weight: bold; text-decoration: underline;">nullptr</span>) {
+  <span style="font-weight: bold;">return</span> Insert(addBranchMetadata(<span style="font-weight: bold; text-decoration: underline;">BranchInst</span>::Create(True, False, Cond),
+                                  BranchWeights, Unpredictable));
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge15e6c2" class="outline-4">
+<h4 id="orge15e6c2"><span class="section-number-4">2.1.2</span> CreateStore</h4>
+<div class="outline-text-4" id="text-2-1-2">
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">StoreInst</span> *<span style="font-weight: bold;">CreateStore</span>(<span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">Val</span>, <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">Ptr</span>, <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; font-style: italic;">isVolatile</span> = <span style="font-weight: bold; text-decoration: underline;">false</span>) {
+  <span style="font-weight: bold;">return</span> CreateAlignedStore(Val, Ptr, MaybeAlign(), isVolatile);
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org9563788" class="outline-2">
+<h2 id="org9563788"><span class="section-number-2">3</span> Important and useful LLVM APIS</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org3e57919" class="outline-3">
+<h3 id="org3e57919"><span class="section-number-3">3.1</span> isa&lt;&gt;</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+类似Java的instanceof，判断变量是否为对应的类。
+</p>
+</div>
+</div>
+<div id="outline-container-orga436ec3" class="outline-3">
+<h3 id="orga436ec3"><span class="section-number-3">3.2</span> cast&lt;&gt;</h3>
+<div class="outline-text-3" id="text-3-2">
+</div>
+</div>
+<div id="outline-container-org2c2261a" class="outline-3">
+<h3 id="org2c2261a"><span class="section-number-3">3.3</span> dyn_cast&lt;&gt;</h3>
+<div class="outline-text-3" id="text-3-3">
+</div>
+</div>
+</div>
+<div id="outline-container-orgc2b3aa1" class="outline-2">
+<h2 id="orgc2b3aa1"><span class="section-number-2">4</span> Scalar Evolution</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Scalar Evolution, 标量演化， 是一种现代化的高级编译优化技术。用来对循环中的变量进行优化，用于分析循环中变量是如何被更新，并优化。
+</p>
+</div>
+</div>
+<div id="outline-container-org506ff0b" class="outline-2">
+<h2 id="org506ff0b"><span class="section-number-2">5</span> Module</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org474db6c" class="outline-3">
+<h3 id="org474db6c"><span class="section-number-3">5.1</span> getOrInsertFunction</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+获取或者创建函数。
+根据参数的不同有不同的效果。
+</p>
+</div>
+</div>
+<div id="outline-container-orga775cfe" class="outline-3">
+<h3 id="orga775cfe"><span class="section-number-3">5.2</span> getVoidTy</h3>
+<div class="outline-text-3" id="text-5-2">
+</div>
+</div>
+</div>
+<div id="outline-container-org2b2e6d4" class="outline-2">
+<h2 id="org2b2e6d4"><span class="section-number-2">6</span> StructType</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-org11401a0" class="outline-3">
+<h3 id="org11401a0"><span class="section-number-3">6.1</span> create</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+创建结构体变量。
+</p>
+</div>
+</div>
+<div id="outline-container-org48dabb6" class="outline-3">
+<h3 id="org48dabb6"><span class="section-number-3">6.2</span> setBody</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+指定结构体成员的类型。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org639ab02" class="outline-2">
+<h2 id="org639ab02"><span class="section-number-2">7</span> ArrayType</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org20d3cd7" class="outline-3">
+<h3 id="org20d3cd7"><span class="section-number-3">7.1</span> get</h3>
+<div class="outline-text-3" id="text-7-1">
+</div>
+</div>
+</div>
+<div id="outline-container-orge2a3155" class="outline-2">
+<h2 id="orge2a3155"><span class="section-number-2">8</span> Metadata</h2>
+<div class="outline-text-2" id="text-8">
+</div>
+<div id="outline-container-orge532acf" class="outline-3">
+<h3 id="orge532acf"><span class="section-number-3">8.1</span> Instruction</h3>
+<div class="outline-text-3" id="text-8-1">
+<div class="org-src-container">
+<pre class="src src-C++">
+<span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">Instruction</span>::<span style="font-weight: bold;">setMetadata</span>(<span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; font-style: italic;">KindID</span>, <span style="font-weight: bold; text-decoration: underline;">MDNode</span> *<span style="font-weight: bold; font-style: italic;">Node</span>) {
+  <span style="font-weight: bold;">if</span> (!Node &amp;&amp; !hasMetadata())
+    <span style="font-weight: bold;">return</span>;
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Handle 'dbg' as a special case since it is not stored in the hash table.</span>
+  <span style="font-weight: bold;">if</span> (KindID == <span style="font-weight: bold; text-decoration: underline;">LLVMContext</span>::MD_dbg) {
+    DbgLoc = DebugLoc(Node);
+    <span style="font-weight: bold;">return</span>;
+  }
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Handle the case when we're adding/updating metadata on an instruction.</span>
+  <span style="font-weight: bold;">if</span> (Node) {
+    <span style="font-weight: bold;">auto</span> &amp;<span style="font-weight: bold; font-style: italic;">Info</span> = getContext().pImpl-&gt;InstructionMetadata[<span style="font-weight: bold;">this</span>];
+    assert(!Info.empty() == hasMetadataHashEntry() &amp;&amp;
+           <span style="font-style: italic;">"HasMetadata bit is wonked"</span>);
+    <span style="font-weight: bold;">if</span> (Info.empty())
+      setHasMetadataHashEntry(<span style="font-weight: bold; text-decoration: underline;">true</span>);
+    Info.set(KindID, *Node);
+    <span style="font-weight: bold;">return</span>;
+  }
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Otherwise, we're removing metadata from an instruction.</span>
+  assert((hasMetadataHashEntry() ==
+          (getContext().pImpl-&gt;InstructionMetadata.count(<span style="font-weight: bold;">this</span>) &gt; 0)) &amp;&amp;
+         <span style="font-style: italic;">"HasMetadata bit out of date!"</span>);
+  <span style="font-weight: bold;">if</span> (!hasMetadataHashEntry())
+    <span style="font-weight: bold;">return</span>; <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Nothing to remove!</span>
+  <span style="font-weight: bold;">auto</span> &amp;<span style="font-weight: bold; font-style: italic;">Info</span> = getContext().pImpl-&gt;InstructionMetadata[<span style="font-weight: bold;">this</span>];
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Handle removal of an existing value.</span>
+  Info.erase(KindID);
+
+  <span style="font-weight: bold;">if</span> (!Info.empty())
+    <span style="font-weight: bold;">return</span>;
+
+  getContext().pImpl-&gt;InstructionMetadata.erase(<span style="font-weight: bold;">this</span>);
+  setHasMetadataHashEntry(<span style="font-weight: bold; text-decoration: underline;">false</span>);
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5d6b4e9" class="outline-2">
+<h2 id="org5d6b4e9"><span class="section-number-2">9</span> ModulePass</h2>
+<div class="outline-text-2" id="text-9">
+<p>
+LLVM中最通用的Pass类。
+入口函数为：runOnModule，如果对Module进行了修改则返回true，否则返回false。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgcf485df" class="outline-2">
+<h2 id="orgcf485df"><span class="section-number-2">10</span> BasicBlock</h2>
+<div class="outline-text-2" id="text-10">
+</div>
+<div id="outline-container-org8dbbf69" class="outline-3">
+<h3 id="org8dbbf69"><span class="section-number-3">10.1</span> Create</h3>
+<div class="outline-text-3" id="text-10-1">
+<p>
+创建基本块，如果Parent不为空，则会插在函数的末尾;如果InsertBefore不为空，则会插在指定的基本块前面。
+</p>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold;">Create</span>(<span style="font-weight: bold; text-decoration: underline;">LLVMContext</span> &amp;<span style="font-weight: bold; font-style: italic;">Context</span>, <span style="font-weight: bold;">const</span> <span style="font-weight: bold; text-decoration: underline;">Twine</span> &amp;<span style="font-weight: bold; font-style: italic;">Name</span> = <span style="font-style: italic;">""</span>,
+                          <span style="font-weight: bold; text-decoration: underline;">Function</span> *<span style="font-weight: bold; font-style: italic;">Parent</span> = <span style="font-weight: bold; text-decoration: underline;">nullptr</span>,
+                          <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">InsertBefore</span> = <span style="font-weight: bold; text-decoration: underline;">nullptr</span>) {
+  <span style="font-weight: bold;">return</span> <span style="font-weight: bold;">new</span> <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span>(Context, Name, Parent, InsertBefore);
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7fc806a" class="outline-3">
+<h3 id="org7fc806a"><span class="section-number-3">10.2</span> getFirstInsertionPt</h3>
+<div class="outline-text-3" id="text-10-2">
+<p>
+返回一个能被插入non-PHI指令的指令迭代器。
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org21b7908" class="outline-2">
+<h2 id="org21b7908"><span class="section-number-2">11</span> Instrumentation</h2>
+<div class="outline-text-2" id="text-11">
+</div>
+<div id="outline-container-org2bf813b" class="outline-3">
+<h3 id="org2bf813b"><span class="section-number-3">11.1</span> PrepareToSplitEntryBlock</h3>
+<div class="outline-text-3" id="text-11-1">
+<p>
+有些指令需要留在入口基本块处。
+</p>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">BasicBlock</span>::<span style="font-weight: bold; text-decoration: underline;">iterator</span> <span style="font-weight: bold; text-decoration: underline;">llvm</span>::<span style="font-weight: bold;">PrepareToSplitEntryBlock</span>(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>, <span style="font-weight: bold; text-decoration: underline;">BasicBlock</span>::<span style="font-weight: bold; text-decoration: underline;">iterator</span> <span style="font-weight: bold; font-style: italic;">IP</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2021-11-01 Mon 10:23</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

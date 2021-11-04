@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-03 Wed 18:50 -->
+<!-- 2021-11-04 Thu 09:22 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Klotski: Efficient Obfuscated Execution against Controlled-Channel Attacks</title>
@@ -308,6 +308,7 @@ ul.no-bullet {list-style: none}
 <li><a href="#org2db6ea5">9. 真实应用</a></li>
 <li><a href="#org39efff9">10. 总结</a></li>
 <li><a href="#org979f66a">11. 鸣谢</a></li>
+<li><a href="#orgcf1230d">12. 文章总结</a></li>
 </ul>
 </div>
 </div>
@@ -424,7 +425,7 @@ ORAM通过混淆内存访问模式来实现这一目标，如添加噪音、排�
 环形ORAM是对Path ORAM[50]的一种优化。它包括三个部分：
 </p>
 <ul class="org-ul">
-<li><b>ORAM 树</b> :一个不受信任的服务器中的一个完整的二进制树在来存储加密的内存块。这个树的深度是典型的O(log N)，其中N是真实内存块的数量。这棵树的每个节点，也被称为桶，有固定数量的槽来容纳块（Z+S，最多有Z个槽可以包含实数块，而至少有S个槽是由假块填充的），以及一个包含基本信息的小型元数据。由于所有的真实区块和虚拟区块都是加密的，攻击者是无法区分它们的。</li>
+<li><b>ORAM 树</b> :一个不受信任的服务器中的一个完整的二叉树在来存储加密的内存块。这个树的深度是典型的O(log N)，其中N是真实内存块的数量。这棵树的每个节点，也被称为桶，有固定数量的槽来容纳块（Z+S，最多有Z个槽可以包含实数块，而至少有S个槽是由假块填充的），以及一个包含基本信息的小型元数据。由于所有的真实区块和虚拟区块都是加密的，攻击者是无法区分它们的。</li>
 <li><b>Position Map</b> :一个查询表，该表由受信任的客户保留，并用于记录一个真实块在ORAM树中的映射路径。</li>
 <li><b>储存区</b> :在受信任的客户端有一个缓冲区，用来存储未被驱逐到ORAM树中的块。一个区块要么在ORAM树中，要么在储存区中。</li>
 </ul>
@@ -434,7 +435,7 @@ ORAM通过混淆内存访问模式来实现这一目标，如添加噪音、排�
 </p>
 <ol class="org-ol">
 <li>查询Position Map：ORAM通过查找Position Map来了解目标区块 \(b\) 目前在哪条路径 \(l\) 上，并将新的路径 \(l′\) 分配给并为该块。</li>
-<li>ReadPath：ORAM读取所有路径 \(l\) 上的桶，并将 \(b\) 储存到储存区中。与之前的树状方案不同，只从路径上的每个桶中读取一个块。
+<li>ReadPath：ORAM读取路径 \(l\) 上的所有桶，并将 \(b\) 储存到储存区中。与之前的树状方案不同，只从路径上的每个桶中读取一个块。
 除了b所在的桶之外，读取一个随机的假块。</li>
 <li>EvictPath：为了保持较低的储存区空间占用率，在每A次ReadPath后，EvictPath会选择一个路径，从每个桶中读取Z个块（所有剩余的真实块和可能的假块）到储存区，然后将区块按照反向字典序填充到路径中[38]。</li>
 <li>早期重新洗牌：为了避免一个桶在EvictPath重新洗牌之前被读取 &gt; S次。对于每个ReadPath操作，对被访问超过S次的桶进行EarlyReshuffle。与EvictPath类似，EarlyReshuffle读取Z个块，并写回Z+S个的混合块。</li>
@@ -513,7 +514,7 @@ InvisiPage[1]提出了一种类似于Klotski的新硬件设计，飞地内的程
 <h3 id="org912c475"><span class="section-number-3">5.2</span> 概述</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
-在这项工作中，我们使用一种基于运行时重新随机化的混淆方法来缓解侧信道攻击。图1说明了Klotski的概况，它包括两个主要部分：一个编译器扩展和一个基于ORAM的运行时。编译器扩展执行两个转换。首先，它记录所有的内存访问指令，包括飞地程序运行时的控制转移（代码访问）指令。其次，它将程序的代码和数据划分为小块，可以重定位到任何虚拟地址。运行时作为一个内存子系统，使用增强的环形ORM协议混淆内存访问[38]。为了加快执行速度，运行时还包括两个可配置大小的内存缓冲区，作为代码缓冲区和数据缓冲区。注意，为了避免混淆Klotski的软件缓存和架构/硬件缓存，我们将使用vCache来表示Klotski的缓存。代码和数据块使用ORAM协议被取到vCache中。vCache的重新随机化是通过自然替换（使用随机替换策略）或强制刷新完成的。
+在这项工作中，我们使用一种基于运行时重新随机化的混淆方法来缓解侧信道攻击。图1说明了Klotski的概况，它包括两个主要部分：一个编译器扩展和一个基于ORAM的运行时。编译器扩展执行两个转换。首先，它对所有的内存访问指令进行插装，包括飞地程序运行时的控制转移（代码访问）指令。其次，它将程序的代码和数据划分为小块，可以重定位到任何虚拟地址。运行时作为一个内存子系统，使用增强的环形ORM协议混淆内存访问[38]。为了加快执行速度，运行时还包括两个可配置大小的内存缓冲区，作为代码缓冲区和数据缓冲区。注意，为了避免混淆Klotski的软件缓存和架构/硬件缓存，我们将使用vCache来表示Klotski的缓存。代码和数据块使用ORAM协议被取到vCache中。vCache的重新随机化是通过自然替换（使用随机替换策略）或强制刷新完成的。
 </p>
 </div>
 </div>
@@ -773,11 +774,11 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 <h2 id="org2db6ea5"><span class="section-number-2">9</span> 真实应用</h2>
 <div class="outline-text-2" id="text-9">
 <p>
-第一个真实的应用是一个HTTPS服务器mbedTLS[5]，它是一个开源的传输层安全（TLS）库。这个项目包括一个HTTPS服务器的样本。在我们的测试中，这个HTML文件的大小为30KB。为了测量性能，我们用ab命令从这个HTTPs服务器上请求文件20000次，并报告了处理单个请求的总耗时的平均值。表5显示了这些结果。总的来说，当vCache大小被设置为4KB时，Klotski比本地的慢了15.4倍。随着vCache大小的增加，性能开销呈指数级减少（从15.4倍到48.02%）。我们还测量了具有重新随机化的更大的vCache配置，它的开销增加到153.10%。
+第一个真实的应用是一个HTTPS服务器mbedTLS[5]，它是一个开源的传输层安全（TLS）库。这个项目包括一个HTTPS服务器的样本。在我们的测试中，这个HTML文件的大小为30KB。为了测量性能，我们用ab命令从这个HTTPs服务器上请求文件20000次，并报告了处理单个请求所需耗时的平均值。表5展示了这些结果。总的来说，当vCache大小被设置为4KB时，Klotski比本地的慢了15.4倍。随着vCache大小的增加，性能开销呈指数级减少（从15.4倍到48.02%）。我们还测量了具有重新随机化的更大的vCache配置，它的开销增加到153.10%。
 </p>
 
 <p>
-接下来的两个应用程序来自libjpeg[25]，它是一个广泛使用的用于读写JPEG图像文件的C语言库，被Xu等人[56]攻击。cjpeg和djpeg是项目中的两个例子，展示将BMP或PPM文件压缩成JPEG文件和将JPEG文件解压成另一种类型文件的处理。为了测量cjpeg的性能，我们随机下载了10张宽度和高度固定对的PPM图片（227*149像素）。cjpeg飞地程序一次将这十个文件全部压缩成PPM文件，并输出处理一张图片的平均时间。我们为每张图片运行了100次该程序，并计算出其平均值。对于djpeg，我们遵循cjpeg的相同程序，只是输入是10张JPEG图像，其输出是BMP文件。表6显示了性能开销。当vCache大小被设置为4KB时，我们看到Klotski分别造成了2.7倍和5.5倍的速度下降。与nbench和mbedtls的结果类似，性能开销随着vCache大小的增加而呈指数级下降。
+接下来的两个应用程序来自libjpeg[25]，它是一个广泛使用的用于读写JPEG图像文件的C语言库，被Xu等人[56]攻击。cjpeg和djpeg是项目中的两个例子，用来将BMP或PPM文件压缩成JPEG文件和将JPEG文件解压成另一种类型文件。为了测量cjpeg的性能，我们随机下载了10张宽度和高度固定对的PPM图片（227*149像素）。cjpeg飞地程序一次将这十个文件全部压缩成PPM文件，并输出处理一张图片的平均时间。我们为每张图片运行了100次该程序，并计算出其平均值。对于djpeg，与cjpeg的过程相同，只是输入是10张JPEG图像，其输出是BMP文件。表6显示了性能开销。当vCache大小被设置为4KB时，我们看到Klotski分别造成了2.7倍和5.5倍的速度下降。与nbench和mbedtls的结果类似，性能开销随着vCache大小的增加而呈指数级下降。
 </p>
 </div>
 </div>
@@ -799,9 +800,21 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </p>
 </div>
 </div>
+
+<div id="outline-container-orgcf1230d" class="outline-2">
+<h2 id="orgcf1230d"><span class="section-number-2">12</span> 文章总结</h2>
+<div class="outline-text-2" id="text-12">
+<ul class="org-ul">
+<li>通过2个vCache，将程序的执行过程限制在相同页面中，因此可以有效对抗通过页面访问模式进行攻击的侧信道攻击手段，如可控信道攻击。</li>
+<li>使用ORAM协议来隐藏将真实内存块放入vCache的过程。</li>
+<li>通过随机替换实现vCache中内存地址的完全随机化。</li>
+<li>通过修改vCache的大小，能够在安全与性能中进行取舍。</li>
+</ul>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-03 Wed 18:50</p>
+<p class="date">Created: 2021-11-04 Thu 09:22</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

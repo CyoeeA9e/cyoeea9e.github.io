@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-04 Thu 09:22 -->
+<!-- 2021-11-04 Thu 15:14 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Klotski: Efficient Obfuscated Execution against Controlled-Channel Attacks</title>
@@ -330,7 +330,7 @@ ul.no-bullet {list-style: none}
 </p>
 
 <p>
-<b>关键字</b>: 英特尔SGX;Oblivious Execution;运行时随机化；页错误通道;
+<b>关键字</b>: 英特尔SGX;Oblivious Execution;运行时随机化；缺页通道;
 </p>
 </div>
 </div>
@@ -625,7 +625,7 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 <h3 id="org0053655"><span class="section-number-3">6.2</span> 循环对齐</h3>
 <div class="outline-text-3" id="text-6-2">
 <p>
-由于循环内的指令是重复执行的，它们占了程序执行时间的很大一部分。因此，优化循环对于提高程序的性能至关重要。在Klotski中，如果一个基本块和它的后续块不在同一个小页中，那么地址转换将被插入到这个基本块的末尾（§4.3）。如果这种情况发生在一个循环体中，那么就会产生非常高的性能开销。为了避免这种行为并提高程序的定位性，Klotski试图对齐循环，使大多数循环的主体不会跨越一个迷你页的边界。如果一个循环体太大，无法装入一个迷你页，那么Klotski仍然会将其基本块分割成两个迷你页。幸运的是，这样的大型循环很少见。
+由于循环内的指令是重复执行的，它们占了程序执行时间的很大一部分。因此，优化循环对于提高程序的性能至关重要。在Klotski中，如果一个基本块和它的后续块不在同一个迷你页中，那么地址转换将被插入到这个基本块的末尾（§4.3）。如果这种情况发生在一个循环体中，那么就会产生非常高的性能开销。为了避免这种行为并提高程序的定位性，Klotski试图对齐循环，使大多数循环的主体不会跨越一个迷你页的边界。如果一个循环体太大，无法装入一个迷你页，那么Klotski仍然会将其基本块分割成两个迷你页。幸运的是，这样的大型循环很少见。
 </p>
 </div>
 </div>
@@ -809,12 +809,18 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 <li>使用ORAM协议来隐藏将真实内存块放入vCache的过程。</li>
 <li>通过随机替换实现vCache中内存地址的完全随机化。</li>
 <li>通过修改vCache的大小，能够在安全与性能中进行取舍。</li>
+<li>使用多种优化来提高系统性能：
+<ul class="org-ul">
+<li>循环对齐：尽量让循环体在一个迷你页中。</li>
+<li>常量嵌入：将常量位置放入与访问位置同一个迷你页中。</li>
+<li>减少地址转化</li>
+</ul></li>
 </ul>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-04 Thu 09:22</p>
+<p class="date">Created: 2021-11-04 Thu 15:14</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

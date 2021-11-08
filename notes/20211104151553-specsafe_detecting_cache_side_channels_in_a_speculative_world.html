@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-11-07 Sun 10:22 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SpecSafe: Detecting Cache Side Channels in a Speculative World</title>
+<meta name="generator" content="Org mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://www.gnu.org/software/emacs/manual.css">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">SpecSafe: Detecting Cache Side Channels in a Speculative World</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org2d21f42">1. 文章主要贡献：</a></li>
+<li><a href="#org47acff8">2. 新的预测执行侧信道</a>
+<ul>
+<li><a href="#orga11de90">2.1. <span class="todo TODO">TODO</span> 这3变种的思考</a>
+<ul>
+<li><a href="#orgb2185df">2.1.1. <span class="todo TODO">TODO</span> 变种 c 思考</a></li>
+</ul>
+</li>
+<li><a href="#orgd785466">2.2. <span class="todo TODO">TODO</span> 1.如果需要循环，那么循环过程会对预测进行矫正，如何克服？2.需要细粒度地控制程序</a></li>
+</ul>
+</li>
+<li><a href="#orgb242d1d">3. Speculative-Aware Noninterferece</a>
+<ul>
+<li><a href="#orgb9444e9">3.1. 现存定义的不足</a>
+<ul>
+<li><a href="#org30b5877">3.1.1. <span class="todo TODO">TODO</span> 继续阅读符号执行的剩余内容</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgbe09dc5">4. 总结</a></li>
+</ul>
+</div>
+</div>
+<p>
+文章认为将转换缓存通道检测工具与预测执行工具相结合并不一定能涵盖所有可能的缓存侧信道。
+</p>
+
+<div id="outline-container-org2d21f42" class="outline-2">
+<h2 id="org2d21f42"><span class="section-number-2">1</span> 文章主要贡献：</h2>
+<div class="outline-text-2" id="text-1">
+<ul class="org-ul">
+<li>新的预测执行侧信道</li>
+<li>Speculative-Aware Noninterferece</li>
+<li>Novel Program Transformation</li>
+<li>Speculative-Aware Symbolic Execution</li>
+<li>Side-Channel Detection</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org47acff8" class="outline-2">
+<h2 id="org47acff8"><span class="section-number-2">2</span> 新的预测执行侧信道</h2>
+<div class="outline-text-2" id="text-2">
+
+<div id="orgbcf6f63" class="figure">
+<p><img src="./images/2021-11-04_16-21.png" alt="2021-11-04_16-21.png" />
+</p>
+</div>
+
+<ul class="org-ul">
+<li>通过条件分支时的预测执行过程读取某些变量到缓存中，从而导致泄漏分支判断中变量信息。</li>
+</ul>
+</div>
+
+<div id="outline-container-orga11de90" class="outline-3">
+<h3 id="orga11de90"><span class="section-number-3">2.1</span> <span class="todo TODO">TODO</span> 这3变种的思考</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>个人认为，此类变种的意义为：通过错误训练+预测执行，可以通过侧信道泄漏更多的内容。
+对于一般程序而言，执行的内容越多泄漏的信息越多，通过预测执行可以导致程序执行更多的内容，从而泄漏出更多的信息。
+也就是，通过预测执行+正常执行来进行侧信道的攻击。
+但估计这种攻击难度很大。</li>
+<li>这3种变种的主要作用是泄漏key。</li>
+<li>a 中的代码形式不常见，为什么不直接写成temp=A[0]？</li>
+<li>b 中，误导向temp=A[((key+1)%2)*512]，则只有key%2=1的情况，会导致A[0]被加载到cache中，</li>
+</ul>
+</div>
+<div id="outline-container-orgb2185df" class="outline-4">
+<h4 id="orgb2185df"><span class="section-number-4">2.1.1</span> <span class="todo TODO">TODO</span> 变种 c 思考</h4>
+<div class="outline-text-4" id="text-2-1-1">
+<p>
+这种可以泄漏key的值，如果存在循环则可能泄漏多位。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd785466" class="outline-3">
+<h3 id="orgd785466"><span class="section-number-3">2.2</span> <span class="todo TODO">TODO</span> 1.如果需要循环，那么循环过程会对预测进行矫正，如何克服？2.需要细粒度地控制程序</h3>
+</div>
+</div>
+
+<div id="outline-container-orgb242d1d" class="outline-2">
+<h2 id="orgb242d1d"><span class="section-number-2">3</span> Speculative-Aware Noninterferece</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+cache中信息的可见程度。
+</p>
+
+<p>
+文章使用<a href="20211105150407-rigorous_analysis_of_software_countermeasures_against_cache_attacks.html#ID-94f00989-c858-449d-8060-785abd6a8e5a">block-trace observer</a>模型，粒度为cache line。
+</p>
+</div>
+
+<div id="outline-container-orgb9444e9" class="outline-3">
+<h3 id="orgb9444e9"><span class="section-number-3">3.1</span> 现存定义的不足</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+主要无法找出上述新的侧信道泄漏。
+</p>
+
+<p>
+侧信道安全形式化定义：<a href="20211105151009-security_policies_and_security_models.html#ID-845f83f4-2e24-465c-a22f-42f631d135b8">Noninterferece property</a> 不相干性。
+</p>
+
+<p>
+策略 \(P\) 是公开变量的集合， \(m\) 为内存
+</p>
+
+<p>
+<b>Definition 1 (Low Eqivalence)</b> . Given a policy \(P\) , two memories \(m_1\) and \(m_2\) are low-equivalent according to \(P\) ,written as \(m_1 \simeq_P m_2\) if and only if \(\forall x \in P. m_1(x) = m_2(x)\) .
+</p>
+
+<p>
+\(s^{perf}_{\langle m,w \rangle}\) 表示没有预测执行的执行序列。
+</p>
+
+<p>
+<b>Definition 2 (Cache noninterference (CNI))</b> . A program s with policy \(P\) satisfies CNI if for all \(O\) , \(m_1 \simeq_P m_2\) , we have
+</p>
+
+\begin{equation}
+view(s^{perf}_{\langle m_1,0 \rangle}) = view(s^{perf}_{\langle m_2,0\rangle})
+\end{equation}
+
+<p>
+<b>Definition 3 (SNI-GEN)</b> . A program s with policy \(P\) satisfies SNI-GEN with transaction length \(w\)
+if for all \(m_1 \simeq_P m_2\) ,
+</p>
+
+\begin{equation}
+view(s^{perf}_{\langle m_1,0\rangle})=view(s^{perf}_{\langle m_2,0\rangle}) \Longrightarrow view(s^{mis}_{\langle m_1,0\rangle})=view(s^{mis}_{\langle m_2,0\rangle})
+\end{equation}
+</div>
+
+<div id="outline-container-org30b5877" class="outline-4">
+<h4 id="org30b5877"><span class="section-number-4">3.1.1</span> <span class="todo TODO">TODO</span> 继续阅读符号执行的剩余内容</h4>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbe09dc5" class="outline-2">
+<h2 id="orgbe09dc5"><span class="section-number-2">4</span> 总结</h2>
+<div class="outline-text-2" id="text-4">
+<ul class="org-ul">
+<li>提出了一种新的变种</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2021-11-07 Sun 10:22</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

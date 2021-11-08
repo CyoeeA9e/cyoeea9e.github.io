@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-01 Mon 10:23 -->
+<!-- 2021-11-08 Mon 16:26 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FSCDetect Code</title>
@@ -262,9 +262,9 @@ ul.no-bullet {list-style: none}
 <li><a href="#org477cd05">1.1.1.7. injectTrace</a></li>
 <li><a href="#org9d33731">1.1.1.8. handleInterestingMemoryAccesses</a></li>
 <li><a href="#org681a10d">1.1.1.9. _handle_memory_access_core</a></li>
-<li><a href="#orgba8bd0d">1.1.1.10. injectAFLBitMapOperation</a></li>
+<li><a href="#org996810c">1.1.1.10. injectAFLBitMapOperation</a></li>
 <li><a href="#orga8ece8f">1.1.1.11. runInlineClone</a></li>
-<li><a href="#org996810c">1.1.1.12. injectAFLBitMapOperation</a></li>
+<li><a href="#org5178fb7">1.1.1.12. injectAFLBitMapOperation</a></li>
 <li><a href="#org5626026">1.1.1.13. FSCDSplitBasicBlock</a></li>
 </ul>
 </li>
@@ -285,6 +285,13 @@ ul.no-bullet {list-style: none}
 </li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a href="#org4691f87">2. AFL</a>
+<ul>
+<li><a href="#org8825b94">2.1. fscd_setup_shm</a></li>
+<li><a href="#orgc309c8a">2.2. call_queue</a></li>
+<li><a href="#org0c56bf8">2.3. fuzz_one_phase1</a></li>
 </ul>
 </li>
 </ul>
@@ -910,8 +917,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-orgba8bd0d" class="outline-5">
-<h5 id="orgba8bd0d"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
+<div id="outline-container-org996810c" class="outline-5">
+<h5 id="org996810c"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
 <div class="outline-text-5" id="text-1-1-1-10">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">injectAFLBitMapOperation</span>(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>, <span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">cur_loc</span>) {
@@ -964,7 +971,7 @@ ul.no-bullet {list-style: none}
 <li><a href="#org2565fb7">FSCDTrace</a>::<a href="#org7b30ca1">cloneInline</a></li>
 <li><a href="#orgb565214">AFL_R</a></li>
 <li><a href="#org477cd05">injectTrace</a></li>
-<li><a href="#org996810c">injectAFLBitMapOperation</a></li>
+<li><a href="#org5178fb7">injectAFLBitMapOperation</a></li>
 </ul>
 <p>
 对基本块进行插装。
@@ -1019,8 +1026,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org996810c" class="outline-5">
-<h5 id="org996810c"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
+<div id="outline-container-org5178fb7" class="outline-5">
+<h5 id="org5178fb7"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
 <div class="outline-text-5" id="text-1-1-1-12">
 </div>
 </div>
@@ -1225,9 +1232,222 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 </div>
 </div>
 </div>
+
+<div id="outline-container-org4691f87" class="outline-2">
+<h2 id="org4691f87"><span class="section-number-2">2</span> AFL</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org8825b94" class="outline-3">
+<h3 id="org8825b94"><span class="section-number-3">2.1</span> fscd_setup_shm</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+设置共享内存空间
+</p>
+<div class="org-src-container">
+<pre class="src src-C">EXP_ST <span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold;">fscd_setup_shm</span>(<span style="font-weight: bold; text-decoration: underline;">void</span>) {
+  <span style="font-weight: bold; text-decoration: underline;">u8</span>* <span style="font-weight: bold; font-style: italic;">shm_str</span>=<span style="font-weight: bold; text-decoration: underline;">NULL</span>;
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#37197;&#32622;&#20849;&#20139;&#20869;&#23384;&#29992;&#20110;&#25968;&#25454;&#30340;&#35775;&#38382;&#35760;&#24405;, 4KB</span>
+  {
+    fscd_shm_data_id = shmget(IPC_PRIVATE, MAP_SIZE, IPC_CREAT | IPC_EXCL | 0600);
+    <span style="font-weight: bold;">if</span> (fscd_shm_data_id &lt;0) PFATAL(<span style="font-style: italic;">"shmget() failed"</span>);
+    actived_shm_ids[actived_shm_count++] = fscd_shm_data_id;
+
+    atexit(remove_shm);
+
+    shm_str = alloc_printf(<span style="font-style: italic;">"%d"</span>, fscd_shm_data_id);
+    setenv(FSCD_SHM_DATA, shm_str, 1);
+    ck_free(shm_str);
+    shm_str = <span style="font-weight: bold; text-decoration: underline;">NULL</span>;
+
+    fscd_data_bits = shmat(fscd_shm_data_id, <span style="font-weight: bold; text-decoration: underline;">NULL</span>, 0);
+
+    <span style="font-weight: bold;">if</span> (fscd_data_bits == (<span style="font-weight: bold; text-decoration: underline;">void</span> *)-1) PFATAL(<span style="font-style: italic;">"shmat() failed"</span>);
+
+  }
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#37197;&#32622;&#20849;&#20139;&#20869;&#23384;&#29992;&#20110;&#35760;&#24405;baseline&#30340;&#36712;&#36857;</span>
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#30001;&#20110;&#22312;&#30003;&#35831;&#22823;&#20869;&#23384;&#30340;&#24773;&#20917;&#19979;&#65292;&#20250;&#30003;&#35831;&#22833;&#36133;&#65292;&#22240;&#27492;&#23558;&#20869;&#23384;&#20998;&#25104;3&#37096;&#20998;</span>
+  {
+    atexit(remove_shm);
+
+    fscd_shm_baseline_id = shmget(IPC_PRIVATE, (<span style="font-weight: bold; text-decoration: underline;">size_t</span>)FSCD_SHM_BASELINE_SIZE, IPC_CREAT | IPC_EXCL | 0600);
+    <span style="font-weight: bold;">if</span> (fscd_shm_baseline_id &lt; 0) PFATAL(<span style="font-style: italic;">"shmget() failed"</span>);
+    actived_shm_ids[actived_shm_count++] = fscd_shm_baseline_id;
+
+    shm_str = alloc_printf(<span style="font-style: italic;">"%d"</span>, fscd_shm_baseline_id);
+    setenv(FSCD_SHM_BASELINE, shm_str, 1);
+    ck_free(shm_str);
+    shm_str = <span style="font-weight: bold; text-decoration: underline;">NULL</span>;
+
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#20284;&#20046;&#19981;&#29992;&#26144;&#23556;&#21040;&#36825;</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">fscd_baseline_records = shmat(fscd_shm_baseline_id, (void*)FSCD_SHM_BASELINE_ADDR, 0 | MAP_NORESERVE);</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">if(fscd_baseline_records != (void *)FSCD_SHM_BASELINE_ADDR) PFATAL("shmat() failed");</span>
+  }
+
+  {<span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#37197;&#32622;&#20869;&#23384;&#29992;&#20110;&#33719;&#21462;&#32467;&#26524;</span>
+    <span style="font-weight: bold; text-decoration: underline;">char</span> * <span style="font-weight: bold; font-style: italic;">Env</span> = FSCD_SHM_RESULT;
+    fscd_shm_result_id = shmget(IPC_PRIVATE, FSCD_SHM_RESULT_SIZE, IPC_CREAT | IPC_EXCL | 0600);
+    <span style="font-weight: bold;">if</span>(fscd_shm_result_id &lt; 0) PFATAL(<span style="font-style: italic;">"shmget() failed"</span>);
+    actived_shm_ids[actived_shm_count++] = fscd_shm_result_id;
+
+    atexit(remove_shm);
+
+    shm_str = alloc_printf(<span style="font-style: italic;">"%d"</span>, fscd_shm_result_id);
+    setenv(Env, shm_str, 1);
+    ck_free(shm_str);
+    shm_str = <span style="font-weight: bold; text-decoration: underline;">NULL</span>;
+    fscd_diff_results = shmat(fscd_shm_result_id, (<span style="font-weight: bold; text-decoration: underline;">void</span>*)FSCD_SHM_RESULT_ADDR, 0);
+    <span style="font-weight: bold;">if</span>(fscd_diff_results == (<span style="font-weight: bold; text-decoration: underline;">void</span> *)-1) PFATAL(<span style="font-style: italic;">"shmat() failed"</span>);
+  }
+
+  <span style="font-weight: bold;">return</span>;
+}
+<span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">fscd: lyf</span>
+
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc309c8a" class="outline-3">
+<h3 id="orgc309c8a"><span class="section-number-3">2.2</span> call_queue</h3>
+</div>
+<div id="outline-container-org0c56bf8" class="outline-3">
+<h3 id="org0c56bf8"><span class="section-number-3">2.3</span> fuzz_one_phase1</h3>
+<div class="outline-text-3" id="text-2-3">
+<div class="org-src-container">
+<pre class="src src-C"><span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">u8</span> <span style="font-weight: bold;">fuzz_one_phase1</span>(<span style="font-weight: bold; text-decoration: underline;">char</span> ** <span style="font-weight: bold; font-style: italic;">argv</span>){
+  <span style="font-weight: bold; text-decoration: underline;">s32</span> <span style="font-weight: bold; font-style: italic;">len</span>, <span style="font-weight: bold; font-style: italic;">fd</span>;
+  <span style="font-weight: bold; text-decoration: underline;">u8</span>  *<span style="font-weight: bold; font-style: italic;">in_buf</span>;
+  <span style="font-weight: bold; text-decoration: underline;">u32</span> <span style="font-weight: bold; font-style: italic;">perf_score</span> = 100;
+  <span style="font-weight: bold; text-decoration: underline;">u8</span>  <span style="font-weight: bold; font-style: italic;">ret_val</span> = 1;
+  <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">fault</span>;
+  <span style="font-weight: bold;">struct</span> <span style="font-weight: bold; text-decoration: underline;">queue_entry</span> * <span style="font-weight: bold; font-style: italic;">_queue</span> = queue_cur[FSCD_P1];
+
+  <span style="font-weight: bold; text-decoration: underline;">u64</span> <span style="font-weight: bold; font-style: italic;">prev_queued</span> = 0;
+
+  <span style="font-weight: bold;">if</span> (pending_favored[FSCD_P1] &amp;&amp; 
+      (_queue-&gt;was_fuzzed || !_queue-&gt;favored) &amp;&amp;
+        UR(100) &lt; SKIP_TO_NEW_PROB)  <span style="font-weight: bold;">return</span> 1;
+
+  <span style="font-weight: bold;">if</span> (not_on_tty) {
+    ACTF(<span style="font-style: italic;">"Fuzzing test case #%u (%u total, %llu uniq crashes found)..."</span>,
+         current_entry[fscd_mode], queued_paths[FSCD_P1], unique_crashes[fscd_mode]);
+    fflush(stdout);
+  }
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Map the test case into memory.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  fd = open(_queue-&gt;fname, O_RDONLY);
+
+  <span style="font-weight: bold;">if</span> (fd &lt; 0) PFATAL(<span style="font-style: italic;">"Unable to open '%s'"</span>, _queue-&gt;fname);
+
+  len = _queue-&gt;len;
+
+  in_buf = mmap(0, len, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+
+  <span style="font-weight: bold;">if</span> (in_buf == MAP_FAILED) PFATAL(<span style="font-style: italic;">"Unable to mmap '%s'"</span>, _queue-&gt;fname);
+
+  close(fd);
+
+  subseq_tmouts = 0;
+
+  cur_depth = _queue-&gt;depth;
+
+  <span style="font-weight: bold; font-style: italic;">/*******************************************</span>
+<span style="font-weight: bold; font-style: italic;">   * CALIBRATION (only if failed earlier on) *</span>
+<span style="font-weight: bold; font-style: italic;">   ******************************************</span><span style="font-weight: bold; font-style: italic;">*/</span>
+
+  <span style="font-weight: bold;">if</span> (_queue-&gt;cal_failed) {
+
+    <span style="font-weight: bold; text-decoration: underline;">u8</span> <span style="font-weight: bold; font-style: italic;">res</span> = FAULT_TMOUT;
+
+    <span style="font-weight: bold;">if</span> (_queue-&gt;cal_failed &lt; CAL_CHANCES) {
+
+      _queue-&gt;exec_cksum = 0;
+
+      res = calibrate_case(argv, _queue, in_buf, queue_cycle[fscd_mode] - 1, 0, fscd_mode);
+
+      <span style="font-weight: bold;">if</span> (res == FAULT_ERROR)
+        FATAL(<span style="font-style: italic;">"Unable to execute target application"</span>);
+
+    }
+
+    <span style="font-weight: bold;">if</span> (stop_soon || res != crash_mode) {
+      cur_skipped_paths[fscd_mode]++;
+      <span style="font-weight: bold;">goto</span> <span style="font-weight: bold; text-decoration: underline;">abandon_entry</span>;
+    }
+
+  }
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;baseline</span>
+  write_to_testcase(in_buf, len);
+  fault = run_target(argv, exec_tmout, FSCD_FIDUCIARY);
+  munmap(in_buf, queue_cur[fscd_mode]-&gt;len);
+  <span style="font-weight: bold;">if</span> (fault) <span style="font-weight: bold;">goto</span> <span style="font-weight: bold; text-decoration: underline;">abandon_entry</span>;
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#36941;&#21382;&#31532;&#19968;&#23618;queue&#65292;&#23558;&#20869;&#23481;&#28155;&#21152;&#21040;&#31532;&#20108;&#23618;queue</span>
+  init_p2();
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#20999;&#25442;&#21040;phase 2</span>
+  fscd_mode = FSCD_P2;
+  <span style="font-weight: bold;">while</span>(1){
+    <span style="font-weight: bold; text-decoration: underline;">u8</span> <span style="font-weight: bold; font-style: italic;">skipped_fuzz</span>;
+
+    cull_queue(FSCD_P2);
+
+    <span style="font-weight: bold;">if</span>(!queue_cur[FSCD_P2]){
+      queue_cycle[FSCD_P2]++;
+      current_entry[FSCD_P2]     = 0;
+      cur_skipped_paths[FSCD_P2] = 0;
+      queue_cur[FSCD_P2]         = queue[FSCD_P2];
+
+      show_stats();
+
+      <span style="font-weight: bold;">if</span> (not_on_tty) {
+        ACTF(<span style="font-style: italic;">"Entering P2 queue cycle %llu."</span>, queue_cycle[FSCD_P2]);
+        fflush(stdout);
+      }
+
+      <span style="font-weight: bold;">if</span> (queued_paths[FSCD_P2] == prev_queued) cycles_wo_finds[FSCD_P2]++;
+      <span style="font-weight: bold;">else</span> cycles_wo_finds[FSCD_P2] = 0;
+
+      prev_queued = queued_paths[FSCD_P2];
+    }
+
+    skipped_fuzz = fuzz_one(argv);
+
+    <span style="font-weight: bold;">if</span> (stop_soon) <span style="font-weight: bold;">break</span>;
+
+    queue_cur[FSCD_P2] =  queue_cur[FSCD_P2]-&gt;next;
+    current_entry[FSCD_P2]++;
+
+  }
+
+<span style="font-weight: bold; text-decoration: underline;">abandon_entry</span>:
+
+  fini_p2();
+
+  fscd_mode = FSCD_P1;
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Update pending_not_fuzzed[fscd_mode] count if we made it through the calibration</span>
+<span style="font-weight: bold; font-style: italic;">     cycle and have not seen this entry before.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  <span style="font-weight: bold;">if</span> (!stop_soon &amp;&amp; !_queue-&gt;cal_failed &amp;&amp; !_queue-&gt;was_fuzzed) {
+    _queue-&gt;was_fuzzed = 1;
+    pending_not_fuzzed[FSCD_P1]--;
+    <span style="font-weight: bold;">if</span> (_queue-&gt;favored) pending_favored[FSCD_P1]--;
+  }
+
+  <span style="font-weight: bold;">return</span> ret_val;
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-01 Mon 10:23</p>
+<p class="date">Created: 2021-11-08 Mon 16:26</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

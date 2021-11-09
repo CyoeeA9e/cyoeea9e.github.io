@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-08 Mon 16:26 -->
+<!-- 2021-11-09 Tue 17:54 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>oo7: Low-overhead Defense against Spectre Attacks via Program Analysis</title>
@@ -247,8 +247,22 @@ ul.no-bullet {list-style: none}
 <ul>
 <li><a href="#org429237d">1.1.1. Spectre V1</a></li>
 <li><a href="#org84ecbcc">1.1.2. Spectre V1.1</a></li>
+<li><a href="#org11fb0e2">1.1.3. Spectre V1.2</a></li>
+<li><a href="#org50b88c6">1.1.4. Spectre-NG V4</a></li>
 </ul>
 </li>
+<li><a href="#org57153e7">1.2. Spectre V2 及其变种</a>
+<ul>
+<li><a href="#orgd1df2e8">1.2.1. Spectre V2</a></li>
+<li><a href="#org033fddc">1.2.2. SpectreRSB</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org0f1181d">2. 文章概述</a></li>
+<li><a href="#orgc615ef1">3. Spectre检测</a>
+<ul>
+<li><a href="#org5e6bf65">3.1. V1</a></li>
 </ul>
 </li>
 </ul>
@@ -308,15 +322,81 @@ Bounds Check Bypass Store
 </div>
 
 <p>
-array1[x] 可以是返回地址，也可以是SEH。
+array1[x] 可以是返回地址，也可以SEH。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org11fb0e2" class="outline-4">
+<h4 id="org11fb0e2"><span class="section-number-4">1.1.3</span> Spectre V1.2</h4>
+<div class="outline-text-4" id="text-1-1-3">
+<p>
+类似V1.1，可以实现修改只读的内存区域，如代码指针。
+</p>
+</div>
+</div>
+<div id="outline-container-org50b88c6" class="outline-4">
+<h4 id="org50b88c6"><span class="section-number-4">1.1.4</span> Spectre-NG V4</h4>
+<div class="outline-text-4" id="text-1-1-4">
+<p>
+在内存写入数据前，读取数据，会导致读取原数据。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org57153e7" class="outline-3">
+<h3 id="org57153e7"><span class="section-number-3">1.2</span> Spectre V2 及其变种</h3>
+<div class="outline-text-3" id="text-1-2">
+</div>
+<div id="outline-container-orgd1df2e8" class="outline-4">
+<h4 id="orgd1df2e8"><span class="section-number-4">1.2.1</span> Spectre V2</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<p>
+对BTB进行投毒，误导执行错误的间接跳转地址
+</p>
+</div>
+</div>
+<div id="outline-container-org033fddc" class="outline-4">
+<h4 id="org033fddc"><span class="section-number-4">1.2.2</span> SpectreRSB</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<p>
+对RSB进行投毒，误导返回地址
 </p>
 </div>
 </div>
 </div>
 </div>
+<div id="outline-container-org0f1181d" class="outline-2">
+<h2 id="org0f1181d"><span class="section-number-2">2</span> 文章概述</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+oo7基于BAP开发。
+</p>
+
+<ul class="org-ul">
+<li>从二进制程序生成控制流图较为困难</li>
+<li>oo7注重false negative</li>
+<li>符号执行+污点分析</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgc615ef1" class="outline-2">
+<h2 id="orgc615ef1"><span class="section-number-2">3</span> Spectre检测</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org5e6bf65" class="outline-3">
+<h3 id="org5e6bf65"><span class="section-number-3">3.1</span> V1</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+oo7将Spectre Execution Window设置为2n，为了确保false negative
+</p>
+</div>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-08 Mon 16:26</p>
+<p class="date">Created: 2021-11-09 Tue 17:54</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

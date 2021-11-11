@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-09 Tue 17:54 -->
+<!-- 2021-11-11 Thu 09:56 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>oo7: Low-overhead Defense against Spectre Attacks via Program Analysis</title>
@@ -263,8 +263,18 @@ ul.no-bullet {list-style: none}
 <li><a href="#orgc615ef1">3. Spectre检测</a>
 <ul>
 <li><a href="#org5e6bf65">3.1. V1</a></li>
+<li><a href="#org0e5134d">3.2. 污点分析</a></li>
 </ul>
 </li>
+<li><a href="#orgcf851f0">4. 实现</a></li>
+<li><a href="#orgb362ee9">5. 测试</a>
+<ul>
+<li><a href="#orgc6cb740">5.1. 测试数据集</a></li>
+<li><a href="#org3c80598">5.2. 测试结果</a></li>
+</ul>
+</li>
+<li><a href="#orgf2c6583">6. 总结</a></li>
+<li><a href="#orgb956d80">7. 思考</a></li>
 </ul>
 </div>
 </div>
@@ -390,13 +400,122 @@ oo7基于BAP开发。
 <div class="outline-text-3" id="text-3-1">
 <p>
 oo7将Spectre Execution Window设置为2n，为了确保false negative
+使用污点分析来确认TB和内存访问。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0e5134d" class="outline-3">
+<h3 id="org0e5134d"><span class="section-number-3">3.2</span> 污点分析</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+污点分析内容包括数据分析和控制流分析。
+</p>
+
+<ul class="org-ul">
+<li>条件分支：将污点分支中的写入数据标记为污点。</li>
+<li>计算</li>
+<li>内存写入</li>
+<li>内存读取</li>
+<li>Over-tainting</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgcf851f0" class="outline-2">
+<h2 id="orgcf851f0"><span class="section-number-2">4</span> 实现</h2>
+<div class="outline-text-2" id="text-4">
+<ul class="org-ul">
+<li>强制执行：用于模拟预测执行</li>
+<li>污点分析：
+<ul class="org-ul">
+<li>与强制执行共同作用</li>
+<li>当发现call指令时，判断call的api是否是否可能从不可信的信道获取数据，如果API属于不可信，则将返回值标记为污点。</li>
+</ul></li>
+<li>漏洞检测：在指令被标记为污点后，对指令进行检查，判断是否满足规则，同时判断是否在SEW范围内。</li>
+<li>使用BAP进行分析。</li>
+<li>直接对汇编代码进行修改，进行补丁。</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgb362ee9" class="outline-2">
+<h2 id="orgb362ee9"><span class="section-number-2">5</span> 测试</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-orgc6cb740" class="outline-3">
+<h3 id="orgc6cb740"><span class="section-number-3">5.1</span> 测试数据集</h3>
+<div class="outline-text-3" id="text-5-1">
+<ul class="org-ul">
+<li><a href="https://www.paulkocher.com/doc/MicrosoftCompilerSpectreMitigation.html">Paul Kocher Spectre variations example</a></li>
+<li><a href="20211110111249-specint.html#ID-6732d7ec-7d10-4375-9662-a5f73c5de4b0">SPECint</a></li>
+<li><a href="20211110111536-google_oss_fuzz.html#ID-e5370297-6757-4efa-9050-17e61ff371a1">Google OSS-Fuzz</a></li>
+<li>bzip2中插入漏洞代码</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3c80598" class="outline-3">
+<h3 id="org3c80598"><span class="section-number-3">5.2</span> 测试结果</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+设定的污点源：
+<img src="./images/2021-11-11_08-46.png" alt="2021-11-11_08-46.png" />
+</p>
+
+
+<div id="orgfb5cc95" class="figure">
+<p><img src="./images/2021-11-11_08-48.png" alt="2021-11-11_08-48.png" />
+</p>
+</div>
+
+
+<div id="org6520872" class="figure">
+<p><img src="./images/2021-11-11_08-49.png" alt="2021-11-11_08-49.png" />
+</p>
+</div>
+
+
+<div id="orgf38be54" class="figure">
+<p><img src="./images/2021-11-11_09-09.png" alt="2021-11-11_09-09.png" />
+</p>
+</div>
+
+<p>
+这个样本是否能被利用？
+</p>
+
+
+<div id="org0f0dc08" class="figure">
+<p><img src="./images/2021-11-11_09-20.png" alt="2021-11-11_09-20.png" />
+</p>
+</div>
+
+<p>
+TB和RS之间的距离大多数在100条指令内
 </p>
 </div>
 </div>
 </div>
+
+<div id="outline-container-orgf2c6583" class="outline-2">
+<h2 id="orgf2c6583"><span class="section-number-2">6</span> 总结</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+oo7使用BAP作为二进制分析平台，使用静态污点分析对二进制文件进行分析。能够检测Spectre V1，V1.1,V1.2。
+</p>
+</div>
+</div>
+<div id="outline-container-orgb956d80" class="outline-2">
+<h2 id="orgb956d80"><span class="section-number-2">7</span> 思考</h2>
+<div class="outline-text-2" id="text-7">
+<ul class="org-ul">
+<li>与<a href="20211025083301-spectaint_speculative_taint_analysis_for_discovering_spectre_gadgets.html#ID-8d9793e8-cac9-41d4-bb06-6a2a7d85d04e">SpecTaint:Speculative Taint Analysis for Discovering Spectre Gadgets</a>类似，将Spectre 漏洞代码注入到程序中进行测试，样例代码较为简单，容易被发现，是否会导致测试结果并不准确。</li>
+</ul>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-09 Tue 17:54</p>
+<p class="date">Created: 2021-11-11 Thu 09:56</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

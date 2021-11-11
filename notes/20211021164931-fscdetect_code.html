@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-08 Mon 16:26 -->
+<!-- 2021-11-11 Thu 17:29 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FSCDetect Code</title>
@@ -262,9 +262,9 @@ ul.no-bullet {list-style: none}
 <li><a href="#org477cd05">1.1.1.7. injectTrace</a></li>
 <li><a href="#org9d33731">1.1.1.8. handleInterestingMemoryAccesses</a></li>
 <li><a href="#org681a10d">1.1.1.9. _handle_memory_access_core</a></li>
-<li><a href="#org996810c">1.1.1.10. injectAFLBitMapOperation</a></li>
+<li><a href="#org5178fb7">1.1.1.10. injectAFLBitMapOperation</a></li>
 <li><a href="#orga8ece8f">1.1.1.11. runInlineClone</a></li>
-<li><a href="#org5178fb7">1.1.1.12. injectAFLBitMapOperation</a></li>
+<li><a href="#org2274992">1.1.1.12. injectAFLBitMapOperation</a></li>
 <li><a href="#org5626026">1.1.1.13. FSCDSplitBasicBlock</a></li>
 </ul>
 </li>
@@ -291,7 +291,9 @@ ul.no-bullet {list-style: none}
 <ul>
 <li><a href="#org8825b94">2.1. fscd_setup_shm</a></li>
 <li><a href="#orgc309c8a">2.2. call_queue</a></li>
-<li><a href="#org0c56bf8">2.3. fuzz_one_phase1</a></li>
+<li><a href="#orgc24544e">2.3. write_to_testcase</a></li>
+<li><a href="#org0c56bf8">2.4. fuzz_one_phase1</a></li>
+<li><a href="#org18c3db1">2.5. run_target</a></li>
 </ul>
 </li>
 </ul>
@@ -917,8 +919,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org996810c" class="outline-5">
-<h5 id="org996810c"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
+<div id="outline-container-org5178fb7" class="outline-5">
+<h5 id="org5178fb7"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
 <div class="outline-text-5" id="text-1-1-1-10">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">injectAFLBitMapOperation</span>(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>, <span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">cur_loc</span>) {
@@ -971,7 +973,7 @@ ul.no-bullet {list-style: none}
 <li><a href="#org2565fb7">FSCDTrace</a>::<a href="#org7b30ca1">cloneInline</a></li>
 <li><a href="#orgb565214">AFL_R</a></li>
 <li><a href="#org477cd05">injectTrace</a></li>
-<li><a href="#org5178fb7">injectAFLBitMapOperation</a></li>
+<li><a href="#org2274992">injectAFLBitMapOperation</a></li>
 </ul>
 <p>
 对基本块进行插装。
@@ -1026,8 +1028,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org5178fb7" class="outline-5">
-<h5 id="org5178fb7"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
+<div id="outline-container-org2274992" class="outline-5">
+<h5 id="org2274992"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
 <div class="outline-text-5" id="text-1-1-1-12">
 </div>
 </div>
@@ -1236,6 +1238,9 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 <div id="outline-container-org4691f87" class="outline-2">
 <h2 id="org4691f87"><span class="section-number-2">2</span> AFL</h2>
 <div class="outline-text-2" id="text-2">
+<p>
+<a href="20211026152446-afl.html#ID-fb6ddb5a-83de-411f-8e89-fb125b9e732d">AFL</a>
+</p>
 </div>
 <div id="outline-container-org8825b94" class="outline-3">
 <h3 id="org8825b94"><span class="section-number-3">2.1</span> fscd_setup_shm</h3>
@@ -1312,9 +1317,17 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 <div id="outline-container-orgc309c8a" class="outline-3">
 <h3 id="orgc309c8a"><span class="section-number-3">2.2</span> call_queue</h3>
 </div>
-<div id="outline-container-org0c56bf8" class="outline-3">
-<h3 id="org0c56bf8"><span class="section-number-3">2.3</span> fuzz_one_phase1</h3>
+<div id="outline-container-orgc24544e" class="outline-3">
+<h3 id="orgc24544e"><span class="section-number-3">2.3</span> write_to_testcase</h3>
 <div class="outline-text-3" id="text-2-3">
+<p>
+将内存映射的内容写入到文件中
+</p>
+</div>
+</div>
+<div id="outline-container-org0c56bf8" class="outline-3">
+<h3 id="org0c56bf8"><span class="section-number-3">2.4</span> fuzz_one_phase1</h3>
+<div class="outline-text-3" id="text-2-4">
 <div class="org-src-container">
 <pre class="src src-C"><span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">u8</span> <span style="font-weight: bold;">fuzz_one_phase1</span>(<span style="font-weight: bold; text-decoration: underline;">char</span> ** <span style="font-weight: bold; font-style: italic;">argv</span>){
   <span style="font-weight: bold; text-decoration: underline;">s32</span> <span style="font-weight: bold; font-style: italic;">len</span>, <span style="font-weight: bold; font-style: italic;">fd</span>;
@@ -1338,26 +1351,31 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 
   <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Map the test case into memory.</span><span style="font-weight: bold; font-style: italic;"> */</span>
 
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#26144;&#23556;&#36755;&#20837;&#21040;&#20869;&#23384;&#20013;</span>
   fd = open(_queue-&gt;fname, O_RDONLY);
 
   <span style="font-weight: bold;">if</span> (fd &lt; 0) PFATAL(<span style="font-style: italic;">"Unable to open '%s'"</span>, _queue-&gt;fname);
 
   len = _queue-&gt;len;
 
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#26144;&#23556;&#21040;&#20869;&#23384;&#31354;&#38388;</span>
   in_buf = mmap(0, len, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
 
+  <span style="font-weight: bold; font-style: italic;">/// </span><span style="font-weight: bold; font-style: italic;">&#30003;&#35831;&#22833;&#36133;</span>
   <span style="font-weight: bold;">if</span> (in_buf == MAP_FAILED) PFATAL(<span style="font-style: italic;">"Unable to mmap '%s'"</span>, _queue-&gt;fname);
 
   close(fd);
 
   subseq_tmouts = 0;
 
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">depth ? </span>
   cur_depth = _queue-&gt;depth;
 
   <span style="font-weight: bold; font-style: italic;">/*******************************************</span>
 <span style="font-weight: bold; font-style: italic;">   * CALIBRATION (only if failed earlier on) *</span>
 <span style="font-weight: bold; font-style: italic;">   ******************************************</span><span style="font-weight: bold; font-style: italic;">*/</span>
 
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#27979;&#35797;&#26696;&#20363;&#30456;&#20851;</span>
   <span style="font-weight: bold;">if</span> (_queue-&gt;cal_failed) {
 
     <span style="font-weight: bold; text-decoration: underline;">u8</span> <span style="font-weight: bold; font-style: italic;">res</span> = FAULT_TMOUT;
@@ -1444,10 +1462,258 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 </div>
 </div>
 </div>
+
+<div id="outline-container-org18c3db1" class="outline-3">
+<h3 id="org18c3db1"><span class="section-number-3">2.5</span> run_target</h3>
+<div class="outline-text-3" id="text-2-5">
+<div class="org-src-container">
+<pre class="src src-C"><span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#26032;&#22686; cmd &#21442;&#25968;</span>
+<span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">u8</span> <span style="font-weight: bold;">run_target</span>(<span style="font-weight: bold; text-decoration: underline;">char</span>** <span style="font-weight: bold; font-style: italic;">argv</span>, <span style="font-weight: bold; text-decoration: underline;">u32</span> <span style="font-weight: bold; font-style: italic;">timeout</span>, <span style="font-weight: bold; text-decoration: underline;">u32</span> <span style="font-weight: bold; font-style: italic;">cmd</span>) {
+
+  <span style="font-weight: bold;">static</span> <span style="font-weight: bold;">struct</span> <span style="font-weight: bold; text-decoration: underline;">itimerval</span> <span style="font-weight: bold; font-style: italic;">it</span>;
+  <span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">u32</span> <span style="font-weight: bold; font-style: italic;">prev_timed_out</span> = 0;
+  <span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">u64</span> <span style="font-weight: bold; font-style: italic;">exec_ms</span> = 0;
+
+  <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">status</span> = 0;
+  <span style="font-weight: bold; text-decoration: underline;">u32</span> <span style="font-weight: bold; font-style: italic;">tb4</span>;
+
+  child_timed_out = 0;
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">After this memset, trace_bits[] are effectively volatile, so we</span>
+<span style="font-weight: bold; font-style: italic;">     must prevent any earlier operations from venturing into that</span>
+<span style="font-weight: bold; font-style: italic;">     territory.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">fscd: lyf clean memory bitmap</span>
+  memset(trace_bits, 0, MAP_SIZE);
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">fscd &#20869;&#23384;&#35774;&#32622;</span>
+  memset(fscd_data_bits, 0, MAP_SIZE);
+  MEM_BARRIER();
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">If we're running in "dumb" mode, we can't rely on the fork server</span>
+<span style="font-weight: bold; font-style: italic;">     logic compiled into the target program, so we will just keep calling</span>
+<span style="font-weight: bold; font-style: italic;">     execve(). There is a bit of code duplication between here and </span>
+<span style="font-weight: bold; font-style: italic;">     init_forkserver(), but c'est la vie.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  <span style="font-weight: bold;">if</span> (dumb_mode == 1 || no_forkserver) {
+
+    child_pid = fork();
+
+    <span style="font-weight: bold;">if</span> (child_pid &lt; 0) PFATAL(<span style="font-style: italic;">"fork() failed"</span>);
+
+    <span style="font-weight: bold;">if</span> (!child_pid) {
+
+      <span style="font-weight: bold;">struct</span> <span style="font-weight: bold; text-decoration: underline;">rlimit</span> <span style="font-weight: bold; font-style: italic;">r</span>;
+
+      <span style="font-weight: bold;">if</span> (mem_limit) {
+
+        r.rlim_max = r.rlim_cur = ((<span style="font-weight: bold; text-decoration: underline;">rlim_t</span>)mem_limit) &lt;&lt; 20;
+
+<span style="font-weight: bold;">#ifdef</span> RLIMIT_AS
+
+        setrlimit(RLIMIT_AS, &amp;r); <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Ignore errors</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+<span style="font-weight: bold;">#else</span>
+
+        setrlimit(RLIMIT_DATA, &amp;r); <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Ignore errors</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+<span style="font-weight: bold;">#endif</span> <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">^RLIMIT_AS</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+      }
+
+      r.rlim_max = r.rlim_cur = 0;
+
+      setrlimit(RLIMIT_CORE, &amp;r); <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Ignore errors</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+      <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Isolate the process and configure standard descriptors. If out_file is</span>
+<span style="font-weight: bold; font-style: italic;">         specified, stdin is /dev/null; otherwise, out_fd is cloned instead.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+      setsid();
+
+      dup2(dev_null_fd, 1);
+      dup2(dev_null_fd, 2);
+
+      <span style="font-weight: bold;">if</span> (out_file) {
+
+        dup2(dev_null_fd, 0);
+
+      } <span style="font-weight: bold;">else</span> {
+
+        dup2(out_fd, 0);
+        close(out_fd);
+
+      }
+
+      <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">On Linux, would be faster to use O_CLOEXEC. Maybe TODO.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+      close(dev_null_fd);
+      close(out_dir_fd);
+      close(dev_urandom_fd);
+      close(fileno(plot_file));
+
+      <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Set sane defaults for ASAN if nothing else specified.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+      setenv(<span style="font-style: italic;">"ASAN_OPTIONS"</span>, <span style="font-style: italic;">"abort_on_error=1:"</span>
+                             <span style="font-style: italic;">"detect_leaks=0:"</span>
+                             <span style="font-style: italic;">"symbolize=0:"</span>
+                             <span style="font-style: italic;">"allocator_may_return_null=1"</span>, 0);
+
+      setenv(<span style="font-style: italic;">"MSAN_OPTIONS"</span>, <span style="font-style: italic;">"exit_code="</span> STRINGIFY(MSAN_ERROR) <span style="font-style: italic;">":"</span>
+                             <span style="font-style: italic;">"symbolize=0:"</span>
+                             <span style="font-style: italic;">"msan_track_origins=0"</span>, 0);
+
+      execv(target_path, argv);
+
+      <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Use a distinctive bitmap value to tell the parent about execv()</span>
+<span style="font-weight: bold; font-style: italic;">         falling through.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+      *(<span style="font-weight: bold; text-decoration: underline;">u32</span>*)trace_bits = EXEC_FAIL_SIG;
+      exit(0);
+
+    }
+
+  } <span style="font-weight: bold;">else</span> {
+
+    <span style="font-weight: bold; text-decoration: underline;">s32</span> <span style="font-weight: bold; font-style: italic;">res</span>;
+
+    <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">In non-dumb mode, we have the fork server up and running, so simply</span>
+<span style="font-weight: bold; font-style: italic;">       tell it to have at it, and then read back PID.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">bug ?</span>
+    <span style="font-weight: bold;">if</span>(prev_timed_out){
+      cmd = KILL;
+    }
+
+    <span style="font-weight: bold;">if</span> ((res = write(fsrv_ctl_fd, &amp;cmd, 4)) != 4) {
+
+      <span style="font-weight: bold;">if</span> (stop_soon) <span style="font-weight: bold;">return</span> 0;
+      RPFATAL(res, <span style="font-style: italic;">"Unable to request new process from fork server (OOM?)"</span>);
+
+    }
+
+    <span style="font-weight: bold;">if</span> ((res = read(fsrv_st_fd, &amp;child_pid, 4)) != 4) {
+
+      <span style="font-weight: bold;">if</span> (stop_soon) <span style="font-weight: bold;">return</span> 0;
+      RPFATAL(res, <span style="font-style: italic;">"Unable to request new process from fork server (OOM?)"</span>);
+
+    }
+
+    <span style="font-weight: bold;">if</span> (child_pid &lt;= 0) FATAL(<span style="font-style: italic;">"Fork server is misbehaving (OOM?)"</span>);
+
+  }
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Configure timeout, as requested by user, then wait for child to terminate.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  it.it_value.tv_sec = (timeout / 1000);
+  it.it_value.tv_usec = (timeout % 1000) * 1000;
+
+  setitimer(ITIMER_REAL, &amp;it, <span style="font-weight: bold; text-decoration: underline;">NULL</span>);
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">The SIGALRM handler simply kills the child_pid and sets child_timed_out.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  <span style="font-weight: bold;">if</span> (dumb_mode == 1 || no_forkserver) {
+
+    <span style="font-weight: bold;">if</span> (waitpid(child_pid, &amp;status, 0) &lt;= 0) PFATAL(<span style="font-style: italic;">"waitpid() failed"</span>);
+
+  } <span style="font-weight: bold;">else</span> {
+
+    <span style="font-weight: bold; text-decoration: underline;">s32</span> <span style="font-weight: bold; font-style: italic;">res</span>;
+
+    <span style="font-weight: bold;">if</span> ((res = read(fsrv_st_fd, &amp;status, 4)) != 4) {
+
+      <span style="font-weight: bold;">if</span> (stop_soon) <span style="font-weight: bold;">return</span> 0;
+      RPFATAL(res, <span style="font-style: italic;">"Unable to communicate with fork server (OOM?)"</span>);
+
+    }
+
+  }
+
+  <span style="font-weight: bold;">if</span> (!WIFSTOPPED(status)) child_pid = 0;
+
+  getitimer(ITIMER_REAL, &amp;it);
+  exec_ms = (<span style="font-weight: bold; text-decoration: underline;">u64</span>) timeout - (it.it_value.tv_sec * 1000 +
+                             it.it_value.tv_usec / 1000);
+
+  it.it_value.tv_sec = 0;
+  it.it_value.tv_usec = 0;
+
+  setitimer(ITIMER_REAL, &amp;it, <span style="font-weight: bold; text-decoration: underline;">NULL</span>);
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">fscd stuff</span>
+  <span style="font-weight: bold;">if</span>(cmd!=AFL_NORMAL){
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;&#27604;&#36739;&#30340;&#32467;&#26524;</span>
+    DNMResults(&amp;fscd_cnts, FSCD_SHM_RESULT_ADDR);    
+    <span style="font-weight: bold;">if</span>(fscd_cnts.distance != -1){
+    <span style="font-weight: bold; font-style: italic;">//   </span><span style="font-weight: bold; font-style: italic;">distances[distance_idx++ % FSCD_DISTANCE_CNT] = fscd_cnts.distance;</span>
+      distance_sum += fscd_cnts.distance;
+      distance_size++;
+    }
+  }
+    total_execs[fscd_mode]++;
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Any subsequent operations on trace_bits must not be moved by the</span>
+<span style="font-weight: bold; font-style: italic;">     compiler below this point. Past this location, trace_bits[] behave</span>
+<span style="font-weight: bold; font-style: italic;">     very normally and do not have to be treated as volatile.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  MEM_BARRIER();
+
+  tb4 = *(<span style="font-weight: bold; text-decoration: underline;">u32</span>*)trace_bits;
+
+<span style="font-weight: bold;">#ifdef</span> WORD_SIZE_64
+  classify_counts((<span style="font-weight: bold; text-decoration: underline;">u64</span>*)trace_bits);
+<span style="font-weight: bold;">#else</span>
+  classify_counts((<span style="font-weight: bold; text-decoration: underline;">u32</span>*)trace_bits);
+<span style="font-weight: bold;">#endif</span> <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">^WORD_SIZE_64</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  prev_timed_out = child_timed_out;
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Report outcome to caller.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  <span style="font-weight: bold;">if</span> (WIFSIGNALED(status) &amp;&amp; !stop_soon) {
+
+    kill_signal = WTERMSIG(status);
+
+    <span style="font-weight: bold;">if</span> (child_timed_out &amp;&amp; kill_signal == SIGKILL) <span style="font-weight: bold;">return</span> FAULT_TMOUT;
+
+    <span style="font-weight: bold;">return</span> FAULT_CRASH;
+
+  }
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">A somewhat nasty hack for MSAN, which doesn't support abort_on_error and</span>
+<span style="font-weight: bold; font-style: italic;">     must use a special exit code.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+
+  <span style="font-weight: bold;">if</span> (uses_asan &amp;&amp; WEXITSTATUS(status) == MSAN_ERROR) {
+    kill_signal = 0;
+    <span style="font-weight: bold;">return</span> FAULT_CRASH;
+  }
+
+  <span style="font-weight: bold;">if</span> ((dumb_mode == 1 || no_forkserver) &amp;&amp; tb4 == EXEC_FAIL_SIG)
+    <span style="font-weight: bold;">return</span> FAULT_ERROR;
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">It makes sense to account for the slowest units only if the testcase was run</span>
+<span style="font-weight: bold; font-style: italic;">  under the user defined timeout.</span><span style="font-weight: bold; font-style: italic;"> */</span>
+  <span style="font-weight: bold;">if</span> (!(timeout &gt; exec_tmout) &amp;&amp; (slowest_exec_ms &lt; exec_ms)) {
+    slowest_exec_ms = exec_ms;
+  }
+
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">Exit(status) status&#65281;=0&#21017;&#34920;&#31034;&#36755;&#20837;&#38750;&#27491;&#24120;&#65292;&#30452;&#25509;&#36864;&#20986;</span>
+  <span style="font-weight: bold;">if</span>(fscd_mode!=AFL_NORMAL &amp;&amp; (fscd_cnts.exit_status&gt;0 &amp;&amp; fscd_cnts.exit_status != -1)){
+    <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#22788;&#29702;&#32467;&#26524;&#65292;&#22635;&#20805;&#35745;&#25968;&#22120;</span>
+    exec_ms = fscd_cnts.exec_ms;
+    total_invalid++;
+    assert(fscd_cnts.diff_ms == 0 &amp;&amp; <span style="font-style: italic;">"when invalid, diff_ms != 0"</span>);
+    <span style="font-weight: bold;">return</span> FAULT_INVAID_INPUTS;
+  }
+
+  <span style="font-weight: bold;">return</span> FAULT_NONE;
+
+}
+</pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-08 Mon 16:26</p>
+<p class="date">Created: 2021-11-11 Thu 17:29</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

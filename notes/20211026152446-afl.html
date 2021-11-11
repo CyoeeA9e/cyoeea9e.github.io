@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-10-27 Wed 16:07 -->
+<!-- 2021-11-11 Thu 17:29 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>AFL</title>
@@ -237,10 +237,136 @@ ul.no-bullet {list-style: none}
 <body>
 <div id="content">
 <h1 class="title">AFL</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org0939932">1. fork server</a></li>
+</ul>
+</div>
+</div>
 
+<div id="outline-container-org0939932" class="outline-2">
+<h2 id="org0939932"><span class="section-number-2">1</span> fork server</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+<a href="https://lcamtuf.blogspot.com/2014/10/fuzzing-binaries-without-execve.html">https://lcamtuf.blogspot.com/2014/10/fuzzing-binaries-without-execve.html</a>
+</p>
+
+<p>
+通常的做法是使用execve()执行程序，然后等待子进程pid。
+但子进程初始化过程，包括动态库的链接、库的初始化等过程需要耗费不少的时间，并且这些过程在每次调用execve()都需要重新进行一次。
+</p>
+
+<p>
+afl为了解决这个问题，在程序加载过程中进行插装，在完成了初始化过程之后，在实际执行之前，暂停程序的执行，在收到继续的信号后，调用fork来创建新的子进程。
+</p>
+
+<p>
+因为有copy-on-write，fork的速度非常快，并且能够确保进程隔离。
+</p>
+
+<p>
+方法有：
+</p>
+<ul class="org-ul">
+<li>LD_PRELOAD</li>
+<li>PTRACE_POKETEXT</li>
+<li>编译时插装</li>
+<li>修改ELF文件内容</li>
+</ul>
+
+<p>
+问题：
+</p>
+<ul class="org-ul">
+<li>文件描述符</li>
+<li><p>
+fuzzer变成了祖父进程，不能直接使用waitpid()和获取程序状态，因此需要通过父进程进行监控。
+</p>
+<div class="org-src-container">
+<pre class="src src-asm"><span style="font-weight: bold;">__afl_forkserver</span>:
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Phone home and tell the parent that we're OK. */</span>
+
+  <span style="font-weight: bold;">pushl</span> $4          <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">length    */</span>
+  <span style="font-weight: bold;">pushl</span> $__afl_temp <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">data      */</span>
+  <span style="font-weight: bold;">pushl</span> $199        <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">file desc */</span>
+  <span style="font-weight: bold;">call</span>  write
+  <span style="font-weight: bold;">addl</span>  $12, <span style="font-weight: bold; font-style: italic;">%esp</span>
+
+<span style="font-weight: bold;">__afl_fork_wait_loop</span>:
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Wait for parent by reading from the pipe. This will block until</span>
+<span style="font-weight: bold; font-style: italic;">     the parent sends us something. Abort if read fails. */</span>
+
+  <span style="font-weight: bold;">pushl</span> $4          <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">length    */</span>
+  <span style="font-weight: bold;">pushl</span> $__afl_temp <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">data      */</span>
+  <span style="font-weight: bold;">pushl</span> $198        <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">file desc */</span>
+  <span style="font-weight: bold;">call</span>  read
+  <span style="font-weight: bold;">addl</span>  $12, <span style="font-weight: bold; font-style: italic;">%esp</span>
+
+  <span style="font-weight: bold;">cmpl</span>  $4, <span style="font-weight: bold; font-style: italic;">%eax</span>
+  <span style="font-weight: bold;">jne</span>   __afl_die
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Once woken up, create a clone of our process. */</span>
+
+  <span style="font-weight: bold;">call</span> fork
+
+  <span style="font-weight: bold;">cmpl</span> $0, <span style="font-weight: bold; font-style: italic;">%eax</span>
+  <span style="font-weight: bold;">jl</span>   __afl_die
+  <span style="font-weight: bold;">je</span>   __afl_fork_resume
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">In parent process: write PID to pipe, then wait for child. </span>
+<span style="font-weight: bold; font-style: italic;">     Parent will handle timeouts and SIGKILL the child as needed. */</span>
+
+  <span style="font-weight: bold;">movl</span>  <span style="font-weight: bold; font-style: italic;">%eax</span>, __afl_fork_pid
+
+  <span style="font-weight: bold;">pushl</span> $4              <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">length    */</span>
+  <span style="font-weight: bold;">pushl</span> $__afl_fork_pid <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">data      */</span>
+  <span style="font-weight: bold;">pushl</span> $199            <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">file desc */</span>
+  <span style="font-weight: bold;">call</span>  write
+  <span style="font-weight: bold;">addl</span>  $12, <span style="font-weight: bold; font-style: italic;">%esp</span>
+
+  <span style="font-weight: bold;">pushl</span> $2             <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">WUNTRACED */</span>
+  <span style="font-weight: bold;">pushl</span> $__afl_temp    <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">status    */</span>
+  <span style="font-weight: bold;">pushl</span> __afl_fork_pid <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">PID       */</span>
+  <span style="font-weight: bold;">call</span>  waitpid
+  <span style="font-weight: bold;">addl</span>  $12, <span style="font-weight: bold; font-style: italic;">%esp</span>
+
+  <span style="font-weight: bold;">cmpl</span>  $0, <span style="font-weight: bold; font-style: italic;">%eax</span>
+  <span style="font-weight: bold;">jle</span>   __afl_die
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">Relay wait status to pipe, then loop back. */</span>
+
+  <span style="font-weight: bold;">pushl</span> $4          <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">length    */</span>
+  <span style="font-weight: bold;">pushl</span> $__afl_temp <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">data      */</span>
+  <span style="font-weight: bold;">pushl</span> $199        <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">file desc */</span>
+  <span style="font-weight: bold;">call</span>  write
+  <span style="font-weight: bold;">addl</span>  $12, <span style="font-weight: bold; font-style: italic;">%esp</span>
+
+  <span style="font-weight: bold;">jmp</span> __afl_fork_wait_loop
+
+<span style="font-weight: bold;">__afl_fork_resume</span>:
+
+  <span style="font-weight: bold; font-style: italic;">/* </span><span style="font-weight: bold; font-style: italic;">In child process: close fds, resume execution. */</span>
+
+  <span style="font-weight: bold;">pushl</span> $198
+  <span style="font-weight: bold;">call</span>  close
+
+  <span style="font-weight: bold;">pushl</span> $199
+  <span style="font-weight: bold;">call</span>  close
+
+  <span style="font-weight: bold;">addl</span>  $8, <span style="font-weight: bold; font-style: italic;">%esp</span>
+  <span style="font-weight: bold;">ret</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-10-27 Wed 16:07</p>
+<p class="date">Created: 2021-11-11 Thu 17:29</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

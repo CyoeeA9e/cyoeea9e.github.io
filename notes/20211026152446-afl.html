@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-11 Thu 17:29 -->
+<!-- 2021-11-12 Fri 14:59 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>AFL</title>
@@ -283,6 +283,7 @@ afl为了解决这个问题，在程序加载过程中进行插装，在完成�
 <li>文件描述符</li>
 <li><p>
 fuzzer变成了祖父进程，不能直接使用waitpid()和获取程序状态，因此需要通过父进程进行监控。
+简单的例子
 </p>
 <div class="org-src-container">
 <pre class="src src-asm"><span style="font-weight: bold;">__afl_forkserver</span>:
@@ -366,7 +367,7 @@ fuzzer变成了祖父进程，不能直接使用waitpid()和获取程序状态�
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-11 Thu 17:29</p>
+<p class="date">Created: 2021-11-12 Fri 14:59</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

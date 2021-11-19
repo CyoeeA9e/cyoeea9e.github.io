@@ -6,7 +6,7 @@
 <!-- 2021-11-18 Thu 09:37 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>SpecSafe: Detecting Cache Side Channels in a Speculative World</title>
+<title>Speculative execution</title>
 <meta name="generator" content="Org mode" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
@@ -233,155 +233,42 @@ ul.no-bullet {list-style: none}
     /*]]>*///-->
 // @license-end
 </script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        displayAlign: "center",
-        displayIndent: "0em",
-
-        "HTML-CSS": { scale: 100,
-                        linebreaks: { automatic: "false" },
-                        webFont: "TeX"
-                       },
-        SVG: {scale: 100,
-              linebreaks: { automatic: "false" },
-              font: "TeX"},
-        NativeMML: {scale: 100},
-        TeX: { equationNumbers: {autoNumber: "AMS"},
-               MultLineWidth: "85%",
-               TagSide: "right",
-               TagIndent: ".8em"
-             }
-});
-</script>
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="content">
-<h1 class="title">SpecSafe: Detecting Cache Side Channels in a Speculative World</h1>
+<h1 class="title">Speculative execution</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org47acff8">1. 新的预测执行侧信道</a>
-<ul>
-<li><a href="#orga11de90">1.1. 这3变种的思考</a></li>
-</ul>
-</li>
-<li><a href="#orgfef8ff4">2. Speculative-Aware Noninterference</a>
-<ul>
-<li><a href="#orgb9444e9">2.1. 现存定义的不足</a></li>
-</ul>
-</li>
-<li><a href="#org2d21f42">3. 文章主要贡献：</a></li>
+<li><a href="#orge6dea14">1. Branch speculation</a></li>
+<li><a href="#org1ecf30a">2. Exception speculation</a></li>
+<li><a href="#orgb66a3d6">3. Address speculation</a></li>
 </ul>
 </div>
 </div>
-<p>
-文章认为将转换缓存通道检测工具与预测执行工具相结合并不一定能涵盖所有可能的缓存侧信道。
-</p>
 
-<div id="outline-container-org47acff8" class="outline-2">
-<h2 id="org47acff8"><span class="section-number-2">1</span> 新的预测执行侧信道</h2>
+<div id="outline-container-orge6dea14" class="outline-2">
+<h2 id="orge6dea14"><span class="section-number-2">1</span> Branch speculation</h2>
 <div class="outline-text-2" id="text-1">
-
-<div id="org352903a" class="figure">
-<p><img src="./images/2021-11-04_16-21.png" alt="2021-11-04_16-21.png" />
-</p>
-</div>
-
-<ul class="org-ul">
-<li>通过条件分支时的预测执行过程读取某些变量到缓存中，从而导致泄漏分支判断中变量信息。</li>
-</ul>
-</div>
-
-<div id="outline-container-orga11de90" class="outline-3">
-<h3 id="orga11de90"><span class="section-number-3">1.1</span> 这3变种的思考</h3>
-<div class="outline-text-3" id="text-1-1">
-<ul class="org-ul">
-<li>个人认为，此类变种的意义为：通过错误训练+预测执行，可以通过侧信道泄漏更多的内容。
-对于一般程序而言，执行的内容越多泄漏的信息越多，通过预测执行可以导致程序执行更多的内容，从而泄漏出更多的信息。
-也就是，通过预测执行+正常执行来进行侧信道的攻击。
-但估计这种攻击难度很大。</li>
-<li>这3种变种的主要作用是泄漏key。</li>
-<li>a 中的代码形式不常见，为什么不直接写成temp=A[0]？</li>
-<li>b 中，误导向temp=A[((key+1)%2)*512]，则只有key%2=1的情况，会导致A[0]被加载到cache中，</li>
-</ul>
 <p>
-这种可以泄漏key的值，如果存在循环则可能泄漏多位。
+<a href="20211023113056-spectre_attack_exploiting_speculative_execution.html#ID-42cc5d33-9c25-4572-afeb-41c24c392f2c">Spectre V1</a>
+<a href="20211023113056-spectre_attack_exploiting_speculative_execution.html#ID-75246c73-32b1-4bad-8597-f70749ad4d1a">Spectre V2</a>
 </p>
-<ol class="org-ol">
-<li>如果需要循环，那么循环过程会对预测进行矫正，如何克服？</li>
-<li>需要细粒度地控制程序</li>
-</ol>
 </div>
 </div>
-</div>
-
-<div id="outline-container-orgfef8ff4" class="outline-2">
-<h2 id="orgfef8ff4"><span class="section-number-2">2</span> Speculative-Aware Noninterference</h2>
+<div id="outline-container-org1ecf30a" class="outline-2">
+<h2 id="org1ecf30a"><span class="section-number-2">2</span> Exception speculation</h2>
 <div class="outline-text-2" id="text-2">
 <p>
-cache中信息的可见程度。
-</p>
-
-<p>
-文章使用<a href="20211105150407-rigorous_analysis_of_software_countermeasures_against_cache_attacks.html#ID-94f00989-c858-449d-8060-785abd6a8e5a">block-trace observer</a>模型，粒度为cache line。
+<a href="20211115095304-meltdown.html#ID-2ba8c699-1920-4182-ac87-637c998a5751">Spectre V3</a>
+<a href="20211115095304-meltdown.html#ID-7eeb35b6-d334-4744-a126-04188b36a27c">Meltdown</a>
 </p>
 </div>
-
-<div id="outline-container-orgb9444e9" class="outline-3">
-<h3 id="orgb9444e9"><span class="section-number-3">2.1</span> 现存定义的不足</h3>
-<div class="outline-text-3" id="text-2-1">
-<p>
-主要无法找出上述新的侧信道泄漏。
-</p>
-
-<p>
-侧信道安全形式化定义：<a href="20211105151009-security_policies_and_security_models.html#ID-845f83f4-2e24-465c-a22f-42f631d135b8">Noninterferece property</a> 不相干性。
-</p>
-
-<p>
-策略 \(P\) 是公开变量的集合， \(m\) 为内存
-</p>
-
-<p>
-<b>Definition 1 (Low Eqivalence)</b> . Given a policy \(P\) , two memories \(m_1\) and \(m_2\) are low-equivalent according to \(P\) ,written as \(m_1 \simeq_P m_2\) if and only if \(\forall x \in P. m_1(x) = m_2(x)\) .
-</p>
-
-<p>
-\(s^{perf}_{\langle m,w \rangle}\) 表示没有预测执行的执行序列。
-</p>
-
-<p>
-<b>Definition 2 (Cache noninterference (CNI))</b> . A program s with policy \(P\) satisfies CNI if for all \(O\) , \(m_1 \simeq_P m_2\) , we have
-</p>
-
-\begin{equation}
-view(s^{perf}_{\langle m_1,0 \rangle}) = view(s^{perf}_{\langle m_2,0\rangle})
-\end{equation}
-
-<p>
-<b>Definition 3 (SNI-GEN)</b> . A program s with policy \(P\) satisfies SNI-GEN with transaction length \(w\)
-if for all \(m_1 \simeq_P m_2\) ,
-</p>
-
-\begin{equation}
-view(s^{perf}_{\langle m_1,0\rangle})=view(s^{perf}_{\langle m_2,0\rangle}) \Longrightarrow view(s^{mis}_{\langle m_1,0\rangle})=view(s^{mis}_{\langle m_2,0\rangle})
-\end{equation}
 </div>
-</div>
-</div>
-
-<div id="outline-container-org2d21f42" class="outline-2">
-<h2 id="org2d21f42"><span class="section-number-2">3</span> 文章主要贡献：</h2>
+<div id="outline-container-orgb66a3d6" class="outline-2">
+<h2 id="orgb66a3d6"><span class="section-number-2">3</span> Address speculation</h2>
 <div class="outline-text-2" id="text-3">
-<ul class="org-ul">
-<li>提出了一种新的Spectre V1变种，这种变种通过预测执行过程中对缓存的修改来判断条件分支中关键字的值。</li>
-<li>新的预测执行安全定义，Speculative-Aware Noninterferece。</li>
-<li>新的程序转换，Novel Program Transformation</li>
-<li>Speculative-Aware Symbolic Execution，基于新的预测执行安全定义设计的符号执行。将符号执行结果输入<a href="20211108095734-smt_solver.html#ID-becc345f-c97c-4bec-99c1-736767830c6c">SMT solver</a>。</li>
-</ul>
 </div>
 </div>
 </div>

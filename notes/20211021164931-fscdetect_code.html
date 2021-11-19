@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-12 Fri 14:59 -->
+<!-- 2021-11-18 Thu 09:37 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FSCDetect Code</title>
@@ -262,9 +262,9 @@ ul.no-bullet {list-style: none}
 <li><a href="#org477cd05">1.1.1.7. injectTrace</a></li>
 <li><a href="#org9d33731">1.1.1.8. handleInterestingMemoryAccesses</a></li>
 <li><a href="#org681a10d">1.1.1.9. _handle_memory_access_core</a></li>
-<li><a href="#org2274992">1.1.1.10. injectAFLBitMapOperation</a></li>
+<li><a href="#org17d4951">1.1.1.10. injectAFLBitMapOperation</a></li>
 <li><a href="#orga8ece8f">1.1.1.11. runInlineClone</a></li>
-<li><a href="#org17d4951">1.1.1.12. injectAFLBitMapOperation</a></li>
+<li><a href="#org14b17fe">1.1.1.12. injectAFLBitMapOperation</a></li>
 <li><a href="#org5626026">1.1.1.13. FSCDSplitBasicBlock</a></li>
 </ul>
 </li>
@@ -289,13 +289,20 @@ ul.no-bullet {list-style: none}
 </li>
 <li><a href="#org4691f87">2. AFL</a>
 <ul>
-<li><a href="#org2af6624">2.1. main</a></li>
-<li><a href="#org3a7706d">2.2. perform_dry_run</a></li>
-<li><a href="#org8825b94">2.3. fscd_setup_shm</a></li>
-<li><a href="#orgc309c8a">2.4. call_queue</a></li>
-<li><a href="#orgc24544e">2.5. write_to_testcase</a></li>
-<li><a href="#org0c56bf8">2.6. fuzz_one_phase1</a></li>
-<li><a href="#org18c3db1">2.7. run_target</a></li>
+<li><a href="#org5d8e2cc">2.1. fscd_mode</a>
+<ul>
+<li><a href="#orgd8aa6c8">2.1.1. fscd_init</a></li>
+<li><a href="#org05a5557">2.1.2. _fscd_init</a></li>
+<li><a href="#org6728750">2.1.3. <span class="todo TODO">TODO</span> get_fiduciary_rt</a></li>
+</ul>
+</li>
+<li><a href="#org2af6624">2.2. main</a></li>
+<li><a href="#org3a7706d">2.3. perform_dry_run</a></li>
+<li><a href="#org8825b94">2.4. fscd_setup_shm</a></li>
+<li><a href="#orgc309c8a">2.5. call_queue</a></li>
+<li><a href="#orgc24544e">2.6. write_to_testcase</a></li>
+<li><a href="#org0c56bf8">2.7. fuzz_one_phase1</a></li>
+<li><a href="#org18c3db1">2.8. run_target</a></li>
 </ul>
 </li>
 </ul>
@@ -921,8 +928,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org2274992" class="outline-5">
-<h5 id="org2274992"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
+<div id="outline-container-org17d4951" class="outline-5">
+<h5 id="org17d4951"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
 <div class="outline-text-5" id="text-1-1-1-10">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">injectAFLBitMapOperation</span>(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>, <span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">cur_loc</span>) {
@@ -975,7 +982,7 @@ ul.no-bullet {list-style: none}
 <li><a href="#org2565fb7">FSCDTrace</a>::<a href="#org7b30ca1">cloneInline</a></li>
 <li><a href="#orgb565214">AFL_R</a></li>
 <li><a href="#org477cd05">injectTrace</a></li>
-<li><a href="#org17d4951">injectAFLBitMapOperation</a></li>
+<li><a href="#org14b17fe">injectAFLBitMapOperation</a></li>
 </ul>
 <p>
 对基本块进行插装。
@@ -1030,8 +1037,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org17d4951" class="outline-5">
-<h5 id="org17d4951"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
+<div id="outline-container-org14b17fe" class="outline-5">
+<h5 id="org14b17fe"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
 <div class="outline-text-5" id="text-1-1-1-12">
 </div>
 </div>
@@ -1244,23 +1251,63 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 <a href="20211026152446-afl.html#ID-fb6ddb5a-83de-411f-8e89-fb125b9e732d">AFL</a>
 </p>
 </div>
-<div id="outline-container-org2af6624" class="outline-3">
-<h3 id="org2af6624"><span class="section-number-3">2.1</span> main</h3>
+<div id="outline-container-org5d8e2cc" class="outline-3">
+<h3 id="org5d8e2cc"><span class="section-number-3">2.1</span> fscd_mode</h3>
 <div class="outline-text-3" id="text-2-1">
+<p>
+fscd runtime代码
+</p>
+</div>
+<div id="outline-container-orgd8aa6c8" class="outline-4">
+<h4 id="orgd8aa6c8"><span class="section-number-4">2.1.1</span> fscd_init</h4>
+<div class="outline-text-4" id="text-2-1-1">
+<p>
+调用<a href="#org05a5557">_fscd_init</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org05a5557" class="outline-4">
+<h4 id="org05a5557"><span class="section-number-4">2.1.2</span> _fscd_init</h4>
+<div class="outline-text-4" id="text-2-1-2">
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold;">_fscd_init</span>() {
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#36816;&#34892;&#26102;&#19978;&#19979;&#25991;&#20445;&#23384;&#23454;&#20363;</span>
+  <span style="font-weight: bold; text-decoration: underline;">RTInstrumentCtx_SimpleComparison</span> *<span style="font-weight: bold; font-style: italic;">runtime_ctx</span> =
+      getSimpleComparisonCtxInstance();
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;&#20849;&#20139;&#20869;&#23384;</span>
+  runtime_ctx-&gt;attach_shm();
+  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#33719;&#21462;&#22996;&#25176;&#65311;</span>
+  runtime_ctx-&gt;get_fiduciary_rt().init_allocator();
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#26500;&#24314;&#22522;&#26412;&#22359;&#30340;instrument map &#36827;&#34892;&#21021;&#22987;&#21270;</span>
+  _fscd_init_block_instrumentation();
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org6728750" class="outline-4">
+<h4 id="org6728750"><span class="section-number-4">2.1.3</span> <span class="todo TODO">TODO</span> get_fiduciary_rt</h4>
+</div>
+</div>
+<div id="outline-container-org2af6624" class="outline-3">
+<h3 id="org2af6624"><span class="section-number-3">2.2</span> main</h3>
+<div class="outline-text-3" id="text-2-2">
 <p>
 调用<a href="#org3a7706d">perform_dry_run</a>来初始化fork_server
 </p>
 </div>
 </div>
 <div id="outline-container-org3a7706d" class="outline-3">
-<h3 id="org3a7706d"><span class="section-number-3">2.2</span> perform_dry_run</h3>
-<div class="outline-text-3" id="text-2-2">
+<h3 id="org3a7706d"><span class="section-number-3">2.3</span> perform_dry_run</h3>
+<div class="outline-text-3" id="text-2-3">
 </div>
 </div>
 
 <div id="outline-container-org8825b94" class="outline-3">
-<h3 id="org8825b94"><span class="section-number-3">2.3</span> fscd_setup_shm</h3>
-<div class="outline-text-3" id="text-2-3">
+<h3 id="org8825b94"><span class="section-number-3">2.4</span> fscd_setup_shm</h3>
+<div class="outline-text-3" id="text-2-4">
 <p>
 设置共享内存空间
 </p>
@@ -1331,19 +1378,19 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 </div>
 
 <div id="outline-container-orgc309c8a" class="outline-3">
-<h3 id="orgc309c8a"><span class="section-number-3">2.4</span> call_queue</h3>
+<h3 id="orgc309c8a"><span class="section-number-3">2.5</span> call_queue</h3>
 </div>
 <div id="outline-container-orgc24544e" class="outline-3">
-<h3 id="orgc24544e"><span class="section-number-3">2.5</span> write_to_testcase</h3>
-<div class="outline-text-3" id="text-2-5">
+<h3 id="orgc24544e"><span class="section-number-3">2.6</span> write_to_testcase</h3>
+<div class="outline-text-3" id="text-2-6">
 <p>
 将内存映射的内容写入到文件中
 </p>
 </div>
 </div>
 <div id="outline-container-org0c56bf8" class="outline-3">
-<h3 id="org0c56bf8"><span class="section-number-3">2.6</span> fuzz_one_phase1</h3>
-<div class="outline-text-3" id="text-2-6">
+<h3 id="org0c56bf8"><span class="section-number-3">2.7</span> fuzz_one_phase1</h3>
+<div class="outline-text-3" id="text-2-7">
 <div class="org-src-container">
 <pre class="src src-C"><span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">u8</span> <span style="font-weight: bold;">fuzz_one_phase1</span>(<span style="font-weight: bold; text-decoration: underline;">char</span> ** <span style="font-weight: bold; font-style: italic;">argv</span>){
   <span style="font-weight: bold; text-decoration: underline;">s32</span> <span style="font-weight: bold; font-style: italic;">len</span>, <span style="font-weight: bold; font-style: italic;">fd</span>;
@@ -1480,8 +1527,8 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 </div>
 
 <div id="outline-container-org18c3db1" class="outline-3">
-<h3 id="org18c3db1"><span class="section-number-3">2.7</span> run_target</h3>
-<div class="outline-text-3" id="text-2-7">
+<h3 id="org18c3db1"><span class="section-number-3">2.8</span> run_target</h3>
+<div class="outline-text-3" id="text-2-8">
 <div class="org-src-container">
 <pre class="src src-C"><span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#26032;&#22686; cmd &#21442;&#25968;</span>
 <span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">u8</span> <span style="font-weight: bold;">run_target</span>(<span style="font-weight: bold; text-decoration: underline;">char</span>** <span style="font-weight: bold; font-style: italic;">argv</span>, <span style="font-weight: bold; text-decoration: underline;">u32</span> <span style="font-weight: bold; font-style: italic;">timeout</span>, <span style="font-weight: bold; text-decoration: underline;">u32</span> <span style="font-weight: bold; font-style: italic;">cmd</span>) {
@@ -1729,7 +1776,7 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-12 Fri 14:59</p>
+<p class="date">Created: 2021-11-18 Thu 09:37</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-12 Fri 14:59 -->
+<!-- 2021-11-18 Thu 15:32 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Speculative Buffer Overflows: Attacks and Defenses</title>
@@ -241,22 +241,378 @@ ul.no-bullet {list-style: none}
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgb509595">1. DOING 看论文</a></li>
+<li><a href="#orgda7204b">1. Spectre V1.1</a>
+<ul>
+<li><a href="#org3a604d1">1.1. 前置条件</a></li>
+<li><a href="#orgde7f62e">1.2. Speculative Store-to-Load Forwarding</a>
+<ul>
+<li><a href="#org8de92a5">1.2.1. Store buffer</a></li>
+<li><a href="#orgabe3f21">1.2.2. 要求</a></li>
+</ul>
+</li>
+<li><a href="#org7e20a80">1.3. <span class="todo TODO">TODO</span> Non-blocking Caches</a></li>
+</ul>
+</li>
+<li><a href="#orgd89e829">2. Spectre V1.2</a></li>
+<li><a href="#orgeb06d9c">3. 防御方法</a>
+<ul>
+<li><a href="#orgd6cea28">3.1. Spectre1.1 手动防御</a>
+<ul>
+<li><a href="#org489e7d2">3.1.1. Speculation Fences</a></li>
+<li><a href="#org7417638">3.1.2. Coarse Masking</a></li>
+<li><a href="#org3fc3c1c">3.1.3. Data-dependent Exact Masking</a></li>
+<li><a href="#orgfa9e73c">3.1.4. <span class="todo TODO">TODO</span> Congruent Branch TOCTOU</a></li>
+</ul>
+</li>
+<li><a href="#org070cf87">3.2. 强化后的传统缓冲区溢出缓解方法</a>
+<ul>
+<li><a href="#org5e761d1">3.2.1. 通用的Code-Pointer保护</a></li>
+<li><a href="#org1b57eaa">3.2.2. Return Protections</a></li>
+<li><a href="#org61cc016">3.2.3. ASLR</a></li>
+<li><a href="#org6096225">3.2.4. MPK（Memory Protections Keys）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgee42d0d">4. 硬件缓解方法</a>
+<ul>
+<li><a href="#org16b5e9e">4.1. Store-to-Load Blocking</a></li>
+<li><a href="#org606af9d">4.2. Lazy Store-to-Load Forwarding</a></li>
+<li><a href="#org19f44f9">4.3. Frozen Store-to-Load Forwarding</a></li>
+</ul>
+</li>
+<li><a href="#org3c13353">5. Speculative Attack Payloads</a>
+<ul>
+<li><a href="#org938e006">5.1. stateful channel</a></li>
+<li><a href="#org707428c">5.2. stateless channel</a></li>
+</ul>
+</li>
+<li><a href="#orga57a410">6. 总结</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgb509595" class="outline-2">
-<h2 id="orgb509595"><span class="section-number-2">1</span> DOING 看论文</h2>
+<div id="outline-container-orgda7204b" class="outline-2">
+<h2 id="orgda7204b"><span class="section-number-2">1</span> Spectre V1.1</h2>
 <div class="outline-text-2" id="text-1">
+<p>
+CVE-2018-3693
+</p>
+
+<p>
+Bounds Check Bypass on Stores
+</p>
+
+<p>
+运行过程中处理器可以无视边界写入数据，该写入是预测写入（speculative write）,不会对内存产生影响，但会对微架构产生影响。
+</p>
+
+<p>
+Spectre V1
+</p>
+<div class="org-src-container">
+<pre class="src src-C"><span class="linenr">1: </span><span style="font-weight: bold;">if</span> (x &lt; lenb)
+<span id="coderef-rop" class="coderef-off"><span class="linenr">2: </span>  <span style="font-weight: bold;">return</span> a[b[x] * 512];</span>
+</pre>
+</div>
+
+<p>
+Spectre V1.1
+</p>
+<div class="org-src-container">
+<pre class="src src-C"><span class="linenr">1: </span><span style="font-weight: bold;">if</span> (y &lt; lenc)
+<span id="coderef-store" class="coderef-off"><span class="linenr">2: </span>  <span style="font-weight: bold; text-decoration: underline;">c</span>[y] = z;</span>
+</pre>
+</div>
+
+<p>
+Spectre V1.1 <a href="#coderef-store" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-store');" onmouseout="CodeHighlightOff(this, 'coderef-store');">2</a> 中的c[y]可以指向return地址，通过修改缓存中的返回地址，来短暂的控制程序流, 如跳转到<a href="#coderef-rop" class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-rop');" onmouseout="CodeHighlightOff(this, 'coderef-rop');">2</a>。
+能够绕过V1中的fence指令
+</p>
+</div>
+
+<div id="outline-container-org3a604d1" class="outline-3">
+<h3 id="org3a604d1"><span class="section-number-3">1.1</span> 前置条件</h3>
+<div class="outline-text-3" id="text-1-1">
 <ul class="org-ul">
-<li>State "DOING"      from "TODO"       <span class="timestamp-wrapper"><span class="timestamp">[2021-11-12 Fri 14:47]</span></span></li>
+<li>从条件分支开始到Spectre V1 gadgets需要在窗口范围内。</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgde7f62e" class="outline-3">
+<h3 id="orgde7f62e"><span class="section-number-3">1.2</span> Speculative Store-to-Load Forwarding</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+Spectre1.1 依赖store-to-load forwarding
+</p>
+</div>
+
+<div id="outline-container-org8de92a5" class="outline-4">
+<h4 id="org8de92a5"><span class="section-number-4">1.2.1</span> Store buffer</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<p>
+一种微架构，用来追踪储存，直到写入data cache。
+</p>
+
+<p>
+Intel Skylake, 追踪56条正在进行中的储存，它有4种责任：
+</p>
+<ul class="org-ul">
+<li>在有序核心中，作为L1 cache的写入buffer.</li>
+<li>在乱序核心中，在退役之前不会被写回。</li>
+<li>写入是乱序的。</li>
+<li>用来确保内存的一致性和连贯性。</li>
+</ul>
+
+<p>
+能够确保预测执行的过程中的后续load指令加载之前储存的数据。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgabe3f21" class="outline-4">
+<h4 id="orgabe3f21"><span class="section-number-4">1.2.2</span> 要求</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<ul class="org-ul">
+<li>load size &lt; store size</li>
+<li>store是该地址上最新的修改。</li>
+<li></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org7e20a80" class="outline-3">
+<h3 id="org7e20a80"><span class="section-number-3">1.3</span> <span class="todo TODO">TODO</span> Non-blocking Caches</h3>
+</div>
+</div>
+
+<div id="outline-container-orgd89e829" class="outline-2">
+<h2 id="orgd89e829"><span class="section-number-2">2</span> Spectre V1.2</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+类似<a href="20211115095304-meltdown.html#ID-7eeb35b6-d334-4744-a126-04188b36a27c">Meltdown</a>, 依赖lazy PTE(Page-Table entry) enforcement, 修改只读数据。
+</p>
+
+<p>
+可以修改vtables, GOT/IAT
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgeb06d9c" class="outline-2">
+<h2 id="orgeb06d9c"><span class="section-number-2">3</span> 防御方法</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgd6cea28" class="outline-3">
+<h3 id="orgd6cea28"><span class="section-number-3">3.1</span> Spectre1.1 手动防御</h3>
+<div class="outline-text-3" id="text-3-1">
+</div>
+<div id="outline-container-org489e7d2" class="outline-4">
+<h4 id="org489e7d2"><span class="section-number-4">3.1.1</span> Speculation Fences</h4>
+<div class="outline-text-4" id="text-3-1-1">
+<p>
+在判定条件后加入fence指令。
+</p>
+
+<p>
+安全，但比较影响性能。
+</p>
+</div>
+</div>
+<div id="outline-container-org7417638" class="outline-4">
+<h4 id="org7417638"><span class="section-number-4">3.1.2</span> Coarse Masking</h4>
+<div class="outline-text-4" id="text-3-1-2">
+<p>
+限定index的取值范围.
+</p>
+
+<p>
+不安全
+</p>
+
+<p>
+不同的内存布局可能导致泄漏关键信息, mask也可能不在缓存中。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3fc3c1c" class="outline-4">
+<h4 id="org3fc3c1c"><span class="section-number-4">3.1.3</span> Data-dependent Exact Masking</h4>
+<div class="outline-text-4" id="text-3-1-3">
+<p>
+基于数据依赖的索引。
+</p>
+
+<p>
+有效，但编译器的优化可能导致失效。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgfa9e73c" class="outline-4">
+<h4 id="orgfa9e73c"><span class="section-number-4">3.1.4</span> <span class="todo TODO">TODO</span> Congruent Branch TOCTOU</h4>
+<div class="outline-text-4" id="text-3-1-4">
+<p>
+共轭分支TOCTOU。
+</p>
+
+<p>
+共轭分支：一起进一起出。
+</p>
+
+<p>
+<a href="20211118091832-toctou.html#ID-9bdfb341-6130-4049-addb-31792696007c">TOCTOU</a>
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org070cf87" class="outline-3">
+<h3 id="org070cf87"><span class="section-number-3">3.2</span> 强化后的传统缓冲区溢出缓解方法</h3>
+<div class="outline-text-3" id="text-3-2">
+</div>
+<div id="outline-container-org5e761d1" class="outline-4">
+<h4 id="org5e761d1"><span class="section-number-4">3.2.1</span> 通用的Code-Pointer保护</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<p>
+需要将条件判定修改为算术执行。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1b57eaa" class="outline-4">
+<h4 id="org1b57eaa"><span class="section-number-4">3.2.2</span> Return Protections</h4>
+<div class="outline-text-4" id="text-3-2-2">
+<p>
+传统的canary能够进行保护。
+</p>
+
+<p>
+但是编译器在认为写入是安全时会优化掉canary,而在预测执行时这些写入是不安全的。
+</p>
+
+<p>
+硬件方面，主要是对RSB的保护，可以考虑：
+</p>
+<ul class="org-ul">
+<li>在预测执行过程中禁止RSB。</li>
+<li>预测储存不会被用于ret。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org61cc016" class="outline-4">
+<h4 id="org61cc016"><span class="section-number-4">3.2.3</span> ASLR</h4>
+<div class="outline-text-4" id="text-3-2-3">
+<p>
+效果不好，可以被轻松绕过。
+</p>
+
+<p>
+如：
+c[y] = z -&gt; c[y] += z
+</p>
+
+<p>
+Spectre3.0 和Spectre3.1也能够绕过Kernel ASLR。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org6096225" class="outline-4">
+<h4 id="org6096225"><span class="section-number-4">3.2.4</span> MPK（Memory Protections Keys）</h4>
+<div class="outline-text-4" id="text-3-2-4">
+<p>
+目前的MPK不能缓解Spectre3，但未来的硬件缓解措施能够避免Spectre1.0 访问隐私数据。
+</p>
+
+<p>
+但Spectre1,可以关闭这些保护，然后再读取数据。
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgee42d0d" class="outline-2">
+<h2 id="orgee42d0d"><span class="section-number-2">4</span> 硬件缓解方法</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+提出了SLoth（Store-to-Load oth）
+</p>
+</div>
+<div id="outline-container-org16b5e9e" class="outline-3">
+<h3 id="org16b5e9e"><span class="section-number-3">4.1</span> Store-to-Load Blocking</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+禁止<a href="#orgde7f62e">Speculative Store-to-Load Forwarding</a>
+</p>
+
+<p>
+安全性最佳，但性能损失较高。
+</p>
+</div>
+</div>
+<div id="outline-container-org606af9d" class="outline-3">
+<h3 id="org606af9d"><span class="section-number-3">4.2</span> Lazy Store-to-Load Forwarding</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+编译器标记forwarding的候选指令，
+</p>
+</div>
+</div>
+<div id="outline-container-org19f44f9" class="outline-3">
+<h3 id="org19f44f9"><span class="section-number-3">4.3</span> Frozen Store-to-Load Forwarding</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+动态标记store-to-load forwarding指令
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org3c13353" class="outline-2">
+<h2 id="org3c13353"><span class="section-number-2">5</span> Speculative Attack Payloads</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org938e006" class="outline-3">
+<h3 id="org938e006"><span class="section-number-3">5.1</span> stateful channel</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+比如timing of cache-line presence state
+</p>
+<ul class="org-ul">
+<li>cache memory state: cache line, cache sets&#x2026;</li>
+<li>branch predictor state: branch target buffer, branch history table&#x2026;</li>
+<li>address translation state: TLB, PTE cache</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org707428c" class="outline-3">
+<h3 id="org707428c"><span class="section-number-3">5.2</span> stateless channel</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+Throughput Timing Side Channel
+</p>
+<ul class="org-ul">
+<li>cache resources: slice, bank</li>
+<li>OoO(Out-of-Order) execution resources: ports, buffer</li>
+<li>System resources: DRAM, QPI</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orga57a410" class="outline-2">
+<h2 id="orga57a410"><span class="section-number-2">6</span> 总结</h2>
+<div class="outline-text-2" id="text-6">
+<ul class="org-ul">
+<li>提出了2个新的Spectre变种：Spectre1.1, Spectre1.2, 利用store-to-load forwarding对预测执行阶段的控制流进行劫持。</li>
+<li>分析了现有方法的防御效果。</li>
+<li>提出了可能缓解这两种变种的防御方法。</li>
 </ul>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-12 Fri 14:59</p>
+<p class="date">Created: 2021-11-18 Thu 15:32</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

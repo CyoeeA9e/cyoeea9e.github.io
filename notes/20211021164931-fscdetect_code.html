@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-18 Thu 09:37 -->
+<!-- 2021-11-22 Mon 09:56 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FSCDetect Code</title>
@@ -262,9 +262,9 @@ ul.no-bullet {list-style: none}
 <li><a href="#org477cd05">1.1.1.7. injectTrace</a></li>
 <li><a href="#org9d33731">1.1.1.8. handleInterestingMemoryAccesses</a></li>
 <li><a href="#org681a10d">1.1.1.9. _handle_memory_access_core</a></li>
-<li><a href="#org17d4951">1.1.1.10. injectAFLBitMapOperation</a></li>
+<li><a href="#org14b17fe">1.1.1.10. injectAFLBitMapOperation</a></li>
 <li><a href="#orga8ece8f">1.1.1.11. runInlineClone</a></li>
-<li><a href="#org14b17fe">1.1.1.12. injectAFLBitMapOperation</a></li>
+<li><a href="#org2512d87">1.1.1.12. injectAFLBitMapOperation</a></li>
 <li><a href="#org5626026">1.1.1.13. FSCDSplitBasicBlock</a></li>
 </ul>
 </li>
@@ -289,11 +289,18 @@ ul.no-bullet {list-style: none}
 </li>
 <li><a href="#org4691f87">2. AFL</a>
 <ul>
-<li><a href="#org5d8e2cc">2.1. fscd_mode</a>
+<li><a href="#org3e7e13a">2.1. fscd runtime</a>
 <ul>
-<li><a href="#orgd8aa6c8">2.1.1. fscd_init</a></li>
-<li><a href="#org05a5557">2.1.2. _fscd_init</a></li>
-<li><a href="#org6728750">2.1.3. <span class="todo TODO">TODO</span> get_fiduciary_rt</a></li>
+<li><a href="#orgd0f621e">2.1.1. __fscd_trace_pc_normal_bb</a></li>
+<li><a href="#orgd8aa6c8">2.1.2. fscd_init</a></li>
+<li><a href="#org05a5557">2.1.3. _fscd_init</a></li>
+<li><a href="#org6728750">2.1.4. <span class="todo TODO">TODO</span> get_fiduciary_rt</a></li>
+<li><a href="#org34c1695">2.1.5. _fscd_before_iteration</a></li>
+<li><a href="#org77545b9">2.1.6. RTInstrumentCtx_SimpleComparison</a>
+<ul>
+<li><a href="#orgdc56ab9">2.1.6.1. prepare_comparison_rt</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#org2af6624">2.2. main</a></li>
@@ -928,8 +935,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org17d4951" class="outline-5">
-<h5 id="org17d4951"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
+<div id="outline-container-org14b17fe" class="outline-5">
+<h5 id="org14b17fe"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
 <div class="outline-text-5" id="text-1-1-1-10">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">injectAFLBitMapOperation</span>(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>, <span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">cur_loc</span>) {
@@ -982,7 +989,7 @@ ul.no-bullet {list-style: none}
 <li><a href="#org2565fb7">FSCDTrace</a>::<a href="#org7b30ca1">cloneInline</a></li>
 <li><a href="#orgb565214">AFL_R</a></li>
 <li><a href="#org477cd05">injectTrace</a></li>
-<li><a href="#org14b17fe">injectAFLBitMapOperation</a></li>
+<li><a href="#org2512d87">injectAFLBitMapOperation</a></li>
 </ul>
 <p>
 对基本块进行插装。
@@ -1037,8 +1044,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org14b17fe" class="outline-5">
-<h5 id="org14b17fe"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
+<div id="outline-container-org2512d87" class="outline-5">
+<h5 id="org2512d87"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
 <div class="outline-text-5" id="text-1-1-1-12">
 </div>
 </div>
@@ -1251,16 +1258,19 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 <a href="20211026152446-afl.html#ID-fb6ddb5a-83de-411f-8e89-fb125b9e732d">AFL</a>
 </p>
 </div>
-<div id="outline-container-org5d8e2cc" class="outline-3">
-<h3 id="org5d8e2cc"><span class="section-number-3">2.1</span> fscd_mode</h3>
+<div id="outline-container-org3e7e13a" class="outline-3">
+<h3 id="org3e7e13a"><span class="section-number-3">2.1</span> fscd runtime</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 fscd runtime代码
 </p>
 </div>
+<div id="outline-container-orgd0f621e" class="outline-4">
+<h4 id="orgd0f621e"><span class="section-number-4">2.1.1</span> __fscd_trace_pc_normal_bb</h4>
+</div>
 <div id="outline-container-orgd8aa6c8" class="outline-4">
-<h4 id="orgd8aa6c8"><span class="section-number-4">2.1.1</span> fscd_init</h4>
-<div class="outline-text-4" id="text-2-1-1">
+<h4 id="orgd8aa6c8"><span class="section-number-4">2.1.2</span> fscd_init</h4>
+<div class="outline-text-4" id="text-2-1-2">
 <p>
 调用<a href="#org05a5557">_fscd_init</a>
 </p>
@@ -1268,8 +1278,8 @@ fscd runtime代码
 </div>
 
 <div id="outline-container-org05a5557" class="outline-4">
-<h4 id="org05a5557"><span class="section-number-4">2.1.2</span> _fscd_init</h4>
-<div class="outline-text-4" id="text-2-1-2">
+<h4 id="org05a5557"><span class="section-number-4">2.1.3</span> _fscd_init</h4>
+<div class="outline-text-4" id="text-2-1-3">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold;">_fscd_init</span>() {
   <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#36816;&#34892;&#26102;&#19978;&#19979;&#25991;&#20445;&#23384;&#23454;&#20363;</span>
@@ -1288,9 +1298,45 @@ fscd runtime代码
 </div>
 </div>
 <div id="outline-container-org6728750" class="outline-4">
-<h4 id="org6728750"><span class="section-number-4">2.1.3</span> <span class="todo TODO">TODO</span> get_fiduciary_rt</h4>
+<h4 id="org6728750"><span class="section-number-4">2.1.4</span> <span class="todo TODO">TODO</span> get_fiduciary_rt</h4>
+</div>
+<div id="outline-container-org34c1695" class="outline-4">
+<h4 id="org34c1695"><span class="section-number-4">2.1.5</span> _fscd_before_iteration</h4>
+<div class="outline-text-4" id="text-2-1-5">
+<p>
+根据cmd的来选择模式，分为normal, fiduciary, comparison，
+</p>
 </div>
 </div>
+<div id="outline-container-org77545b9" class="outline-4">
+<h4 id="org77545b9"><span class="section-number-4">2.1.6</span> RTInstrumentCtx_SimpleComparison</h4>
+<div class="outline-text-4" id="text-2-1-6">
+</div>
+<div id="outline-container-orgdc56ab9" class="outline-5">
+<h5 id="orgdc56ab9"><span class="section-number-5">2.1.6.1</span> prepare_comparison_rt</h5>
+<div class="outline-text-5" id="text-2-1-6-1">
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">RTInstrumentCtx_SimpleComparison</span>::<span style="font-weight: bold;">prepare_fiduciary_rt</span>(){
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">1. &#25346;&#36733;&#20849;&#20139;&#20869;&#23384;, &#22810;&#20010;&#36827;&#31243;&#25317;&#26377;, &#35774;&#32622;&#20026;&#21487;&#20889;</span>
+  attach_shm();
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">2. &#20934;&#22791;fiduciary recorder</span>
+  rt_fiduciary-&gt;prepare_trace_recorder();
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22914;&#26524;&#21069;&#27425;mode&#26159;FiduciaryMode&#65292;&#21017;&#19981;&#38656;&#35201;&#20877;&#27425;instrument</span>
+  <span style="font-weight: bold;">if</span>(mode != FiduciaryMode){
+    module_info-&gt;instrument_all_bbs();
+  }
+
+  <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">4. &#35774;&#32622;&#36816;&#34892;&#26102;&#30340;&#25509;&#21475;&#37319;&#29992;baseline</span>
+  switch_mode(FiduciaryMode);
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
 <div id="outline-container-org2af6624" class="outline-3">
 <h3 id="org2af6624"><span class="section-number-3">2.2</span> main</h3>
 <div class="outline-text-3" id="text-2-2">
@@ -1776,7 +1822,7 @@ fscd runtime代码
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-18 Thu 09:37</p>
+<p class="date">Created: 2021-11-22 Mon 09:56</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

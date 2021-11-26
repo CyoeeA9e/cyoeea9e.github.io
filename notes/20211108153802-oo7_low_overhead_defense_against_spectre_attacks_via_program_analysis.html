@@ -3,11 +3,12 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-11 Thu 09:56 -->
+<!-- 2021-11-25 四 18:25 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>oo7: Low-overhead Defense against Spectre Attacks via Program Analysis</title>
 <meta name="generator" content="Org mode" />
+<meta name="author" content="theone" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -241,46 +242,46 @@ ul.no-bullet {list-style: none}
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org79c4c8e">1. Spectre 变种的分类</a>
+<li><a href="#org542c9ae">1. Spectre 变种的分类</a>
 <ul>
-<li><a href="#org80d9aed">1.1. Spectre V1 及其变种</a>
+<li><a href="#org812982c">1.1. Spectre V1 及其变种</a>
 <ul>
-<li><a href="#org429237d">1.1.1. Spectre V1</a></li>
-<li><a href="#org84ecbcc">1.1.2. Spectre V1.1</a></li>
-<li><a href="#org11fb0e2">1.1.3. Spectre V1.2</a></li>
-<li><a href="#org50b88c6">1.1.4. Spectre-NG V4</a></li>
+<li><a href="#org8ada5ce">1.1.1. Spectre V1</a></li>
+<li><a href="#org6bf859e">1.1.2. Spectre V1.1</a></li>
+<li><a href="#org09adc6f">1.1.3. Spectre V1.2</a></li>
+<li><a href="#org3cb83fe">1.1.4. Spectre-NG V4</a></li>
 </ul>
 </li>
-<li><a href="#org57153e7">1.2. Spectre V2 及其变种</a>
+<li><a href="#orgd3c9b99">1.2. Spectre V2 及其变种</a>
 <ul>
-<li><a href="#orgd1df2e8">1.2.1. Spectre V2</a></li>
-<li><a href="#org033fddc">1.2.2. SpectreRSB</a></li>
+<li><a href="#orgd1ff7ac">1.2.1. Spectre V2</a></li>
+<li><a href="#org76e53ef">1.2.2. SpectreRSB</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org0f1181d">2. 文章概述</a></li>
-<li><a href="#orgc615ef1">3. Spectre检测</a>
+<li><a href="#orgd8999e6">2. 文章概述</a></li>
+<li><a href="#org94e89d2">3. Spectre检测</a>
 <ul>
-<li><a href="#org5e6bf65">3.1. V1</a></li>
-<li><a href="#org0e5134d">3.2. 污点分析</a></li>
+<li><a href="#org84412a5">3.1. V1</a></li>
+<li><a href="#org125ce76">3.2. 污点分析</a></li>
 </ul>
 </li>
-<li><a href="#orgcf851f0">4. 实现</a></li>
-<li><a href="#orgb362ee9">5. 测试</a>
+<li><a href="#org98fb762">4. 实现</a></li>
+<li><a href="#orgf23b425">5. 测试</a>
 <ul>
-<li><a href="#orgc6cb740">5.1. 测试数据集</a></li>
-<li><a href="#org3c80598">5.2. 测试结果</a></li>
+<li><a href="#org51975c4">5.1. 测试数据集</a></li>
+<li><a href="#org872c07d">5.2. 测试结果</a></li>
 </ul>
 </li>
-<li><a href="#orgf2c6583">6. 总结</a></li>
-<li><a href="#orgb956d80">7. 思考</a></li>
+<li><a href="#orga6bcf5d">6. 总结</a></li>
+<li><a href="#orge5c51a8">7. 思考</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org79c4c8e" class="outline-2">
-<h2 id="org79c4c8e"><span class="section-number-2">1</span> Spectre 变种的分类</h2>
+<div id="outline-container-org542c9ae" class="outline-2">
+<h2 id="org542c9ae"><span class="section-number-2">1</span> Spectre 变种的分类</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>代码中的漏洞，存在类似的代码段。</li>
@@ -288,12 +289,12 @@ ul.no-bullet {list-style: none}
 <li>暂时的乱序执行，攻击者执行恶意代码来读取内存中数据。</li>
 </ul>
 </div>
-<div id="outline-container-org80d9aed" class="outline-3">
-<h3 id="org80d9aed"><span class="section-number-3">1.1</span> Spectre V1 及其变种</h3>
+<div id="outline-container-org812982c" class="outline-3">
+<h3 id="org812982c"><span class="section-number-3">1.1</span> Spectre V1 及其变种</h3>
 <div class="outline-text-3" id="text-1-1">
 </div>
-<div id="outline-container-org429237d" class="outline-4">
-<h4 id="org429237d"><span class="section-number-4">1.1.1</span> Spectre V1</h4>
+<div id="outline-container-org8ada5ce" class="outline-4">
+<h4 id="org8ada5ce"><span class="section-number-4">1.1.1</span> Spectre V1</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 定义：
@@ -315,8 +316,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org84ecbcc" class="outline-4">
-<h4 id="org84ecbcc"><span class="section-number-4">1.1.2</span> Spectre V1.1</h4>
+<div id="outline-container-org6bf859e" class="outline-4">
+<h4 id="org6bf859e"><span class="section-number-4">1.1.2</span> Spectre V1.1</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <p>
 Bounds Check Bypass Store
@@ -337,16 +338,16 @@ array1[x] 可以是返回地址，也可以SEH。
 </div>
 </div>
 
-<div id="outline-container-org11fb0e2" class="outline-4">
-<h4 id="org11fb0e2"><span class="section-number-4">1.1.3</span> Spectre V1.2</h4>
+<div id="outline-container-org09adc6f" class="outline-4">
+<h4 id="org09adc6f"><span class="section-number-4">1.1.3</span> Spectre V1.2</h4>
 <div class="outline-text-4" id="text-1-1-3">
 <p>
 类似V1.1，可以实现修改只读的内存区域，如代码指针。
 </p>
 </div>
 </div>
-<div id="outline-container-org50b88c6" class="outline-4">
-<h4 id="org50b88c6"><span class="section-number-4">1.1.4</span> Spectre-NG V4</h4>
+<div id="outline-container-org3cb83fe" class="outline-4">
+<h4 id="org3cb83fe"><span class="section-number-4">1.1.4</span> Spectre-NG V4</h4>
 <div class="outline-text-4" id="text-1-1-4">
 <p>
 在内存写入数据前，读取数据，会导致读取原数据。
@@ -354,20 +355,20 @@ array1[x] 可以是返回地址，也可以SEH。
 </div>
 </div>
 </div>
-<div id="outline-container-org57153e7" class="outline-3">
-<h3 id="org57153e7"><span class="section-number-3">1.2</span> Spectre V2 及其变种</h3>
+<div id="outline-container-orgd3c9b99" class="outline-3">
+<h3 id="orgd3c9b99"><span class="section-number-3">1.2</span> Spectre V2 及其变种</h3>
 <div class="outline-text-3" id="text-1-2">
 </div>
-<div id="outline-container-orgd1df2e8" class="outline-4">
-<h4 id="orgd1df2e8"><span class="section-number-4">1.2.1</span> Spectre V2</h4>
+<div id="outline-container-orgd1ff7ac" class="outline-4">
+<h4 id="orgd1ff7ac"><span class="section-number-4">1.2.1</span> Spectre V2</h4>
 <div class="outline-text-4" id="text-1-2-1">
 <p>
 对BTB进行投毒，误导执行错误的间接跳转地址
 </p>
 </div>
 </div>
-<div id="outline-container-org033fddc" class="outline-4">
-<h4 id="org033fddc"><span class="section-number-4">1.2.2</span> SpectreRSB</h4>
+<div id="outline-container-org76e53ef" class="outline-4">
+<h4 id="org76e53ef"><span class="section-number-4">1.2.2</span> SpectreRSB</h4>
 <div class="outline-text-4" id="text-1-2-2">
 <p>
 对RSB进行投毒，误导返回地址
@@ -376,8 +377,8 @@ array1[x] 可以是返回地址，也可以SEH。
 </div>
 </div>
 </div>
-<div id="outline-container-org0f1181d" class="outline-2">
-<h2 id="org0f1181d"><span class="section-number-2">2</span> 文章概述</h2>
+<div id="outline-container-orgd8999e6" class="outline-2">
+<h2 id="orgd8999e6"><span class="section-number-2">2</span> 文章概述</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 oo7基于BAP开发。
@@ -391,12 +392,12 @@ oo7基于BAP开发。
 </div>
 </div>
 
-<div id="outline-container-orgc615ef1" class="outline-2">
-<h2 id="orgc615ef1"><span class="section-number-2">3</span> Spectre检测</h2>
+<div id="outline-container-org94e89d2" class="outline-2">
+<h2 id="org94e89d2"><span class="section-number-2">3</span> Spectre检测</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org5e6bf65" class="outline-3">
-<h3 id="org5e6bf65"><span class="section-number-3">3.1</span> V1</h3>
+<div id="outline-container-org84412a5" class="outline-3">
+<h3 id="org84412a5"><span class="section-number-3">3.1</span> V1</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 oo7将Spectre Execution Window设置为2n，为了确保false negative
@@ -405,8 +406,8 @@ oo7将Spectre Execution Window设置为2n，为了确保false negative
 </div>
 </div>
 
-<div id="outline-container-org0e5134d" class="outline-3">
-<h3 id="org0e5134d"><span class="section-number-3">3.2</span> 污点分析</h3>
+<div id="outline-container-org125ce76" class="outline-3">
+<h3 id="org125ce76"><span class="section-number-3">3.2</span> 污点分析</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 污点分析内容包括数据分析和控制流分析。
@@ -422,8 +423,8 @@ oo7将Spectre Execution Window设置为2n，为了确保false negative
 </div>
 </div>
 </div>
-<div id="outline-container-orgcf851f0" class="outline-2">
-<h2 id="orgcf851f0"><span class="section-number-2">4</span> 实现</h2>
+<div id="outline-container-org98fb762" class="outline-2">
+<h2 id="org98fb762"><span class="section-number-2">4</span> 实现</h2>
 <div class="outline-text-2" id="text-4">
 <ul class="org-ul">
 <li>强制执行：用于模拟预测执行</li>
@@ -439,12 +440,12 @@ oo7将Spectre Execution Window设置为2n，为了确保false negative
 </div>
 </div>
 
-<div id="outline-container-orgb362ee9" class="outline-2">
-<h2 id="orgb362ee9"><span class="section-number-2">5</span> 测试</h2>
+<div id="outline-container-orgf23b425" class="outline-2">
+<h2 id="orgf23b425"><span class="section-number-2">5</span> 测试</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orgc6cb740" class="outline-3">
-<h3 id="orgc6cb740"><span class="section-number-3">5.1</span> 测试数据集</h3>
+<div id="outline-container-org51975c4" class="outline-3">
+<h3 id="org51975c4"><span class="section-number-3">5.1</span> 测试数据集</h3>
 <div class="outline-text-3" id="text-5-1">
 <ul class="org-ul">
 <li><a href="https://www.paulkocher.com/doc/MicrosoftCompilerSpectreMitigation.html">Paul Kocher Spectre variations example</a></li>
@@ -454,8 +455,8 @@ oo7将Spectre Execution Window设置为2n，为了确保false negative
 </ul>
 </div>
 </div>
-<div id="outline-container-org3c80598" class="outline-3">
-<h3 id="org3c80598"><span class="section-number-3">5.2</span> 测试结果</h3>
+<div id="outline-container-org872c07d" class="outline-3">
+<h3 id="org872c07d"><span class="section-number-3">5.2</span> 测试结果</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 设定的污点源：
@@ -463,19 +464,19 @@ oo7将Spectre Execution Window设置为2n，为了确保false negative
 </p>
 
 
-<div id="orgfb5cc95" class="figure">
+<div id="orgca081ad" class="figure">
 <p><img src="./images/2021-11-11_08-48.png" alt="2021-11-11_08-48.png" />
 </p>
 </div>
 
 
-<div id="org6520872" class="figure">
+<div id="orgcaf68d1" class="figure">
 <p><img src="./images/2021-11-11_08-49.png" alt="2021-11-11_08-49.png" />
 </p>
 </div>
 
 
-<div id="orgf38be54" class="figure">
+<div id="orge4de5ae" class="figure">
 <p><img src="./images/2021-11-11_09-09.png" alt="2021-11-11_09-09.png" />
 </p>
 </div>
@@ -485,7 +486,7 @@ oo7将Spectre Execution Window设置为2n，为了确保false negative
 </p>
 
 
-<div id="org0f0dc08" class="figure">
+<div id="org7806af5" class="figure">
 <p><img src="./images/2021-11-11_09-20.png" alt="2021-11-11_09-20.png" />
 </p>
 </div>
@@ -497,16 +498,16 @@ TB和RS之间的距离大多数在100条指令内
 </div>
 </div>
 
-<div id="outline-container-orgf2c6583" class="outline-2">
-<h2 id="orgf2c6583"><span class="section-number-2">6</span> 总结</h2>
+<div id="outline-container-orga6bcf5d" class="outline-2">
+<h2 id="orga6bcf5d"><span class="section-number-2">6</span> 总结</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 oo7使用BAP作为二进制分析平台，使用静态污点分析对二进制文件进行分析。能够检测Spectre V1，V1.1,V1.2。
 </p>
 </div>
 </div>
-<div id="outline-container-orgb956d80" class="outline-2">
-<h2 id="orgb956d80"><span class="section-number-2">7</span> 思考</h2>
+<div id="outline-container-orge5c51a8" class="outline-2">
+<h2 id="orge5c51a8"><span class="section-number-2">7</span> 思考</h2>
 <div class="outline-text-2" id="text-7">
 <ul class="org-ul">
 <li>与<a href="20211025083301-spectaint_speculative_taint_analysis_for_discovering_spectre_gadgets.html#ID-8d9793e8-cac9-41d4-bb06-6a2a7d85d04e">SpecTaint:Speculative Taint Analysis for Discovering Spectre Gadgets</a>类似，将Spectre 漏洞代码注入到程序中进行测试，样例代码较为简单，容易被发现，是否会导致测试结果并不准确。</li>
@@ -515,7 +516,8 @@ oo7使用BAP作为二进制分析平台，使用静态污点分析对二进制�
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-11 Thu 09:56</p>
+<p class="author">Author: theone</p>
+<p class="date">Created: 2021-11-25 四 18:25</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

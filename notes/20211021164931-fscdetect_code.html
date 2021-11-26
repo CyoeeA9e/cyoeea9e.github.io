@@ -3,11 +3,12 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-22 Mon 09:56 -->
+<!-- 2021-11-25 四 18:25 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FSCDetect Code</title>
 <meta name="generator" content="Org mode" />
+<meta name="author" content="theone" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -241,91 +242,97 @@ ul.no-bullet {list-style: none}
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org09afaa2">1. LLVM</a>
+<li><a href="#org0dd87f6">1. LLVM</a>
 <ul>
-<li><a href="#org7d72fa2">1.1. lib/Transforms/Instrumentation/FSCDTrace.cpp</a>
+<li><a href="#org2e65029">1.1. lib/Transforms/Instrumentation/FSCDTrace.cpp</a>
 <ul>
 <li>
 <ul>
-<li><a href="#orgb565214">1.1.0.1. AFL_R</a></li>
-<li><a href="#orgc491d55">1.1.0.2. FSCDDataAccessInfoTy</a></li>
+<li><a href="#org5b3aa22">1.1.0.1. AFL_R</a></li>
+<li><a href="#org60610aa">1.1.0.2. FSCDDataAccessInfoTy</a></li>
 </ul>
 </li>
-<li><a href="#org2565fb7">1.1.1. FSCDTrace</a>
+<li><a href="#org2bfa71b">1.1.1. FSCDTrace</a>
 <ul>
-<li><a href="#orgedb2713">1.1.1.1. isInterestingMemoryAccess</a></li>
-<li><a href="#org919efeb">1.1.1.2. hasUsersOutsideBlock</a></li>
-<li><a href="#orgf1236d7">1.1.1.3. needSplitTail</a></li>
-<li><a href="#org6ad5d97">1.1.1.4. initCBs</a></li>
-<li><a href="#orgc1bf642">1.1.1.5. collectAllocaInfo</a></li>
-<li><a href="#org7b30ca1">1.1.1.6. cloneInline</a></li>
-<li><a href="#org477cd05">1.1.1.7. injectTrace</a></li>
-<li><a href="#org9d33731">1.1.1.8. handleInterestingMemoryAccesses</a></li>
-<li><a href="#org681a10d">1.1.1.9. _handle_memory_access_core</a></li>
-<li><a href="#org14b17fe">1.1.1.10. injectAFLBitMapOperation</a></li>
-<li><a href="#orga8ece8f">1.1.1.11. runInlineClone</a></li>
-<li><a href="#org2512d87">1.1.1.12. injectAFLBitMapOperation</a></li>
-<li><a href="#org5626026">1.1.1.13. FSCDSplitBasicBlock</a></li>
+<li><a href="#org3467caa">1.1.1.1. isInterestingMemoryAccess</a></li>
+<li><a href="#org4a360e5">1.1.1.2. hasUsersOutsideBlock</a></li>
+<li><a href="#org2ea6ef7">1.1.1.3. needSplitTail</a></li>
+<li><a href="#org1565464">1.1.1.4. initCBs</a></li>
+<li><a href="#org6586f88">1.1.1.5. collectAllocaInfo</a></li>
+<li><a href="#orgfed5f30">1.1.1.6. cloneInline</a></li>
+<li><a href="#orgcf74d36">1.1.1.7. injectTrace</a></li>
+<li><a href="#org3ff0914">1.1.1.8. handleInterestingMemoryAccesses</a></li>
+<li><a href="#org896cbdb">1.1.1.9. _handle_memory_access_core</a></li>
+<li><a href="#org3de933c">1.1.1.10. injectAFLBitMapOperation</a></li>
+<li><a href="#org889e9a8">1.1.1.11. runInlineClone</a></li>
+<li><a href="#org38bf956">1.1.1.12. injectAFLBitMapOperation</a></li>
+<li><a href="#orgf0f171f">1.1.1.13. FSCDSplitBasicBlock</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#orged56d48">1.2. lib/Transforms/Instrumentation/SanitizerCoverage.cpp</a>
+<li><a href="#org887bae1">1.2. lib/Transforms/Instrumentation/SanitizerCoverage.cpp</a>
 <ul>
-<li><a href="#org674a08c">1.2.1. ModuleSanitizerCoverage</a>
+<li><a href="#org2a2b7c6">1.2.1. ModuleSanitizerCoverage</a>
 <ul>
-<li><a href="#orgbfe155c">1.2.1.1. instrumentModule</a></li>
-<li><a href="#orga4bc1dd">1.2.1.2. instrumentFunction</a></li>
+<li><a href="#org7433a14">1.2.1.1. instrumentModule</a></li>
+<li><a href="#orgf85c8a2">1.2.1.2. instrumentFunction</a></li>
 </ul>
 </li>
-<li><a href="#org0793247">1.2.2. ModuleSanitizerCoverageLegacyPass</a>
+<li><a href="#orge08f132">1.2.2. ModuleSanitizerCoverageLegacyPass</a>
 <ul>
-<li><a href="#org580e837">1.2.2.1. runOnModule</a></li>
+<li><a href="#org14e26ac">1.2.2.1. runOnModule</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org4691f87">2. AFL</a>
+<li><a href="#org8acb884">2. AFL</a>
 <ul>
-<li><a href="#org3e7e13a">2.1. fscd runtime</a>
+<li><a href="#orgb4f3fd1">2.1. fscd_mode</a>
 <ul>
-<li><a href="#orgd0f621e">2.1.1. __fscd_trace_pc_normal_bb</a></li>
-<li><a href="#orgd8aa6c8">2.1.2. fscd_init</a></li>
-<li><a href="#org05a5557">2.1.3. _fscd_init</a></li>
-<li><a href="#org6728750">2.1.4. <span class="todo TODO">TODO</span> get_fiduciary_rt</a></li>
-<li><a href="#org34c1695">2.1.5. _fscd_before_iteration</a></li>
-<li><a href="#org77545b9">2.1.6. RTInstrumentCtx_SimpleComparison</a>
+<li><a href="#orgd783c12">2.1.1. BasicBlockInfo</a></li>
+<li><a href="#org35bb5e7">2.1.2. TraceRecorder</a>
 <ul>
-<li><a href="#orgdc56ab9">2.1.6.1. prepare_comparison_rt</a></li>
+<li><a href="#org9cb5e50">2.1.2.1. record_normal_bb_access</a></li>
+</ul>
+</li>
+<li><a href="#org998cbf1">2.1.3. __fscd_trace_pc_normal_bb</a></li>
+<li><a href="#org8a9f16b">2.1.4. fscd_init</a></li>
+<li><a href="#org1797f85">2.1.5. _fscd_init</a></li>
+<li><a href="#orgd196b38">2.1.6. <span class="todo TODO">TODO</span> get_fiduciary_rt</a></li>
+<li><a href="#org2990cf6">2.1.7. _fscd_before_iteration</a></li>
+<li><a href="#orgf93b543">2.1.8. RTInstrumentCtx_SimpleComparison</a>
+<ul>
+<li><a href="#org9848efe">2.1.8.1. prepare_comparison_rt</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org2af6624">2.2. main</a></li>
-<li><a href="#org3a7706d">2.3. perform_dry_run</a></li>
-<li><a href="#org8825b94">2.4. fscd_setup_shm</a></li>
-<li><a href="#orgc309c8a">2.5. call_queue</a></li>
-<li><a href="#orgc24544e">2.6. write_to_testcase</a></li>
-<li><a href="#org0c56bf8">2.7. fuzz_one_phase1</a></li>
-<li><a href="#org18c3db1">2.8. run_target</a></li>
+<li><a href="#orgf4395f2">2.2. main</a></li>
+<li><a href="#org3fce68d">2.3. perform_dry_run</a></li>
+<li><a href="#org65952a3">2.4. fscd_setup_shm</a></li>
+<li><a href="#orgfdb7242">2.5. call_queue</a></li>
+<li><a href="#orgcb4647f">2.6. write_to_testcase</a></li>
+<li><a href="#org41d5b8e">2.7. fuzz_one_phase1</a></li>
+<li><a href="#org1d1a7d9">2.8. run_target</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org09afaa2" class="outline-2">
-<h2 id="org09afaa2"><span class="section-number-2">1</span> LLVM</h2>
+<div id="outline-container-org0dd87f6" class="outline-2">
+<h2 id="org0dd87f6"><span class="section-number-2">1</span> LLVM</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-org7d72fa2" class="outline-3">
-<h3 id="org7d72fa2"><span class="section-number-3">1.1</span> lib/Transforms/Instrumentation/FSCDTrace.cpp</h3>
+<div id="outline-container-org2e65029" class="outline-3">
+<h3 id="org2e65029"><span class="section-number-3">1.1</span> lib/Transforms/Instrumentation/FSCDTrace.cpp</h3>
 <div class="outline-text-3" id="text-1-1">
 </div>
-<div id="outline-container-orgb565214" class="outline-5">
-<h5 id="orgb565214"><span class="section-number-5">1.1.0.1</span> AFL_R</h5>
+<div id="outline-container-org5b3aa22" class="outline-5">
+<h5 id="org5b3aa22"><span class="section-number-5">1.1.0.1</span> AFL_R</h5>
 <div class="outline-text-5" id="text-1-1-0-1">
 <p>
 产生一个随机数
@@ -336,8 +343,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-orgc491d55" class="outline-5">
-<h5 id="orgc491d55"><span class="section-number-5">1.1.0.2</span> FSCDDataAccessInfoTy</h5>
+<div id="outline-container-org60610aa" class="outline-5">
+<h5 id="org60610aa"><span class="section-number-5">1.1.0.2</span> FSCDDataAccessInfoTy</h5>
 <div class="outline-text-5" id="text-1-1-0-2">
 <p>
 保存内存访问指令的信息
@@ -351,12 +358,12 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org2565fb7" class="outline-4">
-<h4 id="org2565fb7"><span class="section-number-4">1.1.1</span> FSCDTrace</h4>
+<div id="outline-container-org2bfa71b" class="outline-4">
+<h4 id="org2bfa71b"><span class="section-number-4">1.1.1</span> FSCDTrace</h4>
 <div class="outline-text-4" id="text-1-1-1">
 </div>
-<div id="outline-container-orgedb2713" class="outline-5">
-<h5 id="orgedb2713"><span class="section-number-5">1.1.1.1</span> isInterestingMemoryAccess</h5>
+<div id="outline-container-org3467caa" class="outline-5">
+<h5 id="org3467caa"><span class="section-number-5">1.1.1.1</span> isInterestingMemoryAccess</h5>
 <div class="outline-text-5" id="text-1-1-1-1">
 <p>
 内存访问指令，但不是alloca相关地址
@@ -407,8 +414,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org919efeb" class="outline-5">
-<h5 id="org919efeb"><span class="section-number-5">1.1.1.2</span> hasUsersOutsideBlock</h5>
+<div id="outline-container-org4a360e5" class="outline-5">
+<h5 id="org4a360e5"><span class="section-number-5">1.1.1.2</span> hasUsersOutsideBlock</h5>
 <div class="outline-text-5" id="text-1-1-1-2">
 <p>
 判断value是否有基本块的use
@@ -429,8 +436,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-orgf1236d7" class="outline-5">
-<h5 id="orgf1236d7"><span class="section-number-5">1.1.1.3</span> needSplitTail</h5>
+<div id="outline-container-org2ea6ef7" class="outline-5">
+<h5 id="org2ea6ef7"><span class="section-number-5">1.1.1.3</span> needSplitTail</h5>
 <div class="outline-text-5" id="text-1-1-1-3">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold;">inline</span> needSplitTail(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> *<span style="font-weight: bold; font-style: italic;">OrgBlock</span>){
@@ -444,8 +451,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org6ad5d97" class="outline-5">
-<h5 id="org6ad5d97"><span class="section-number-5">1.1.1.4</span> initCBs</h5>
+<div id="outline-container-org1565464" class="outline-5">
+<h5 id="org1565464"><span class="section-number-5">1.1.1.4</span> initCBs</h5>
 <div class="outline-text-5" id="text-1-1-1-4">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">initCBs</span>(<span style="font-weight: bold; text-decoration: underline;">Module</span> &amp;<span style="font-weight: bold; font-style: italic;">M</span>) {
@@ -522,8 +529,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-orgc1bf642" class="outline-5">
-<h5 id="orgc1bf642"><span class="section-number-5">1.1.1.5</span> collectAllocaInfo</h5>
+<div id="outline-container-org6586f88" class="outline-5">
+<h5 id="org6586f88"><span class="section-number-5">1.1.1.5</span> collectAllocaInfo</h5>
 <div class="outline-text-5" id="text-1-1-1-5">
 <p>
 该函数用于收集函数中的alloc指令信息。
@@ -568,8 +575,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org7b30ca1" class="outline-5">
-<h5 id="org7b30ca1"><span class="section-number-5">1.1.1.6</span> cloneInline</h5>
+<div id="outline-container-orgfed5f30" class="outline-5">
+<h5 id="orgfed5f30"><span class="section-number-5">1.1.1.6</span> cloneInline</h5>
 <div class="outline-text-5" id="text-1-1-1-6">
 <p>
 将基本块分割成3份，中间一份复制，并根据条件选择执行的基本块，返回生成的Head，Clone,Org,Tail基本块
@@ -688,8 +695,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org477cd05" class="outline-5">
-<h5 id="org477cd05"><span class="section-number-5">1.1.1.7</span> injectTrace</h5>
+<div id="outline-container-orgcf74d36" class="outline-5">
+<h5 id="orgcf74d36"><span class="section-number-5">1.1.1.7</span> injectTrace</h5>
 <div class="outline-text-5" id="text-1-1-1-7">
 <ol class="org-ol">
 <li>向基本块中插装函数，根据基本块的类型插入不同的函数：
@@ -842,8 +849,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org9d33731" class="outline-5">
-<h5 id="org9d33731"><span class="section-number-5">1.1.1.8</span> handleInterestingMemoryAccesses</h5>
+<div id="outline-container-org3ff0914" class="outline-5">
+<h5 id="org3ff0914"><span class="section-number-5">1.1.1.8</span> handleInterestingMemoryAccesses</h5>
 <div class="outline-text-5" id="text-1-1-1-8">
 <p>
 获取内存访问的地址和offset
@@ -882,8 +889,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org681a10d" class="outline-5">
-<h5 id="org681a10d"><span class="section-number-5">1.1.1.9</span> _handle_memory_access_core</h5>
+<div id="outline-container-org896cbdb" class="outline-5">
+<h5 id="org896cbdb"><span class="section-number-5">1.1.1.9</span> _handle_memory_access_core</h5>
 <div class="outline-text-5" id="text-1-1-1-9">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">std</span>::<span style="font-weight: bold; text-decoration: underline;">pair</span>&lt;<span style="font-weight: bold; text-decoration: underline;">Value</span>*,<span style="font-weight: bold; text-decoration: underline;">Value</span>*&gt; <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">_handle_memory_access_core</span>(<span style="font-weight: bold; text-decoration: underline;">Instruction</span> * <span style="font-weight: bold; font-style: italic;">I</span>, <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">value</span>){
@@ -935,8 +942,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org14b17fe" class="outline-5">
-<h5 id="org14b17fe"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
+<div id="outline-container-org3de933c" class="outline-5">
+<h5 id="org3de933c"><span class="section-number-5">1.1.1.10</span> injectAFLBitMapOperation</h5>
 <div class="outline-text-5" id="text-1-1-1-10">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">FSCDTrace</span>::<span style="font-weight: bold;">injectAFLBitMapOperation</span>(<span style="font-weight: bold; text-decoration: underline;">BasicBlock</span> &amp;<span style="font-weight: bold; font-style: italic;">BB</span>, <span style="font-weight: bold; text-decoration: underline;">unsigned</span> <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">cur_loc</span>) {
@@ -982,14 +989,14 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-orga8ece8f" class="outline-5">
-<h5 id="orga8ece8f"><span class="section-number-5">1.1.1.11</span> runInlineClone</h5>
+<div id="outline-container-org889e9a8" class="outline-5">
+<h5 id="org889e9a8"><span class="section-number-5">1.1.1.11</span> runInlineClone</h5>
 <div class="outline-text-5" id="text-1-1-1-11">
 <ul class="org-ul">
-<li><a href="#org2565fb7">FSCDTrace</a>::<a href="#org7b30ca1">cloneInline</a></li>
-<li><a href="#orgb565214">AFL_R</a></li>
-<li><a href="#org477cd05">injectTrace</a></li>
-<li><a href="#org2512d87">injectAFLBitMapOperation</a></li>
+<li><a href="#org2bfa71b">FSCDTrace</a>::<a href="#orgfed5f30">cloneInline</a></li>
+<li><a href="#org5b3aa22">AFL_R</a></li>
+<li><a href="#orgcf74d36">injectTrace</a></li>
+<li><a href="#org38bf956">injectAFLBitMapOperation</a></li>
 </ul>
 <p>
 对基本块进行插装。
@@ -1044,14 +1051,14 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-org2512d87" class="outline-5">
-<h5 id="org2512d87"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
+<div id="outline-container-org38bf956" class="outline-5">
+<h5 id="org38bf956"><span class="section-number-5">1.1.1.12</span> injectAFLBitMapOperation</h5>
 <div class="outline-text-5" id="text-1-1-1-12">
 </div>
 </div>
 
-<div id="outline-container-org5626026" class="outline-5">
-<h5 id="org5626026"><span class="section-number-5">1.1.1.13</span> FSCDSplitBasicBlock</h5>
+<div id="outline-container-orgf0f171f" class="outline-5">
+<h5 id="orgf0f171f"><span class="section-number-5">1.1.1.13</span> FSCDSplitBasicBlock</h5>
 <div class="outline-text-5" id="text-1-1-1-13">
 <p>
 新建基本块，将原基本块bb中指令I及其之后的指令移动到新的基本块中，并返回新基本块
@@ -1100,25 +1107,25 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<div id="outline-container-orged56d48" class="outline-3">
-<h3 id="orged56d48"><span class="section-number-3">1.2</span> lib/Transforms/Instrumentation/SanitizerCoverage.cpp</h3>
+<div id="outline-container-org887bae1" class="outline-3">
+<h3 id="org887bae1"><span class="section-number-3">1.2</span> lib/Transforms/Instrumentation/SanitizerCoverage.cpp</h3>
 <div class="outline-text-3" id="text-1-2">
 <p>
 SanitizerCoverage是llvm自带的一个代码覆盖插装工具，它能在函数、基本块和边上进行插装。
 </p>
 </div>
-<div id="outline-container-org674a08c" class="outline-4">
-<h4 id="org674a08c"><span class="section-number-4">1.2.1</span> ModuleSanitizerCoverage</h4>
+<div id="outline-container-org2a2b7c6" class="outline-4">
+<h4 id="org2a2b7c6"><span class="section-number-4">1.2.1</span> ModuleSanitizerCoverage</h4>
 <div class="outline-text-4" id="text-1-2-1">
 </div>
-<div id="outline-container-orgbfe155c" class="outline-5">
-<h5 id="orgbfe155c"><span class="section-number-5">1.2.1.1</span> instrumentModule</h5>
+<div id="outline-container-org7433a14" class="outline-5">
+<h5 id="org7433a14"><span class="section-number-5">1.2.1.1</span> instrumentModule</h5>
 <div class="outline-text-5" id="text-1-2-1-1">
 <p>
 instrumentModule主要用于初始化SanCov需要插装的相关函数内容，如传入参数、返回值等。
 </p>
 <ul class="org-ul">
-<li><a href="#org2565fb7">FSCDTrace</a>::<a href="#org6ad5d97">initCBs</a></li>
+<li><a href="#org2bfa71b">FSCDTrace</a>::<a href="#org1565464">initCBs</a></li>
 </ul>
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; text-decoration: underline;">ModuleSanitizerCoverage</span>::<span style="font-weight: bold;">instrumentModule</span>(
@@ -1132,17 +1139,17 @@ instrumentModule主要用于初始化SanCov需要插装的相关函数内容，�
 </pre>
 </div>
 <p>
-调用<a href="#org674a08c">ModuleSanitizerCoverage</a>::<a href="#orga4bc1dd">instrumentFunction</a>
+调用<a href="#org2a2b7c6">ModuleSanitizerCoverage</a>::<a href="#orgf85c8a2">instrumentFunction</a>
 </p>
 </div>
 </div>
-<div id="outline-container-orga4bc1dd" class="outline-5">
-<h5 id="orga4bc1dd"><span class="section-number-5">1.2.1.2</span> instrumentFunction</h5>
+<div id="outline-container-orgf85c8a2" class="outline-5">
+<h5 id="orgf85c8a2"><span class="section-number-5">1.2.1.2</span> instrumentFunction</h5>
 <div class="outline-text-5" id="text-1-2-1-2">
 <ul class="org-ul">
 <li><a href="20211021164705-llvm.html#ID-9acea3a5-44a2-43f2-a666-fc59f8a56d85">isa&lt;&gt;</a></li>
-<li><a href="#org2565fb7">FSCDTrace</a>::<a href="#orgc1bf642">collectAllocaInfo</a></li>
-<li><a href="#org2565fb7">FSCDTrace</a>::<a href="#orga8ece8f">runInlineClone</a></li>
+<li><a href="#org2bfa71b">FSCDTrace</a>::<a href="#org6586f88">collectAllocaInfo</a></li>
+<li><a href="#org2bfa71b">FSCDTrace</a>::<a href="#org889e9a8">runInlineClone</a></li>
 </ul>
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">ModuleSanitizerCoverage</span>::<span style="font-weight: bold;">instrumentFunction</span>(<span style="font-weight: bold; text-decoration: underline;">Function</span> &amp;<span style="font-weight: bold; font-style: italic;">F</span>, <span style="font-weight: bold; text-decoration: underline;">DomTreeCallback</span> <span style="font-weight: bold; font-style: italic;">DTCallback</span>, <span style="font-weight: bold; text-decoration: underline;">PostDomTreeCallback</span> <span style="font-weight: bold; font-style: italic;">PDTCallback</span>,
@@ -1192,15 +1199,15 @@ instrumentModule主要用于初始化SanCov需要插装的相关函数内容，�
 </div>
 </div>
 </div>
-<div id="outline-container-org0793247" class="outline-4">
-<h4 id="org0793247"><span class="section-number-4">1.2.2</span> ModuleSanitizerCoverageLegacyPass</h4>
+<div id="outline-container-orge08f132" class="outline-4">
+<h4 id="orge08f132"><span class="section-number-4">1.2.2</span> ModuleSanitizerCoverageLegacyPass</h4>
 <div class="outline-text-4" id="text-1-2-2">
 <p>
 继承自<a href="20211021164705-llvm.html#ID-47d3da53-865c-41bc-a9db-4fa8907fd036">ModulePass</a>。
 </p>
 </div>
-<div id="outline-container-org580e837" class="outline-5">
-<h5 id="org580e837"><span class="section-number-5">1.2.2.1</span> runOnModule</h5>
+<div id="outline-container-org14e26ac" class="outline-5">
+<h5 id="org14e26ac"><span class="section-number-5">1.2.2.1</span> runOnModule</h5>
 <div class="outline-text-5" id="text-1-2-2-1">
 <p>
 声明各种Pass，然后调用ModuleSanitizerCoverage::instrumentModule。
@@ -1251,35 +1258,63 @@ ScalarEvolution: 标量优化。 <a href="20211021164705-llvm.html#ID-5f933e29-b
 </div>
 </div>
 
-<div id="outline-container-org4691f87" class="outline-2">
-<h2 id="org4691f87"><span class="section-number-2">2</span> AFL</h2>
+<div id="outline-container-org8acb884" class="outline-2">
+<h2 id="org8acb884"><span class="section-number-2">2</span> AFL</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 <a href="20211026152446-afl.html#ID-fb6ddb5a-83de-411f-8e89-fb125b9e732d">AFL</a>
 </p>
 </div>
-<div id="outline-container-org3e7e13a" class="outline-3">
-<h3 id="org3e7e13a"><span class="section-number-3">2.1</span> fscd runtime</h3>
+<div id="outline-container-orgb4f3fd1" class="outline-3">
+<h3 id="orgb4f3fd1"><span class="section-number-3">2.1</span> fscd_mode</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 fscd runtime代码
 </p>
 </div>
-<div id="outline-container-orgd0f621e" class="outline-4">
-<h4 id="orgd0f621e"><span class="section-number-4">2.1.1</span> __fscd_trace_pc_normal_bb</h4>
+<div id="outline-container-orgd783c12" class="outline-4">
+<h4 id="orgd783c12"><span class="section-number-4">2.1.1</span> BasicBlockInfo</h4>
+<div class="outline-text-4" id="text-2-1-1">
+<div class="org-src-container">
+<pre class="src src-C++"><span style="font-weight: bold;">class</span> <span style="font-weight: bold; text-decoration: underline;">BasicBlockInfo</span> {
+  <span style="font-weight: bold;">friend</span> <span style="font-weight: bold;">class</span> <span style="font-weight: bold; text-decoration: underline;">BBTrace</span>;
+
+<span style="font-weight: bold;">private</span>:
+  <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">bb_idx</span>;                                 <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22522;&#26412;&#22359;index</span>
+  <span style="font-weight: bold; text-decoration: underline;">BBType</span> <span style="font-weight: bold; font-style: italic;">bb_type</span>;                             <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#22522;&#26412;&#22359;&#31867;&#22411;</span>
+  <span style="font-weight: bold;">const</span> <span style="font-weight: bold; text-decoration: underline;">FSCDBlockInfoEntry</span> *<span style="font-weight: bold; font-style: italic;">block_info_entry</span>; <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#23545;&#24212;&#30340;&#38745;&#24577;&#22359;&#20449;&#24687;&#20837;&#21475;</span>
+  <span style="font-weight: bold; text-decoration: underline;">FuncInfo</span> *<span style="font-weight: bold; font-style: italic;">parent_func_info</span>;                 <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">&#25152;&#23646;&#20989;&#25968;</span>
+
+  <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">first_br_idx</span>;  <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">successor 1</span>
+  <span style="font-weight: bold; text-decoration: underline;">int</span> <span style="font-weight: bold; font-style: italic;">second_br_idx</span>; <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">successor 2</span>
+}
+</pre>
 </div>
-<div id="outline-container-orgd8aa6c8" class="outline-4">
-<h4 id="orgd8aa6c8"><span class="section-number-4">2.1.2</span> fscd_init</h4>
+</div>
+</div>
+<div id="outline-container-org35bb5e7" class="outline-4">
+<h4 id="org35bb5e7"><span class="section-number-4">2.1.2</span> TraceRecorder</h4>
 <div class="outline-text-4" id="text-2-1-2">
+</div>
+<div id="outline-container-org9cb5e50" class="outline-5">
+<h5 id="org9cb5e50"><span class="section-number-5">2.1.2.1</span> record_normal_bb_access</h5>
+</div>
+</div>
+<div id="outline-container-org998cbf1" class="outline-4">
+<h4 id="org998cbf1"><span class="section-number-4">2.1.3</span> __fscd_trace_pc_normal_bb</h4>
+</div>
+<div id="outline-container-org8a9f16b" class="outline-4">
+<h4 id="org8a9f16b"><span class="section-number-4">2.1.4</span> fscd_init</h4>
+<div class="outline-text-4" id="text-2-1-4">
 <p>
-调用<a href="#org05a5557">_fscd_init</a>
+调用<a href="#org1797f85">_fscd_init</a>
 </p>
 </div>
 </div>
 
-<div id="outline-container-org05a5557" class="outline-4">
-<h4 id="org05a5557"><span class="section-number-4">2.1.3</span> _fscd_init</h4>
-<div class="outline-text-4" id="text-2-1-3">
+<div id="outline-container-org1797f85" class="outline-4">
+<h4 id="org1797f85"><span class="section-number-4">2.1.5</span> _fscd_init</h4>
+<div class="outline-text-4" id="text-2-1-5">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold;">_fscd_init</span>() {
   <span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#36816;&#34892;&#26102;&#19978;&#19979;&#25991;&#20445;&#23384;&#23454;&#20363;</span>
@@ -1297,24 +1332,24 @@ fscd runtime代码
 </div>
 </div>
 </div>
-<div id="outline-container-org6728750" class="outline-4">
-<h4 id="org6728750"><span class="section-number-4">2.1.4</span> <span class="todo TODO">TODO</span> get_fiduciary_rt</h4>
+<div id="outline-container-orgd196b38" class="outline-4">
+<h4 id="orgd196b38"><span class="section-number-4">2.1.6</span> <span class="todo TODO">TODO</span> get_fiduciary_rt</h4>
 </div>
-<div id="outline-container-org34c1695" class="outline-4">
-<h4 id="org34c1695"><span class="section-number-4">2.1.5</span> _fscd_before_iteration</h4>
-<div class="outline-text-4" id="text-2-1-5">
+<div id="outline-container-org2990cf6" class="outline-4">
+<h4 id="org2990cf6"><span class="section-number-4">2.1.7</span> _fscd_before_iteration</h4>
+<div class="outline-text-4" id="text-2-1-7">
 <p>
 根据cmd的来选择模式，分为normal, fiduciary, comparison，
 </p>
 </div>
 </div>
-<div id="outline-container-org77545b9" class="outline-4">
-<h4 id="org77545b9"><span class="section-number-4">2.1.6</span> RTInstrumentCtx_SimpleComparison</h4>
-<div class="outline-text-4" id="text-2-1-6">
+<div id="outline-container-orgf93b543" class="outline-4">
+<h4 id="orgf93b543"><span class="section-number-4">2.1.8</span> RTInstrumentCtx_SimpleComparison</h4>
+<div class="outline-text-4" id="text-2-1-8">
 </div>
-<div id="outline-container-orgdc56ab9" class="outline-5">
-<h5 id="orgdc56ab9"><span class="section-number-5">2.1.6.1</span> prepare_comparison_rt</h5>
-<div class="outline-text-5" id="text-2-1-6-1">
+<div id="outline-container-org9848efe" class="outline-5">
+<h5 id="org9848efe"><span class="section-number-5">2.1.8.1</span> prepare_comparison_rt</h5>
+<div class="outline-text-5" id="text-2-1-8-1">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">void</span> <span style="font-weight: bold; text-decoration: underline;">RTInstrumentCtx_SimpleComparison</span>::<span style="font-weight: bold;">prepare_fiduciary_rt</span>(){
   <span style="font-weight: bold; font-style: italic;">//</span><span style="font-weight: bold; font-style: italic;">1. &#25346;&#36733;&#20849;&#20139;&#20869;&#23384;, &#22810;&#20010;&#36827;&#31243;&#25317;&#26377;, &#35774;&#32622;&#20026;&#21487;&#20889;</span>
@@ -1337,22 +1372,22 @@ fscd runtime代码
 </div>
 </div>
 
-<div id="outline-container-org2af6624" class="outline-3">
-<h3 id="org2af6624"><span class="section-number-3">2.2</span> main</h3>
+<div id="outline-container-orgf4395f2" class="outline-3">
+<h3 id="orgf4395f2"><span class="section-number-3">2.2</span> main</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
-调用<a href="#org3a7706d">perform_dry_run</a>来初始化fork_server
+调用<a href="#org3fce68d">perform_dry_run</a>来初始化fork_server
 </p>
 </div>
 </div>
-<div id="outline-container-org3a7706d" class="outline-3">
-<h3 id="org3a7706d"><span class="section-number-3">2.3</span> perform_dry_run</h3>
+<div id="outline-container-org3fce68d" class="outline-3">
+<h3 id="org3fce68d"><span class="section-number-3">2.3</span> perform_dry_run</h3>
 <div class="outline-text-3" id="text-2-3">
 </div>
 </div>
 
-<div id="outline-container-org8825b94" class="outline-3">
-<h3 id="org8825b94"><span class="section-number-3">2.4</span> fscd_setup_shm</h3>
+<div id="outline-container-org65952a3" class="outline-3">
+<h3 id="org65952a3"><span class="section-number-3">2.4</span> fscd_setup_shm</h3>
 <div class="outline-text-3" id="text-2-4">
 <p>
 设置共享内存空间
@@ -1423,19 +1458,19 @@ fscd runtime代码
 </div>
 </div>
 
-<div id="outline-container-orgc309c8a" class="outline-3">
-<h3 id="orgc309c8a"><span class="section-number-3">2.5</span> call_queue</h3>
+<div id="outline-container-orgfdb7242" class="outline-3">
+<h3 id="orgfdb7242"><span class="section-number-3">2.5</span> call_queue</h3>
 </div>
-<div id="outline-container-orgc24544e" class="outline-3">
-<h3 id="orgc24544e"><span class="section-number-3">2.6</span> write_to_testcase</h3>
+<div id="outline-container-orgcb4647f" class="outline-3">
+<h3 id="orgcb4647f"><span class="section-number-3">2.6</span> write_to_testcase</h3>
 <div class="outline-text-3" id="text-2-6">
 <p>
 将内存映射的内容写入到文件中
 </p>
 </div>
 </div>
-<div id="outline-container-org0c56bf8" class="outline-3">
-<h3 id="org0c56bf8"><span class="section-number-3">2.7</span> fuzz_one_phase1</h3>
+<div id="outline-container-org41d5b8e" class="outline-3">
+<h3 id="org41d5b8e"><span class="section-number-3">2.7</span> fuzz_one_phase1</h3>
 <div class="outline-text-3" id="text-2-7">
 <div class="org-src-container">
 <pre class="src src-C"><span style="font-weight: bold;">static</span> <span style="font-weight: bold; text-decoration: underline;">u8</span> <span style="font-weight: bold;">fuzz_one_phase1</span>(<span style="font-weight: bold; text-decoration: underline;">char</span> ** <span style="font-weight: bold; font-style: italic;">argv</span>){
@@ -1572,8 +1607,8 @@ fscd runtime代码
 </div>
 </div>
 
-<div id="outline-container-org18c3db1" class="outline-3">
-<h3 id="org18c3db1"><span class="section-number-3">2.8</span> run_target</h3>
+<div id="outline-container-org1d1a7d9" class="outline-3">
+<h3 id="org1d1a7d9"><span class="section-number-3">2.8</span> run_target</h3>
 <div class="outline-text-3" id="text-2-8">
 <div class="org-src-container">
 <pre class="src src-C"><span style="font-weight: bold; font-style: italic;">// </span><span style="font-weight: bold; font-style: italic;">&#26032;&#22686; cmd &#21442;&#25968;</span>
@@ -1822,7 +1857,8 @@ fscd runtime代码
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-22 Mon 09:56</p>
+<p class="author">Author: theone</p>
+<p class="date">Created: 2021-11-25 四 18:25</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

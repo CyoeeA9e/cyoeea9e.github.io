@@ -3,11 +3,12 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-18 Thu 09:37 -->
+<!-- 2021-11-25 四 18:25 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>SpecSafe: Detecting Cache Side Channels in a Speculative World</title>
 <meta name="generator" content="Org mode" />
+<meta name="author" content="theone" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -263,17 +264,17 @@ ul.no-bullet {list-style: none}
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org47acff8">1. 新的预测执行侧信道</a>
+<li><a href="#orgc3fa9b4">1. 新的预测执行侧信道</a>
 <ul>
-<li><a href="#orga11de90">1.1. 这3变种的思考</a></li>
+<li><a href="#org2b8fb04">1.1. 这3变种的思考</a></li>
 </ul>
 </li>
-<li><a href="#orgfef8ff4">2. Speculative-Aware Noninterference</a>
+<li><a href="#orgc5fabc5">2. Speculative-Aware Noninterference</a>
 <ul>
-<li><a href="#orgb9444e9">2.1. 现存定义的不足</a></li>
+<li><a href="#org10ac2c9">2.1. 现存定义的不足</a></li>
 </ul>
 </li>
-<li><a href="#org2d21f42">3. 文章主要贡献：</a></li>
+<li><a href="#org87400c3">3. 文章主要贡献：</a></li>
 </ul>
 </div>
 </div>
@@ -281,11 +282,11 @@ ul.no-bullet {list-style: none}
 文章认为将转换缓存通道检测工具与预测执行工具相结合并不一定能涵盖所有可能的缓存侧信道。
 </p>
 
-<div id="outline-container-org47acff8" class="outline-2">
-<h2 id="org47acff8"><span class="section-number-2">1</span> 新的预测执行侧信道</h2>
+<div id="outline-container-orgc3fa9b4" class="outline-2">
+<h2 id="orgc3fa9b4"><span class="section-number-2">1</span> 新的预测执行侧信道</h2>
 <div class="outline-text-2" id="text-1">
 
-<div id="org352903a" class="figure">
+<div id="orgeac81ce" class="figure">
 <p><img src="./images/2021-11-04_16-21.png" alt="2021-11-04_16-21.png" />
 </p>
 </div>
@@ -295,8 +296,8 @@ ul.no-bullet {list-style: none}
 </ul>
 </div>
 
-<div id="outline-container-orga11de90" class="outline-3">
-<h3 id="orga11de90"><span class="section-number-3">1.1</span> 这3变种的思考</h3>
+<div id="outline-container-org2b8fb04" class="outline-3">
+<h3 id="org2b8fb04"><span class="section-number-3">1.1</span> 这3变种的思考</h3>
 <div class="outline-text-3" id="text-1-1">
 <ul class="org-ul">
 <li>个人认为，此类变种的意义为：通过错误训练+预测执行，可以通过侧信道泄漏更多的内容。
@@ -318,8 +319,8 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 
-<div id="outline-container-orgfef8ff4" class="outline-2">
-<h2 id="orgfef8ff4"><span class="section-number-2">2</span> Speculative-Aware Noninterference</h2>
+<div id="outline-container-orgc5fabc5" class="outline-2">
+<h2 id="orgc5fabc5"><span class="section-number-2">2</span> Speculative-Aware Noninterference</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 cache中信息的可见程度。
@@ -330,8 +331,8 @@ cache中信息的可见程度。
 </p>
 </div>
 
-<div id="outline-container-orgb9444e9" class="outline-3">
-<h3 id="orgb9444e9"><span class="section-number-3">2.1</span> 现存定义的不足</h3>
+<div id="outline-container-org10ac2c9" class="outline-3">
+<h3 id="org10ac2c9"><span class="section-number-3">2.1</span> 现存定义的不足</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 主要无法找出上述新的侧信道泄漏。
@@ -373,8 +374,8 @@ view(s^{perf}_{\langle m_1,0\rangle})=view(s^{perf}_{\langle m_2,0\rangle}) \Lon
 </div>
 </div>
 
-<div id="outline-container-org2d21f42" class="outline-2">
-<h2 id="org2d21f42"><span class="section-number-2">3</span> 文章主要贡献：</h2>
+<div id="outline-container-org87400c3" class="outline-2">
+<h2 id="org87400c3"><span class="section-number-2">3</span> 文章主要贡献：</h2>
 <div class="outline-text-2" id="text-3">
 <ul class="org-ul">
 <li>提出了一种新的Spectre V1变种，这种变种通过预测执行过程中对缓存的修改来判断条件分支中关键字的值。</li>
@@ -386,7 +387,8 @@ view(s^{perf}_{\langle m_1,0\rangle})=view(s^{perf}_{\langle m_2,0\rangle}) \Lon
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-18 Thu 09:37</p>
+<p class="author">Author: theone</p>
+<p class="date">Created: 2021-11-25 四 18:25</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

@@ -3,10 +3,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-12-02 Thu 14:32 -->
+<!-- 2021-12-02 Thu 20:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>SpecSafe: Detecting Cache Side Channels in a Speculative World</title>
+<title>Foreshadow: Extracting the Keys to the Intel SGX Kingdom with Transient Out-of-Order Execution</title>
 <meta name="generator" content="Org mode" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
@@ -233,160 +233,234 @@ ul.no-bullet {list-style: none}
     /*]]>*///-->
 // @license-end
 </script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        displayAlign: "center",
-        displayIndent: "0em",
-
-        "HTML-CSS": { scale: 100,
-                        linebreaks: { automatic: "false" },
-                        webFont: "TeX"
-                       },
-        SVG: {scale: 100,
-              linebreaks: { automatic: "false" },
-              font: "TeX"},
-        NativeMML: {scale: 100},
-        TeX: { equationNumbers: {autoNumber: "AMS"},
-               MultLineWidth: "85%",
-               TagSide: "right",
-               TagIndent: ".8em"
-             }
-});
-</script>
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="content">
-<h1 class="title">SpecSafe: Detecting Cache Side Channels in a Speculative World</h1>
+<h1 class="title">Foreshadow: Extracting the Keys to the Intel SGX Kingdom with Transient Out-of-Order Execution</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgd4070c7">1. 新的预测执行侧信道</a>
+<li><a href="#org66e55ef">1. Introduction</a></li>
+<li><a href="#org64906b4">2. Backgroud</a>
 <ul>
-<li><a href="#orgd493672">1.1. 这3变种的思考</a></li>
+<li><a href="#org6c8609e">2.1. Intel SGX</a></li>
+<li><a href="#orgc863f70">2.2. Attack Model and Objectives</a></li>
 </ul>
 </li>
-<li><a href="#org40057d4">2. Speculative-Aware Noninterference</a>
+<li><a href="#orgdfa52ce">3. The Foreshadow Attack</a>
 <ul>
-<li><a href="#org075a1f3">2.1. 现存定义的不足</a></li>
+<li><a href="#orgd00ed4b">3.1. The Basic Foreshadow Attack</a>
+<ul>
+<li><a href="#orgbea6c61">3.1.1. Phase 1: Caching Enclave Secret</a></li>
+<li><a href="#org084134e">3.1.2. Phase 2：Transient Execution</a></li>
+<li><a href="#org958f2f2">3.1.3. Phase 3：Receiving the Secret</a></li>
 </ul>
 </li>
-<li><a href="#orge599e0b">3. 文章主要贡献：</a></li>
+<li><a href="#orgc359e8d">3.2. Reading Full Cache Line</a></li>
+<li><a href="#org5771018">3.3. Preemptively Extracting Secrets</a></li>
+<li><a href="#org15d664e">3.4. Concurrently Extracting Secrets</a></li>
+<li><a href="#org7297af6">3.5. Reading Uncached Secrets</a></li>
+</ul>
+</li>
+<li><a href="#org9ae7259">4. 总结</a></li>
 </ul>
 </div>
 </div>
-<p>
-文章认为将转换缓存通道检测工具与预测执行工具相结合并不一定能涵盖所有可能的缓存侧信道。
-</p>
 
-<div id="outline-container-orgd4070c7" class="outline-2">
-<h2 id="orgd4070c7"><span class="section-number-2">1</span> 新的预测执行侧信道</h2>
+<div id="outline-container-org66e55ef" class="outline-2">
+<h2 id="org66e55ef"><span class="section-number-2">1</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
-
-<div id="org59f28b7" class="figure">
-<p><img src="./images/2021-11-04_16-21.png" alt="2021-11-04_16-21.png" />
-</p>
-</div>
-
-<ul class="org-ul">
-<li>通过条件分支时的预测执行过程读取某些变量到缓存中，从而导致泄漏分支判断中变量信息。</li>
-</ul>
-</div>
-
-<div id="outline-container-orgd493672" class="outline-3">
-<h3 id="orgd493672"><span class="section-number-3">1.1</span> 这3变种的思考</h3>
-<div class="outline-text-3" id="text-1-1">
-<ul class="org-ul">
-<li>个人认为，此类变种的意义为：通过错误训练+预测执行，可以通过侧信道泄漏更多的内容。
-对于一般程序而言，执行的内容越多泄漏的信息越多，通过预测执行可以导致程序执行更多的内容，从而泄漏出更多的信息。
-也就是，通过预测执行+正常执行来进行侧信道的攻击。
-但估计这种攻击难度很大。</li>
-<li>这3种变种的主要作用是泄漏key。</li>
-<li>a 中的代码形式不常见，为什么不直接写成temp=A[0]？</li>
-<li>b 中，误导向temp=A[((key+1)%2)*512]，则只有key%2=1的情况，会导致A[0]被加载到cache中，</li>
-</ul>
 <p>
-这种可以泄漏key的值，如果存在循环则可能泄漏多位。
+foreshadow和Meltdown类似，利用预测执行读取不可读的内存数据，并通过侧信道转化通道传递信息。
 </p>
-<ol class="org-ol">
-<li>如果需要循环，那么循环过程会对预测进行矫正，如何克服？</li>
-<li>需要细粒度地控制程序</li>
-</ol>
-</div>
-</div>
-</div>
 
-<div id="outline-container-org40057d4" class="outline-2">
-<h2 id="org40057d4"><span class="section-number-2">2</span> Speculative-Aware Noninterference</h2>
+<p>
+不同之处在于，foreshadow不是读取内核数据，而是读取SGX中的数据，metldown无法攻击SGX。
+</p>
+
+<p>
+相较于别的SGX攻击，foreshadow：
+</p>
+<ul class="org-ul">
+<li>基本攻击不需要特权。</li>
+<li>可以使用特权来优化噪声。</li>
+<li>不需要软件本身存在问题，如软件本身存在控制流的侧信道漏洞。</li>
+<li>不需要前置信息，如源代码。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org64906b4" class="outline-2">
+<h2 id="org64906b4"><span class="section-number-2">2</span> Backgroud</h2>
 <div class="outline-text-2" id="text-2">
-<p>
-cache中信息的可见程度。
-</p>
-
-<p>
-文章使用<a href="20211105150407-rigorous_analysis_of_software_countermeasures_against_cache_attacks.html#ID-94f00989-c858-449d-8060-785abd6a8e5a">block-trace observer</a>模型，粒度为cache line。
-</p>
 </div>
-
-<div id="outline-container-org075a1f3" class="outline-3">
-<h3 id="org075a1f3"><span class="section-number-3">2.1</span> 现存定义的不足</h3>
+<div id="outline-container-org6c8609e" class="outline-3">
+<h3 id="org6c8609e"><span class="section-number-3">2.1</span> Intel SGX</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
-主要无法找出上述新的侧信道泄漏。
+<a href="20211202193833-intel_sgx.html#ID-ce79be9a-efd9-492f-bd7d-400d36aecc15">Intel SGX</a>
 </p>
-
-<p>
-侧信道安全形式化定义：<a href="20211105151009-security_policies_and_security_models.html#ID-845f83f4-2e24-465c-a22f-42f631d135b8">Noninterferece property</a> 不相干性。
-</p>
-
-<p>
-策略 \(P\) 是公开变量的集合， \(m\) 为内存
-</p>
-
-<p>
-<b>Definition 1 (Low Eqivalence)</b> . Given a policy \(P\) , two memories \(m_1\) and \(m_2\) are low-equivalent according to \(P\) ,written as \(m_1 \simeq_P m_2\) if and only if \(\forall x \in P. m_1(x) = m_2(x)\) .
-</p>
-
-<p>
-\(s^{perf}_{\langle m,w \rangle}\) 表示没有预测执行的执行序列。
-</p>
-
-<p>
-<b>Definition 2 (Cache noninterference (CNI))</b> . A program s with policy \(P\) satisfies CNI if for all \(O\) , \(m_1 \simeq_P m_2\) , we have
-</p>
-
-\begin{equation}
-view(s^{perf}_{\langle m_1,0 \rangle}) = view(s^{perf}_{\langle m_2,0\rangle})
-\end{equation}
-
-<p>
-<b>Definition 3 (SNI-GEN)</b> . A program s with policy \(P\) satisfies SNI-GEN with transaction length \(w\)
-if for all \(m_1 \simeq_P m_2\) ,
-</p>
-
-\begin{equation}
-view(s^{perf}_{\langle m_1,0\rangle})=view(s^{perf}_{\langle m_2,0\rangle}) \Longrightarrow view(s^{mis}_{\langle m_1,0\rangle})=view(s^{mis}_{\langle m_2,0\rangle})
-\end{equation}
 </div>
 </div>
-</div>
-
-<div id="outline-container-orge599e0b" class="outline-2">
-<h2 id="orge599e0b"><span class="section-number-2">3</span> 文章主要贡献：</h2>
-<div class="outline-text-2" id="text-3">
+<div id="outline-container-orgc863f70" class="outline-3">
+<h3 id="orgc863f70"><span class="section-number-3">2.2</span> Attack Model and Objectives</h3>
+<div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
-<li>提出了一种新的Spectre V1变种，这种变种通过预测执行过程中对缓存的修改来判断条件分支中关键字的值。</li>
-<li>新的预测执行安全定义，Speculative-Aware Noninterferece。</li>
-<li>新的程序转换，Novel Program Transformation</li>
-<li>Speculative-Aware Symbolic Execution，基于新的预测执行安全定义设计的符号执行。将符号执行结果输入<a href="20211108095734-smt_solver.html#ID-becc345f-c97c-4bec-99c1-736767830c6c">SMT solver</a>。</li>
+<li>不需要知道程序是否存在侧信道漏洞，代码gadgets,源码。</li>
+<li>需要信息在enclave的地址空间中。</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdfa52ce" class="outline-2">
+<h2 id="orgdfa52ce"><span class="section-number-2">3</span> The Foreshadow Attack</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgd00ed4b" class="outline-3">
+<h3 id="orgd00ed4b"><span class="section-number-3">3.1</span> The Basic Foreshadow Attack</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+前提：
+</p>
+<ul class="org-ul">
+<li>untrusted enclave host application</li>
+<li>分配"oracle buffer"</li>
+</ul>
+<p>
+攻击分三步：
+</p>
+<ul class="org-ul">
+<li>缓存secret。</li>
+<li>瞬时执行。</li>
+<li>获取secret。</li>
+</ul>
+</div>
+<div id="outline-container-orgbea6c61" class="outline-4">
+<h4 id="orgbea6c61"><span class="section-number-4">3.1.1</span> Phase 1: Caching Enclave Secret</h4>
+<div class="outline-text-4" id="text-3-1-1">
+<p>
+将enclave的secret加载到cache中
+</p>
+<ul class="org-ul">
+<li>如果secret没有被加载到L1 cache中，则不会触发瞬时执行。</li>
+<li>如果enclave内存没有在L1 cache中的话，就无法读取未授权的enclave 内存内容。</li>
+<li>enclave的内存数据在内存中是加密的，但在cache中是被解密的。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org084134e" class="outline-4">
+<h4 id="org084134e"><span class="section-number-4">3.1.2</span> Phase 2：Transient Execution</h4>
+<div class="outline-text-4" id="text-3-1-2">
+<p>
+触发瞬时执行过程。瞬时执行过程中需要通过oracle slot传递出信息。
+</p>
+<ul class="org-ul">
+<li>对enclave的内存读取不会产生缺页，因此不能直接用来触发瞬时执行。</li>
+<li>文章指出可以通过mprotect撤销内存页的权限来触发缺页。</li>
+<li>虽然Intel官方表示不可见的内存页不会触发缺页，实际确实可以。</li>
+<li>因为enclave进入和退出时会刷新TLB,因此会增加加载oracle slots时带来的时间开销，因此需要为oracle重建TLB,可以通过clflush实现。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org958f2f2" class="outline-4">
+<h4 id="org958f2f2"><span class="section-number-4">3.1.3</span> Phase 3：Receiving the Secret</h4>
+<div class="outline-text-4" id="text-3-1-3">
+<p>
+使用用户的异常处理来接受信息。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc359e8d" class="outline-3">
+<h3 id="orgc359e8d"><span class="section-number-3">3.2</span> Reading Full Cache Line</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+实际测试发现，上下文的切换和内核代码的执行会导致secret被驱逐。
+</p>
+<ul class="org-ul">
+<li>Page Aliasing(Root)：enclave中的执行也需要页表中的执行权限，因此执行在执行后使用mprotect撤销权限，但mprotect本身会对cache产生影响。将同一个物理地址通过page alias映射成另一个虚拟地址，可以在phase 1对另一个虚拟地址进行mprotect。</li>
+<li>Fault suppression：在触发异常时，首先由操作系统处理异常，会影响cache。
+<ul class="org-ul">
+<li>使用TSX能够跳过系统的异常处理。</li>
+<li>将触发异常的指令放在预测执行过程中。</li>
+</ul></li>
+<li>Keeping Secrets Warm(Root)：oracle shots的加载可能会导致secret被驱逐。
+<ul class="org-ul">
+<li>使用wbinvd指令，清空cache,能够腾出空间避免冲突。</li>
+<li>多读几次，确保不会被优先驱逐.</li>
+</ul></li>
+<li>Isolation Cores(Root): Intel CPU中L1中的内容也同样要在L2和L3中, 因此L2, L3中的驱逐也会导致L1中数据被驱逐。超线程中的另一个进程可能会导致L1, L2中的secret被驱逐，其他核心可能会驱逐L3。
+<ul class="org-ul">
+<li>限制enclave在特定核心中.</li>
+<li>减少其他核心上的负载.</li>
+</ul></li>
+<li>Dealing with Zero Bias: 当处理器遇到异常时会将读取的无授权内存内容变为0.
+<ul class="org-ul">
+<li>判断读取内容是否为0.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org5771018" class="outline-3">
+<h3 id="org5771018"><span class="section-number-3">3.3</span> Preemptively Extracting Secrets</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+Secret被加载到cache后可能在后续的执行过程中被驱逐出cache,因此需要在secret被加载的L1之后，退出enclave.
+</p>
+
+<ul class="org-ul">
+<li>Single-Stepping Enclaved Execution (Root): 使用SGX-Step 来控制enclave程序单步执行。</li>
+<li>Dumping Enclaved CPU Registers: 获取CPU寄存器值。SSA中的内容可能会在切换上下文时可能会被驱逐，或者在foreshadow phase 2 和 3中被驱逐。
+<ul class="org-ul">
+<li>通过撤销页的访问权限，可以让eresume后的第一个指令停止.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org15d664e" class="outline-3">
+<h3 id="org15d664e"><span class="section-number-3">3.4</span> Concurrently Extracting Secrets</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+通过超线程持续获取enclave中的信息。
+</p>
+
+<p>
+问题：因为信息接收时需要对256个slot进行测量，这段时间里可能会导致secret的丢失。
+</p>
+</div>
+</div>
+<div id="outline-container-org7297af6" class="outline-3">
+<h3 id="org7297af6"><span class="section-number-3">3.5</span> Reading Uncached Secrets</h3>
+<div class="outline-text-3" id="text-3-5">
+<p>
+使用ewb和eldu SGX指令可以将enclave page写出或重新写入EPC, 但是内容会被留在cache中。通过/proc/pid/maps将每个页加载到cache中，然后获取信息。
+</p>
+
+<p>
+考虑到可能secret还未出现，因此可以在secret被加载后暂停。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org9ae7259" class="outline-2">
+<h2 id="org9ae7259"><span class="section-number-2">4</span> 总结</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+文章主要贡献：
+</p>
+<ul class="org-ul">
+<li>提出了一种类似meltdown的SGX攻击方式，foreshadow。</li>
+<li>foreshadow通过mprotect撤销enclave页的所有权限，让其不可见，从而绕过Intel的abort page semantics限制。</li>
+<li>文章提出了很多能够提高攻击效率的措施：
+<ul class="org-ul">
+<li></li>
+</ul></li>
 </ul>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-12-02 Thu 14:32</p>
+<p class="date">Created: 2021-12-02 Thu 20:24</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

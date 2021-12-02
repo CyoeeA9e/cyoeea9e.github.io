@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-18 Thu 09:37 -->
+<!-- 2021-12-02 Thu 14:33 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>spectector</title>
@@ -241,24 +241,24 @@ ul.no-bullet {list-style: none}
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org309c4f4">1. 摘要</a></li>
-<li><a href="#org3a488af">2. 例子</a>
+<li><a href="#org1be120f">1. 摘要</a></li>
+<li><a href="#orgcd651ea">2. 例子</a>
 <ul>
-<li><a href="#org540784d">2.1. Clang Seculative load hardening</a></li>
+<li><a href="#orgf065c95">2.1. Clang Seculative load hardening</a></li>
 </ul>
 </li>
-<li><a href="#org8dfade0">3. uASM</a>
+<li><a href="#org93c3072">3. uASM</a>
 <ul>
-<li><a href="#org45e7086">3.1. Non-speculative Semantics</a></li>
+<li><a href="#org03bfb29">3.1. Non-speculative Semantics</a></li>
 </ul>
 </li>
-<li><a href="#org4b1d271">4. <span class="todo TODO">TODO</span> Spectector</a></li>
+<li><a href="#orgcf9ead2">4. <span class="todo TODO">TODO</span> Spectector</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org309c4f4" class="outline-2">
-<h2 id="org309c4f4"><span class="section-number-2">1</span> 摘要</h2>
+<div id="outline-container-org1be120f" class="outline-2">
+<h2 id="org1be120f"><span class="section-number-2">1</span> 摘要</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>文章提出了speculative non-interference,一种语意上的安全概念。</li>
@@ -272,8 +272,8 @@ ul.no-bullet {list-style: none}
 </ul>
 </div>
 </div>
-<div id="outline-container-org3a488af" class="outline-2">
-<h2 id="org3a488af"><span class="section-number-2">2</span> 例子</h2>
+<div id="outline-container-orgcd651ea" class="outline-2">
+<h2 id="orgcd651ea"><span class="section-number-2">2</span> 例子</h2>
 <div class="outline-text-2" id="text-2">
 <div class="org-src-container">
 <pre class="src src-C"><span style="font-weight: bold;">if</span> (y &lt; size)
@@ -287,8 +287,8 @@ start*t*rollback when y &gt;= size
 </p>
 </div>
 
-<div id="outline-container-org540784d" class="outline-3">
-<h3 id="org540784d"><span class="section-number-3">2.1</span> Clang Seculative load hardening</h3>
+<div id="outline-container-orgf065c95" class="outline-3">
+<h3 id="orgf065c95"><span class="section-number-3">2.1</span> Clang Seculative load hardening</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 使用mask来限制索引的最大值。
@@ -297,8 +297,8 @@ mask = ite(y &lt; size, 0x0, 0xFF..FF), ite: if-then-else
 </div>
 </div>
 </div>
-<div id="outline-container-org8dfade0" class="outline-2">
-<h2 id="org8dfade0"><span class="section-number-2">3</span> uASM</h2>
+<div id="outline-container-org93c3072" class="outline-2">
+<h2 id="org93c3072"><span class="section-number-2">3</span> uASM</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 Regs:寄存器集合,包含pc
@@ -326,8 +326,8 @@ uASM包含8种指令：
 <b>beqz</b>: branch equal to zero
 </p>
 </div>
-<div id="outline-container-org45e7086" class="outline-3">
-<h3 id="org45e7086"><span class="section-number-3">3.1</span> Non-speculative Semantics</h3>
+<div id="outline-container-org03bfb29" class="outline-3">
+<h3 id="org03bfb29"><span class="section-number-3">3.1</span> Non-speculative Semantics</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 <b>configurations</b>: &lt;m, a&gt; m为内存，a为寄存器任务。m为映射内存地址的函数
@@ -336,12 +336,12 @@ uASM包含8种指令：
 </div>
 </div>
 
-<div id="outline-container-org4b1d271" class="outline-2">
-<h2 id="org4b1d271"><span class="section-number-2">4</span> <span class="todo TODO">TODO</span> Spectector</h2>
+<div id="outline-container-orgcf9ead2" class="outline-2">
+<h2 id="orgcf9ead2"><span class="section-number-2">4</span> <span class="todo TODO">TODO</span> Spectector</h2>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-18 Thu 09:37</p>
+<p class="date">Created: 2021-12-02 Thu 14:33</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

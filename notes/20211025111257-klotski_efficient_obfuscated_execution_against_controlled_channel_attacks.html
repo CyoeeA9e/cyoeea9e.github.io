@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-04 Thu 15:14 -->
+<!-- 2021-12-02 Thu 14:33 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Klotski: Efficient Obfuscated Execution against Controlled-Channel Attacks</title>
@@ -263,60 +263,60 @@ ul.no-bullet {list-style: none}
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org6a5fcec">1. 摘要</a></li>
-<li><a href="#orgecf1f9e">2. 介绍</a></li>
-<li><a href="#org0f8c6dd">3. 背景</a>
+<li><a href="#org30ea829">1. 摘要</a></li>
+<li><a href="#orgf60dda6">2. 介绍</a></li>
+<li><a href="#orgb7e788b">3. 背景</a>
 <ul>
-<li><a href="#orgb5b76f5">3.1. 英特尔SGX</a></li>
-<li><a href="#org79beae5">3.2. ORAM</a></li>
+<li><a href="#org449873f">3.1. 英特尔SGX</a></li>
+<li><a href="#orgcb40551">3.2. ORAM</a></li>
 </ul>
 </li>
-<li><a href="#orgb59aea2">4. 相关工作和动机</a>
+<li><a href="#org0ecc442">4. 相关工作和动机</a>
 <ul>
-<li><a href="#orge6147f3">4.1. 攻击SGX的侧信道攻击</a></li>
-<li><a href="#org54ad87a">4.2. 现有的防御方法</a></li>
+<li><a href="#org88946ec">4.1. 攻击SGX的侧信道攻击</a></li>
+<li><a href="#orga76360b">4.2. 现有的防御方法</a></li>
 </ul>
 </li>
-<li><a href="#orgdb07dcf">5. 设计</a>
+<li><a href="#org7c4dfb9">5. 设计</a>
 <ul>
-<li><a href="#org76cccd8">5.1. 威胁模型</a></li>
-<li><a href="#org912c475">5.2. 概述</a></li>
-<li><a href="#orgae1afeb">5.3. 软件MMU</a></li>
-<li><a href="#orgc1bef48">5.4. ORAM Access</a></li>
+<li><a href="#org989a161">5.1. 威胁模型</a></li>
+<li><a href="#org6609449">5.2. 概述</a></li>
+<li><a href="#org53e450a">5.3. 软件MMU</a></li>
+<li><a href="#org8da3a18">5.4. ORAM Access</a></li>
 </ul>
 </li>
-<li><a href="#org9d0e5ce">6. 优化</a>
+<li><a href="#orgec97f12">6. 优化</a>
 <ul>
-<li><a href="#orgeb86567">6.1. 减少地址转化</a></li>
-<li><a href="#org0053655">6.2. 循环对齐</a></li>
-<li><a href="#org482a693">6.3. 常量嵌入</a></li>
-<li><a href="#orgeec642e">6.4. 可配置的迷你页和vCache大小</a></li>
+<li><a href="#org8cad051">6.1. 减少地址转化</a></li>
+<li><a href="#orgee2c6c4">6.2. 循环对齐</a></li>
+<li><a href="#org32eff44">6.3. 常量嵌入</a></li>
+<li><a href="#org6d6d83b">6.4. 可配置的迷你页和vCache大小</a></li>
 </ul>
 </li>
-<li><a href="#org4e6cdc5">7. 安全性分析</a>
+<li><a href="#org4916af0">7. 安全性分析</a>
 <ul>
-<li><a href="#org374cd2a">7.1. 基线设计</a></li>
-<li><a href="#orgfcb6cd5">7.2. 以性能为导向的配置</a></li>
-<li><a href="#orgd5b61c0">7.3. 其他的侧信道攻击</a></li>
+<li><a href="#org91ec0ff">7.1. 基线设计</a></li>
+<li><a href="#org3472b22">7.2. 以性能为导向的配置</a></li>
+<li><a href="#org0795a50">7.3. 其他的侧信道攻击</a></li>
 </ul>
 </li>
-<li><a href="#org9553ed2">8. 性能评估</a>
+<li><a href="#orgbc5a6ff">8. 性能评估</a>
 <ul>
-<li><a href="#orge9f91db">8.1. Nbench测试</a></li>
+<li><a href="#org34bb7ef">8.1. Nbench测试</a></li>
 </ul>
 </li>
-<li><a href="#org2db6ea5">9. 真实应用</a></li>
-<li><a href="#org39efff9">10. 总结</a></li>
-<li><a href="#org979f66a">11. 鸣谢</a></li>
-<li><a href="#orgcf1230d">12. 文章总结</a></li>
+<li><a href="#org9f06369">9. 真实应用</a></li>
+<li><a href="#orgca30802">10. 总结</a></li>
+<li><a href="#org7e3661e">11. 鸣谢</a></li>
+<li><a href="#org8644282">12. 文章总结</a></li>
 </ul>
 </div>
 </div>
 <p>
 <b>Klotski: 应对Controlled-Channel攻击的高效混淆执行</b>
 </p>
-<div id="outline-container-org6a5fcec" class="outline-2">
-<h2 id="org6a5fcec"><span class="section-number-2">1</span> 摘要</h2>
+<div id="outline-container-org30ea829" class="outline-2">
+<h2 id="org30ea829"><span class="section-number-2">1</span> 摘要</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 英特尔软件防护扩展（SGX）为安全敏感的计算提供了一个基于硬件的可信执行环境。
@@ -334,8 +334,8 @@ ul.no-bullet {list-style: none}
 </p>
 </div>
 </div>
-<div id="outline-container-orgecf1f9e" class="outline-2">
-<h2 id="orgecf1f9e"><span class="section-number-2">2</span> 介绍</h2>
+<div id="outline-container-orgf60dda6" class="outline-2">
+<h2 id="orgf60dda6"><span class="section-number-2">2</span> 介绍</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 可信执行环境（TEE）旨在保障在潜在的敌对平台（如公共云）上程序执行的保密性和完整性，以应对各种程序开发者未曾考虑的安全威胁。
@@ -396,12 +396,12 @@ sMMU将编译时的虚拟地址，也被称作逻辑地址，翻译成运行时�
 </div>
 </div>
 
-<div id="outline-container-org0f8c6dd" class="outline-2">
-<h2 id="org0f8c6dd"><span class="section-number-2">3</span> 背景</h2>
+<div id="outline-container-orgb7e788b" class="outline-2">
+<h2 id="orgb7e788b"><span class="section-number-2">3</span> 背景</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgb5b76f5" class="outline-3">
-<h3 id="orgb5b76f5"><span class="section-number-3">3.1</span> 英特尔SGX</h3>
+<div id="outline-container-org449873f" class="outline-3">
+<h3 id="org449873f"><span class="section-number-3">3.1</span> 英特尔SGX</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 SGX提供两种安全保证：保密性和完整性。
@@ -412,8 +412,8 @@ SGX提供两种安全保证：保密性和完整性。
 </div>
 </div>
 
-<div id="outline-container-org79beae5" class="outline-3">
-<h3 id="org79beae5"><span class="section-number-3">3.2</span> ORAM</h3>
+<div id="outline-container-orgcb40551" class="outline-3">
+<h3 id="orgcb40551"><span class="section-number-3">3.2</span> ORAM</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 Oblivious RAM（ORAM）[18]，提供了一个正式和通用的模型，以防止对手从程序的访问模式中了解任何有关程序的输入的信息。
@@ -443,12 +443,12 @@ ORAM通过混淆内存访问模式来实现这一目标，如添加噪音、排�
 </div>
 </div>
 </div>
-<div id="outline-container-orgb59aea2" class="outline-2">
-<h2 id="orgb59aea2"><span class="section-number-2">4</span> 相关工作和动机</h2>
+<div id="outline-container-org0ecc442" class="outline-2">
+<h2 id="org0ecc442"><span class="section-number-2">4</span> 相关工作和动机</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-orge6147f3" class="outline-3">
-<h3 id="orge6147f3"><span class="section-number-3">4.1</span> 攻击SGX的侧信道攻击</h3>
+<div id="outline-container-org88946ec" class="outline-3">
+<h3 id="org88946ec"><span class="section-number-3">4.1</span> 攻击SGX的侧信道攻击</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 表1总结并比较了现有的对SGX的侧信道攻击方法。Xu等人[56]首次证明了一个恶意的操作系统可以通过观察程序在页粒度上的访问来提取程序的敏感信息。
@@ -473,8 +473,8 @@ Hähnel等人[23]报告说，观察到单个数组的查询速度降低了3532�
 </div>
 </div>
 
-<div id="outline-container-org54ad87a" class="outline-3">
-<h3 id="org54ad87a"><span class="section-number-3">4.2</span> 现有的防御方法</h3>
+<div id="outline-container-orga76360b" class="outline-3">
+<h3 id="orga76360b"><span class="section-number-3">4.2</span> 现有的防御方法</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 T-SGX[44]使用英特尔事务性同步扩展（TSX）来限制关键代码执行时飞地AEX的生成。Chen等人[15]也利用TSX来实现基于执行的参考时钟，用于检测关键执行的中断。基于TSX的解决方案的问题是，一些攻击[9, 19, 20, 54]获得访问模式而不触发AEXs。SGX-Shield[43]在飞地程序的加载时引入了代码块级的随机化。然而，恶意的操作系统仍然可以通过观察操作系统输入的内存访问模式来推断出飞地的内存布局[30]。
@@ -494,12 +494,12 @@ InvisiPage[1]提出了一种类似于Klotski的新硬件设计，飞地内的程
 </div>
 </div>
 
-<div id="outline-container-orgdb07dcf" class="outline-2">
-<h2 id="orgdb07dcf"><span class="section-number-2">5</span> 设计</h2>
+<div id="outline-container-org7c4dfb9" class="outline-2">
+<h2 id="org7c4dfb9"><span class="section-number-2">5</span> 设计</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-org76cccd8" class="outline-3">
-<h3 id="org76cccd8"><span class="section-number-3">5.1</span> 威胁模型</h3>
+<div id="outline-container-org989a161" class="outline-3">
+<h3 id="org989a161"><span class="section-number-3">5.1</span> 威胁模型</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 我们假设的威胁模型与之前的可控信道工作[44, 45, 56]相同。首先，除了飞地本身，软件堆栈中的所有其他组件都不被信任，所以页面访问模式对对手来说是可见的。其次，我们假设目标程序的代码，包括它的源代码和二进制代码，对对手来说是已知的；所以攻击者可以对程序进行任何自动或手动分析，以提取必要的信息。此外，我们假设攻击者可以向目标程序提供攻击者控制的输入，以便进行在线训练，学习内存访问模式。最后，由于我们的重点是防止侧信道攻击，我们认为任何利用目标程序内的软件漏洞（如缓冲区溢出）的攻击都不属于范围。任何缓解这些漏洞的防御措施都是对我们工作的补充。
@@ -510,8 +510,8 @@ InvisiPage[1]提出了一种类似于Klotski的新硬件设计，飞地内的程
 </p>
 </div>
 </div>
-<div id="outline-container-org912c475" class="outline-3">
-<h3 id="org912c475"><span class="section-number-3">5.2</span> 概述</h3>
+<div id="outline-container-org6609449" class="outline-3">
+<h3 id="org6609449"><span class="section-number-3">5.2</span> 概述</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 在这项工作中，我们使用一种基于运行时重新随机化的混淆方法来缓解侧信道攻击。图1说明了Klotski的概况，它包括两个主要部分：一个编译器扩展和一个基于ORAM的运行时。编译器扩展执行两个转换。首先，它对所有的内存访问指令进行插装，包括飞地程序运行时的控制转移（代码访问）指令。其次，它将程序的代码和数据划分为小块，可以重定位到任何虚拟地址。运行时作为一个内存子系统，使用增强的环形ORM协议混淆内存访问[38]。为了加快执行速度，运行时还包括两个可配置大小的内存缓冲区，作为代码缓冲区和数据缓冲区。注意，为了避免混淆Klotski的软件缓存和架构/硬件缓存，我们将使用vCache来表示Klotski的缓存。代码和数据块使用ORAM协议被取到vCache中。vCache的重新随机化是通过自然替换（使用随机替换策略）或强制刷新完成的。
@@ -519,8 +519,8 @@ InvisiPage[1]提出了一种类似于Klotski的新硬件设计，飞地内的程
 </div>
 </div>
 
-<div id="outline-container-orgae1afeb" class="outline-3">
-<h3 id="orgae1afeb"><span class="section-number-3">5.3</span> 软件MMU</h3>
+<div id="outline-container-org53e450a" class="outline-3">
+<h3 id="org53e450a"><span class="section-number-3">5.3</span> 软件MMU</h3>
 <div class="outline-text-3" id="text-5-3">
 <p>
 Klotski用修改过的编译器将目标程序的源代码构建成Klotsk增强版。总体目标是插装内存访问指令，请求软件MMU将原始逻辑地址转换为vCache中的真实虚拟地址。这个阶段是在一个可信的机器上进行的。
@@ -556,8 +556,8 @@ lea指令可以将虚拟地址加载到一个寄存器中。在Klotski中，由�
 </div>
 </div>
 
-<div id="outline-container-orgc1bef48" class="outline-3">
-<h3 id="orgc1bef48"><span class="section-number-3">5.4</span> ORAM Access</h3>
+<div id="outline-container-org8da3a18" class="outline-3">
+<h3 id="org8da3a18"><span class="section-number-3">5.4</span> ORAM Access</h3>
 <div class="outline-text-3" id="text-5-4">
 <p>
 当在vCache中没有找到迷你页时，控制流被转移到ORAM组件中，将迷你页加载到vCache中。整个过程与§2中描述的Ring ORAM协议相似。然而，传统ORAM的威胁模型和Klotski的威胁模型之间的一个很大的区别是，我们没有一个受信任的"客户端"；所以对储藏室和位置图的访问也会受到侧信道的攻击。为了减轻这些威胁，Klotski增加了额外的遗忘操作并增强了一些现有的操作。
@@ -577,8 +577,8 @@ lea指令可以将虚拟地址加载到一个寄存器中。在Klotski中，由�
 </div>
 </div>
 </div>
-<div id="outline-container-org9d0e5ce" class="outline-2">
-<h2 id="org9d0e5ce"><span class="section-number-2">6</span> 优化</h2>
+<div id="outline-container-orgec97f12" class="outline-2">
+<h2 id="orgec97f12"><span class="section-number-2">6</span> 优化</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 Klotski的基线设计产生了很高的运行时开销，这主要来自两个方面。(1）额外的软件地址转换逻辑和（2）vCache缺失（即ORAM访问）。在本节中，我们介绍了几种优化技术，以减少Klotski的性能开销。
@@ -589,8 +589,8 @@ Klotski的基线设计产生了很高的运行时开销，这主要来自两个�
 </p>
 </div>
 
-<div id="outline-container-orgeb86567" class="outline-3">
-<h3 id="orgeb86567"><span class="section-number-3">6.1</span> 减少地址转化</h3>
+<div id="outline-container-org8cad051" class="outline-3">
+<h3 id="org8cad051"><span class="section-number-3">6.1</span> 减少地址转化</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski通过消除冗余的地址翻译来减少地址翻译的数量：当一个新的指针从一个地址已经被翻译过的旧指针派生（增加或减少一个偏移量）时，只要（1）新的指针被保证在同一个迷你页内，并且（2）相应的迷你页没有被从vCache驱逐，我们就可以重复使用已经翻译过的地址。基于这一观察，Klotski执行了以下优化。
@@ -621,8 +621,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </p>
 </div>
 </div>
-<div id="outline-container-org0053655" class="outline-3">
-<h3 id="org0053655"><span class="section-number-3">6.2</span> 循环对齐</h3>
+<div id="outline-container-orgee2c6c4" class="outline-3">
+<h3 id="orgee2c6c4"><span class="section-number-3">6.2</span> 循环对齐</h3>
 <div class="outline-text-3" id="text-6-2">
 <p>
 由于循环内的指令是重复执行的，它们占了程序执行时间的很大一部分。因此，优化循环对于提高程序的性能至关重要。在Klotski中，如果一个基本块和它的后续块不在同一个迷你页中，那么地址转换将被插入到这个基本块的末尾（§4.3）。如果这种情况发生在一个循环体中，那么就会产生非常高的性能开销。为了避免这种行为并提高程序的定位性，Klotski试图对齐循环，使大多数循环的主体不会跨越一个迷你页的边界。如果一个循环体太大，无法装入一个迷你页，那么Klotski仍然会将其基本块分割成两个迷你页。幸运的是，这样的大型循环很少见。
@@ -630,8 +630,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 
-<div id="outline-container-org482a693" class="outline-3">
-<h3 id="org482a693"><span class="section-number-3">6.3</span> 常量嵌入</h3>
+<div id="outline-container-org32eff44" class="outline-3">
+<h3 id="org32eff44"><span class="section-number-3">6.3</span> 常量嵌入</h3>
 <div class="outline-text-3" id="text-6-3">
 <p>
 为了减少程序的大小和提高性能，常见的编译器优化是合并和移动常量值（特别是浮点常量）到程序的数据部分，此后在运行期间将这些常量从内存加载到寄存器。虽然这对普通程序来说是一种有效的优化策略，但对Klotski强化程序来说却带来了麻烦。首先，对这些常量的访问将导致地址转换，这很昂贵。其次，这些常量存储在数据部分，对一个常量值的访问需要将其从数据部分加载到数据vCache中。由于Klotski的数据vCache的大小有限，这也会导致额外的vCache加载和驱逐。
@@ -643,8 +643,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 
-<div id="outline-container-orgeec642e" class="outline-3">
-<h3 id="orgeec642e"><span class="section-number-3">6.4</span> 可配置的迷你页和vCache大小</h3>
+<div id="outline-container-org6d6d83b" class="outline-3">
+<h3 id="org6d6d83b"><span class="section-number-3">6.4</span> 可配置的迷你页和vCache大小</h3>
 <div class="outline-text-3" id="text-6-4">
 <p>
 我们对Klotski的设计是通用的，所以迷你页面和vCache的大小是可以配置的。然而，在配置这些参数时，必须仔细考虑安全和性能之间的权衡。具体来说，较小的迷你页大小可能会提高安全性[2]和vCache的命中率，但它也会增加地址转换的数量以及每个转换的成本：较小的迷你页大小需要更多的PTE来索引，而ReadPTE（§4.4）的成本与页表的大小成正比。同样，从安全角度来看，在我们的威胁模型下，vCache的理想大小是一个物理页（即4KB）。然而，众所周知，当vCache的大小小于程序的工作集时，最终会出现 thrashing [17]，即系统将花费大部分时间将数据复制到/从ORAM。因为 thrashing不能通过vCache替换算法来避免，从性能的角度来看，更大的vCache大小是首选。较小的vCache通过频繁的替换隐式重新随机化，而较大的vCache则需要显式重新随机化（通过刷新）。Klotski允许用户配置刷新频率（例如，在固定数量的代码地址解引用后）。
@@ -652,16 +652,16 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 </div>
-<div id="outline-container-org4e6cdc5" class="outline-2">
-<h2 id="org4e6cdc5"><span class="section-number-2">7</span> 安全性分析</h2>
+<div id="outline-container-org4916af0" class="outline-2">
+<h2 id="org4916af0"><span class="section-number-2">7</span> 安全性分析</h2>
 <div class="outline-text-2" id="text-7">
 <p>
 在本章，我们对Klotski在我们的威胁模型下的安全性进行分析。
 </p>
 </div>
 
-<div id="outline-container-org374cd2a" class="outline-3">
-<h3 id="org374cd2a"><span class="section-number-3">7.1</span> 基线设计</h3>
+<div id="outline-container-org91ec0ff" class="outline-3">
+<h3 id="org91ec0ff"><span class="section-number-3">7.1</span> 基线设计</h3>
 <div class="outline-text-3" id="text-7-1">
 <p>
 我们首先分析了vCache大小为4KB的Klotski（§4）的基准线设计。我们从Klotski的每个重要步骤开始分析。
@@ -689,8 +689,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 
-<div id="outline-container-orgfcb6cd5" class="outline-3">
-<h3 id="orgfcb6cd5"><span class="section-number-3">7.2</span> 以性能为导向的配置</h3>
+<div id="outline-container-org3472b22" class="outline-3">
+<h3 id="org3472b22"><span class="section-number-3">7.2</span> 以性能为导向的配置</h3>
 <div class="outline-text-3" id="text-7-2">
 <p>
 虽然Klotski的基线设计是安全的，但它也有很高的性能开销，特别是当工作集大于vCache大小时（见第7节）。在本小节中，我们分析了当开发者选择通过增加vCache大小来获得更好的性能时，Klotski的安全性。
@@ -714,8 +714,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 
-<div id="outline-container-orgd5b61c0" class="outline-3">
-<h3 id="orgd5b61c0"><span class="section-number-3">7.3</span> 其他的侧信道攻击</h3>
+<div id="outline-container-org0795a50" class="outline-3">
+<h3 id="org0795a50"><span class="section-number-3">7.3</span> 其他的侧信道攻击</h3>
 <div class="outline-text-3" id="text-7-3">
 <p>
 基于缓存的侧信道攻击[9, 10, 19, 23, 42]和基于时间的攻击[11, 53]已被成功证明是能够对SGX飞地推断细粒度的访问模式。尽管Klotski不是为了完全缓解这些攻击而设计的，但它仍然使这些攻击很难成功。具体来说，所有的输入推理攻击都需要知道依赖输入的函数/指令何时被执行，这对于细粒度的攻击尤其重要，因为一次推理就需要大量的时间。为了加速攻击，他们通常在检测到一些感兴趣的特定函数的执行后，通过缺页[56]或专门的间谍线程[12]来抢占飞地，开始细粒度的攻击。通过定期执行vCache再随机化和使用随机vCache驱逐策略，Klotski的vCache中的迷你页不断变化。因此，攻击者很难知道感兴趣的函数何时会被换入或换出vCache。此外，由于Klotski的vCache中每一个4KB的物理页面是由两个任意的迷你页在运行时组合而成的，攻击者无法使用固定的页面访问模式来定位感兴趣的函数。因此，为了发动成功的攻击，攻击者需要找到好的方法来克服这些挑战。更重要的是，如果在攻击者能够确定感兴趣的函数之前，vCache被重新随机化，那么就几乎不可能发动攻击了。回顾一下，在我们的实证评估中，我们不得不修改目标程序，以便在感兴趣的函数被执行时通知我们，这在实践中是不现实的。
@@ -724,8 +724,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 
-<div id="outline-container-org9553ed2" class="outline-2">
-<h2 id="org9553ed2"><span class="section-number-2">8</span> 性能评估</h2>
+<div id="outline-container-orgbc5a6ff" class="outline-2">
+<h2 id="orgbc5a6ff"><span class="section-number-2">8</span> 性能评估</h2>
 <div class="outline-text-2" id="text-8">
 <p>
 <b>环境设置</b> 所有的实验都是在一台配备英特尔Skylake i7-6700 @ 3.4GHz、16GB内存和128MB PRM的机器上进行的。该机器运行的操作系统是Ubuntu 14.04 64位，带有Linux内核4.4.0和Intel SGX SDK（版本1.9.100）[28]和IntelSGX-driver（版本1.8）[27]。
@@ -736,8 +736,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </p>
 </div>
 
-<div id="outline-container-orge9f91db" class="outline-3">
-<h3 id="orge9f91db"><span class="section-number-3">8.1</span> Nbench测试</h3>
+<div id="outline-container-org34bb7ef" class="outline-3">
+<h3 id="org34bb7ef"><span class="section-number-3">8.1</span> Nbench测试</h3>
 <div class="outline-text-3" id="text-8-1">
 <p>
 我们和SGX-Shield和T-SGX一样选择Nbench测试套件来测试性能损耗。
@@ -770,8 +770,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 
-<div id="outline-container-org2db6ea5" class="outline-2">
-<h2 id="org2db6ea5"><span class="section-number-2">9</span> 真实应用</h2>
+<div id="outline-container-org9f06369" class="outline-2">
+<h2 id="org9f06369"><span class="section-number-2">9</span> 真实应用</h2>
 <div class="outline-text-2" id="text-9">
 <p>
 第一个真实的应用是一个HTTPS服务器mbedTLS[5]，它是一个开源的传输层安全（TLS）库。这个项目包括一个HTTPS服务器的样本。在我们的测试中，这个HTML文件的大小为30KB。为了测量性能，我们用ab命令从这个HTTPs服务器上请求文件20000次，并报告了处理单个请求所需耗时的平均值。表5展示了这些结果。总的来说，当vCache大小被设置为4KB时，Klotski比本地的慢了15.4倍。随着vCache大小的增加，性能开销呈指数级减少（从15.4倍到48.02%）。我们还测量了具有重新随机化的更大的vCache配置，它的开销增加到153.10%。
@@ -783,8 +783,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 
-<div id="outline-container-org39efff9" class="outline-2">
-<h2 id="org39efff9"><span class="section-number-2">10</span> 总结</h2>
+<div id="outline-container-orgca30802" class="outline-2">
+<h2 id="orgca30802"><span class="section-number-2">10</span> 总结</h2>
 <div class="outline-text-2" id="text-10">
 <p>
 在这项工作中，我们提出了Klotski，这是一种高效的混淆执行技术，用于对抗可控信道攻击，并能在安全性和性能之间进行调整。Klotski本质上模拟了一个安全的处理器，通过在两个内存vCache内以页面访问不透明的方式执行，并利用ORAM协议将内容加载/删除到vCache中。我们还设计并实施了一些优化技术以减少Klotski的开销。我们的安全分析表明，在我们的威胁模型下，Klotski对可控信道攻击是安全的。对我们的原型实现的性能评估也表明，Klotski的性能开销比以前的解决方案低得多，我们的优化技术非常有效。
@@ -792,8 +792,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 
-<div id="outline-container-org979f66a" class="outline-2">
-<h2 id="org979f66a"><span class="section-number-2">11</span> 鸣谢</h2>
+<div id="outline-container-org7e3661e" class="outline-2">
+<h2 id="org7e3661e"><span class="section-number-2">11</span> 鸣谢</h2>
 <div class="outline-text-2" id="text-11">
 <p>
 我们要感谢所有匿名审稿人的宝贵意见和建议。该工作得到了国家重点研发计划（批准号：2017YFB0802205）、深圳市基础研究计划（批准号：JCYJ20170413114215614）、广东省科技计划项目（批准号：2017B010124001）和广东省重点研发计划项目（批准号：2019B010139001），国家科学基金会（项目号：1718997），海军研究办公室（项目号：N000141712893）。本文所表达的任何意见、发现和结论或建议都是作者的观点，不一定反映资助机构的观点。
@@ -801,8 +801,8 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 
-<div id="outline-container-orgcf1230d" class="outline-2">
-<h2 id="orgcf1230d"><span class="section-number-2">12</span> 文章总结</h2>
+<div id="outline-container-org8644282" class="outline-2">
+<h2 id="org8644282"><span class="section-number-2">12</span> 文章总结</h2>
 <div class="outline-text-2" id="text-12">
 <ul class="org-ul">
 <li>通过2个vCache，将程序的执行过程限制在相同页面中，因此可以有效对抗通过页面访问模式进行攻击的侧信道攻击手段，如可控信道攻击。</li>
@@ -820,7 +820,7 @@ Klotski的基线实现是在每次内存访问之前插入翻译逻辑。Klotski
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-04 Thu 15:14</p>
+<p class="date">Created: 2021-12-02 Thu 14:33</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-11-22 Mon 09:56 -->
+<!-- 2021-12-02 Thu 14:32 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Translation Leak-aside Buffer: Defeating Cache Side-channel Protections with TLB Attacks</title>
@@ -233,14 +233,282 @@ ul.no-bullet {list-style: none}
     /*]]>*///-->
 // @license-end
 </script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="content">
 <h1 class="title">Translation Leak-aside Buffer: Defeating Cache Side-channel Protections with TLB Attacks</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org4e1d14b">1. 背景</a>
+<ul>
+<li><a href="#org0f51ebc">1.1. Cache side-channel防御</a>
+<ul>
+<li><a href="#orgc2038c8">1.1.1. 隔离cache set</a></li>
+<li><a href="#org8869d0d">1.1.2. 隔离cache line</a></li>
+<li><a href="#orgca906ca">1.1.3. 在敏感函数执行时隐藏data cache。</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgb50a767">2. 威胁模型</a></li>
+<li><a href="#org951b0da">3. 攻击概述</a></li>
+<li><a href="#org392a3ce">4. 监控TLB</a>
+<ul>
+<li><a href="#orgc623c1a">4.1. 线性映射TLB</a></li>
+<li><a href="#org5041e32">4.2. 复杂映射TLB</a></li>
+<li><a href="#orgb5e2250">4.3. <span class="todo TODO">TODO</span> TLB Caches之间的关系</a></li>
+</ul>
+</li>
+<li><a href="#orgf35d220">5. 超线程能否观察到TLB</a></li>
+<li><a href="#org7a64eca">6. 无特权TLB监控</a></li>
+<li><a href="#org3f2a572">7. 时间性分析</a>
+<ul>
+<li><a href="#org23eaf18">7.1. 信号分类</a></li>
+<li><a href="#orgac6b04f">7.2. 识别目标TLB set</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
 
+<div id="outline-container-org4e1d14b" class="outline-2">
+<h2 id="org4e1d14b"><span class="section-number-2">1</span> 背景</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org0f51ebc" class="outline-3">
+<h3 id="org0f51ebc"><span class="section-number-3">1.1</span> Cache side-channel防御</h3>
+<div class="outline-text-3" id="text-1-1">
+</div>
+<div id="outline-container-orgc2038c8" class="outline-4">
+<h4 id="orgc2038c8"><span class="section-number-4">1.1.1</span> 隔离cache set</h4>
+</div>
+<div id="outline-container-org8869d0d" class="outline-4">
+<h4 id="org8869d0d"><span class="section-number-4">1.1.2</span> 隔离cache line</h4>
+</div>
+<div id="outline-container-orgca906ca" class="outline-4">
+<h4 id="orgca906ca"><span class="section-number-4">1.1.3</span> 在敏感函数执行时隐藏data cache。</h4>
+<div class="outline-text-4" id="text-1-1-3">
+<p>
+<a href="20211123092929-strong_and_efficient_cache_side_channel_protection_using_hardware_transactional_memory.html#ID-07a01a11-185c-4625-afa2-cae566f9c9e2">Cloak</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb50a767" class="outline-2">
+<h2 id="orgb50a767"><span class="section-number-2">2</span> 威胁模型</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+受害者进程和攻击者进程共享一个核心。
+</p>
+</div>
+</div>
+<div id="outline-container-org951b0da" class="outline-2">
+<h2 id="org951b0da"><span class="section-number-2">3</span> 攻击概述</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li>如何监控TLB sets，或者虚拟内存在现代处理器中的多级TLBs中的映射方式。</li>
+<li>相同核心上的不同进程如何共享TLB sets。</li>
+<li>无特权进程（无法访问性能计数器，TLB shootdown中断）能否有效地监控TLB的活动。</li>
+<li>攻击者能否通过4KB粒度的data页实现有效的攻击，现存的防御方法对攻击的影响。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org392a3ce" class="outline-2">
+<h2 id="org392a3ce"><span class="section-number-2">4</span> 监控TLB</h2>
+<div class="outline-text-2" id="text-4">
+<ul class="org-ul">
+<li>使用Intel Performance Counters（PMCs）来获取TLB各级发生TLB miss时的细粒度信息。</li>
+<li>具体Linux perf 事件框架来监控。
+<ul class="org-ul">
+<li>dtlb_load_misses.stlb_hit</li>
+<li>dtlb_load_misses.miss_causes_a_walk</li>
+</ul></li>
+</ul>
+</div>
+<div id="outline-container-orgc623c1a" class="outline-3">
+<h3 id="orgc623c1a"><span class="section-number-3">4.1</span> 线性映射TLB</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+定义映射函数为hash函数
+</p>
+
+<p>
+假设TLB为线性映射，映射函数为
+</p>
+\begin{equation}
+targetset = page_{VA}\ mod\ s
+\end{equation}
+
+<ol class="org-ol">
+<li>定义cache set数量为s, way数量为w。</li>
+<li>固定s = 1, 2, &#x2026;, 读取第ks+1个页，k = 0, 1, 2, &#x2026;, 同时检查之前的页是否被驱逐，当发现驱逐时，记录s, 记w = k + 1。</li>
+<li>最小的w为way数量，对应最小的s为cache set数量。</li>
+</ol>
+
+<p>
+文章猜测Broadwell为4-way, 16-set L1 dTLB。
+</p>
+</div>
+</div>
+<div id="outline-container-org5041e32" class="outline-3">
+<h3 id="org5041e32"><span class="section-number-3">4.2</span> 复杂映射TLB</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+假设映射时使用xor获取虚拟地址的部分。
+</p>
+<ol class="org-ol">
+<li>首先判断哪些虚拟地址属于一个set中。</li>
+<li>这些虚拟地址的xor结果应该相同。</li>
+<li>计算可能的xor,来得到结果。</li>
+</ol>
+
+<p>
+文章计算得到xor hash矩阵为
+<img src="./images/2021-11-24_09-27.png" alt="2021-11-24_09-27.png" />
+</p>
+
+<p>
+计算方式： \(H\cdot VA[26:12]\), VA[26:12]指低位26到低位13共计14个bit。
+</p>
+</div>
+</div>
+<div id="outline-container-orgb5e2250" class="outline-3">
+<h3 id="orgb5e2250"><span class="section-number-3">4.3</span> <span class="todo TODO">TODO</span> TLB Caches之间的关系</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+TLB caches之间是否存在包容关系，即L2 cache中是否有L1 cache中的内容。
+</p>
+
+<p>
+测试方法：
+</p>
+<ol class="org-ol">
+<li>\(S_1 = \{ L1_{code}, L2 \}, S_2 = \{ L1_{data} \}\)</li>
+<li>访问 \(S_1, S_2\) ，同时增加 \(S_1\) 的大小。</li>
+<li></li>
+</ol>
+
+<p>
+测试得到Skylake的TLB不是包容关系。
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgf35d220" class="outline-2">
+<h2 id="orgf35d220"><span class="section-number-2">5</span> 超线程能否观察到TLB</h2>
+<div class="outline-text-2" id="text-5">
+<ol class="org-ol">
+<li>找到一个TLB set，通过之前得到的映射关系能够很方便找到。</li>
+<li>在一个超线程中访问该TLB set, 在另一个超线程中访问所有的TLB set。</li>
+<li>进行测量。</li>
+</ol>
+
+<p>
+测试发现：
+</p>
+<ul class="org-ul">
+<li>L1 dTLB 和 L2 sTLB是共享的。</li>
+<li>L1 iTLB 不是共享的。</li>
+<li>L2 sTLB set number最高位会与超线程ID做异或。</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org7a64eca" class="outline-2">
+<h2 id="org7a64eca"><span class="section-number-2">6</span> 无特权TLB监控</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+performance counter需要超级用户。
+</p>
+
+<p>
+类似<a href="20211023113705-microarchitectural_side_channel_attacks.html#ID-eaec89e9-27e4-4d11-a96d-d80f8491581f">Prime+Probe</a>，通过访问目标，通过rdtsc和rdtscp指令进行观察。
+</p>
+
+<p>
+测试：
+</p>
+<ul class="org-ul">
+<li>分成3个测试集：
+<ul class="org-ul">
+<li>在L1 dTLB中，L1 hit。</li>
+<li>部分不在L1 dTLB中，但是在L2 sTLB中, L1 miss but L2 hit。</li>
+<li>大于L2 sTLB，也就是部分不在L2中，L2 miss。</li>
+</ul></li>
+<li>所有地址映射到一个物理页中，避免CPU cache带来的影响。</li>
+<li>测量时间。</li>
+</ul>
+
+<p>
+测试显示存在鲜明的差别，可以用于监控TLB的行为。
+</p>
+</div>
+</div>
+<div id="outline-container-org3f2a572" class="outline-2">
+<h2 id="org3f2a572"><span class="section-number-2">7</span> 时间性分析</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+文章通过程序访问TLB时产生的TLB set序列模式来识别函数和分支。
+</p>
+
+<p>
+文章对libgcrypt中的ECC 乘法函数进行分析，发现其中的不同分支执行过程中的TLB访问序列存在明显不同。
+</p>
+</div>
+<div id="outline-container-org23eaf18" class="outline-3">
+<h3 id="org23eaf18"><span class="section-number-3">7.1</span> 信号分类</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+文章测试，发现可以利用TLB访问的延迟进行分类。
+</p>
+
+<p>
+通过一个SVM进行3分类：mul, dup，和其他。
+</p>
+</div>
+</div>
+<div id="outline-container-orgac6b04f" class="outline-3">
+<h3 id="orgac6b04f"><span class="section-number-3">7.2</span> 识别目标TLB set</h3>
+<div class="outline-text-3" id="text-7-2">
+<p>
+由于实际运行过程中，ASLR会导致虚拟地址变化，从而影响对应的set。
+</p>
+
+<p>
+因此需要对每个cache set进行测量，并识别出哪个cache set为目标set。
+</p>
+</div>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-11-22 Mon 09:56</p>
+<p class="date">Created: 2021-12-02 Thu 14:32</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

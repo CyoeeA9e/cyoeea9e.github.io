@@ -3,11 +3,16 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
+<<<<<<< HEAD
 <!-- 2021-12-02 Thu 14:32 -->
+=======
+<!-- 2021-11-25 四 18:25 -->
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>LLVM</title>
 <meta name="generator" content="Org mode" />
+<meta name="author" content="theone" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -241,6 +246,7 @@ ul.no-bullet {list-style: none}
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
+<<<<<<< HEAD
 <li><a href="#org10355d8">1. LLVM IR</a>
 <ul>
 <li><a href="#org37e4201">1.1. Identifiers</a></li>
@@ -261,10 +267,33 @@ ul.no-bullet {list-style: none}
 <ul>
 <li><a href="#orgb0071a5">2.1.1. CreateCondBr</a></li>
 <li><a href="#org2db6b5d">2.1.2. CreateStore</a></li>
+=======
+<li><a href="#org73104e6">1. LLVM IR</a>
+<ul>
+<li><a href="#org4581fbc">1.1. Identifiers</a></li>
+<li><a href="#orgc5f7124">1.2. Module</a></li>
+<li><a href="#orge35cfe6">1.3. Linkage Types</a></li>
+<li><a href="#orgd2a961c">1.4. Call Conventions（调用约定）</a></li>
+<li><a href="#org3dfa830">1.5. Visibility Styles</a></li>
+<li><a href="#orgf732cbc">1.6. DLL Storage Classes</a></li>
+<li><a href="#org52beee8">1.7. Thread Local Storage Models</a></li>
+<li><a href="#org94a17f2">1.8. AllocaInst</a></li>
+<li><a href="#orgb15195b">1.9. GetElementPtrInst</a></li>
+<li><a href="#org7a82218">1.10. PHI</a></li>
+</ul>
+</li>
+<li><a href="#org63b2a45">2. IR</a>
+<ul>
+<li><a href="#orgfd4185b">2.1. IRBuilder</a>
+<ul>
+<li><a href="#orgef8e1ff">2.1.1. CreateCondBr</a></li>
+<li><a href="#orgcbacf9b">2.1.2. CreateStore</a></li>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 </ul>
 </li>
 </ul>
 </li>
+<<<<<<< HEAD
 <li><a href="#orgeee9d0c">3. Important and useful LLVM APIS</a>
 <ul>
 <li><a href="#orgefb85c4">3.1. isa&lt;&gt;</a></li>
@@ -305,17 +334,68 @@ ul.no-bullet {list-style: none}
 <li><a href="#orgc3000d7">11. Instrumentation</a>
 <ul>
 <li><a href="#org3d31af6">11.1. PrepareToSplitEntryBlock</a></li>
+=======
+<li><a href="#org9191e5e">3. Important and useful LLVM APIS</a>
+<ul>
+<li><a href="#org686adad">3.1. isa&lt;&gt;</a></li>
+<li><a href="#orgad551fc">3.2. cast&lt;&gt;</a></li>
+<li><a href="#org9208ef0">3.3. dyn_cast&lt;&gt;</a></li>
+</ul>
+</li>
+<li><a href="#orge9c3083">4. Scalar Evolution</a></li>
+<li><a href="#org562d424">5. Module</a>
+<ul>
+<li><a href="#org62f36d8">5.1. getOrInsertFunction</a></li>
+<li><a href="#org201f9ac">5.2. getVoidTy</a></li>
+</ul>
+</li>
+<li><a href="#org944e624">6. StructType</a>
+<ul>
+<li><a href="#orgcd6e903">6.1. create</a></li>
+<li><a href="#org40d3e40">6.2. setBody</a></li>
+</ul>
+</li>
+<li><a href="#org7fd5dfa">7. ArrayType</a>
+<ul>
+<li><a href="#orgb063544">7.1. get</a></li>
+</ul>
+</li>
+<li><a href="#orgc5b5b70">8. Metadata</a>
+<ul>
+<li><a href="#org0bac862">8.1. Instruction</a></li>
+</ul>
+</li>
+<li><a href="#org7f7579d">9. ModulePass</a></li>
+<li><a href="#org23b8dc3">10. BasicBlock</a>
+<ul>
+<li><a href="#org01cab69">10.1. Create</a></li>
+<li><a href="#orgd64e4e8">10.2. getFirstInsertionPt</a></li>
+</ul>
+</li>
+<li><a href="#orgbc5706f">11. Instrumentation</a>
+<ul>
+<li><a href="#orgf9ce73b">11.1. PrepareToSplitEntryBlock</a></li>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 </ul>
 </li>
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org10355d8" class="outline-2">
 <h2 id="org10355d8"><span class="section-number-2">1</span> LLVM IR</h2>
 <div class="outline-text-2" id="text-1">
 </div>
 <div id="outline-container-org37e4201" class="outline-3">
 <h3 id="org37e4201"><span class="section-number-3">1.1</span> Identifiers</h3>
+=======
+<div id="outline-container-org73104e6" class="outline-2">
+<h2 id="org73104e6"><span class="section-number-2">1</span> LLVM IR</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org4581fbc" class="outline-3">
+<h3 id="org4581fbc"><span class="section-number-3">1.1</span> Identifiers</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-1-1">
 <ul class="org-ul">
 <li>Global identifier（全局标识符）：
@@ -331,20 +411,34 @@ ul.no-bullet {list-style: none}
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgc05dad4" class="outline-3">
 <h3 id="orgc05dad4"><span class="section-number-3">1.2</span> Module</h3>
+=======
+<div id="outline-container-orgc5f7124" class="outline-3">
+<h3 id="orgc5f7124"><span class="section-number-3">1.2</span> Module</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-1-2">
 <p>
 LLVM程序由模块组成，每个模块都是输入程序的翻译单元。每个模块由函数、全局变量和符号表项组成。模块可以和LLVM链接器结合在一起，链接器会合并函数（和全局变量）的定义，解决前向声明，并合并符号表项。
 </p>
 
 <p>
+<<<<<<< HEAD
 Module由全局值，包括函数和全局变量(Global Variable)组成, 全局值通过指针来表示，并有一种<a href="#org9cf47c3">Linkage Types</a>
 </p>
 </div>
 </div>
 <div id="outline-container-org9cf47c3" class="outline-3">
 <h3 id="org9cf47c3"><span class="section-number-3">1.3</span> Linkage Types</h3>
+=======
+Module由全局值，包括函数和全局变量(Global Variable)组成, 全局值通过指针来表示，并有一种<a href="#orge35cfe6">Linkage Types</a>
+</p>
+</div>
+</div>
+<div id="outline-container-orge35cfe6" class="outline-3">
+<h3 id="orge35cfe6"><span class="section-number-3">1.3</span> Linkage Types</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-1-3">
 <ul class="org-ul">
 <li>private
@@ -363,8 +457,13 @@ linkage类型为available_externally的全局值不会被释放到LLVM模块对�
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgdeedffb" class="outline-3">
 <h3 id="orgdeedffb"><span class="section-number-3">1.4</span> Call Conventions（调用约定）</h3>
+=======
+<div id="outline-container-orgd2a961c" class="outline-3">
+<h3 id="orgd2a961c"><span class="section-number-3">1.4</span> Call Conventions（调用约定）</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-1-4">
 <p>
 调用约定是指函数调用的传参方式以及返回值和栈的处理方式。function,call,invoke选项。
@@ -379,8 +478,13 @@ linkage类型为available_externally的全局值不会被释放到LLVM模块对�
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org2f19c10" class="outline-3">
 <h3 id="org2f19c10"><span class="section-number-3">1.5</span> Visibility Styles</h3>
+=======
+<div id="outline-container-org3dfa830" class="outline-3">
+<h3 id="org3dfa830"><span class="section-number-3">1.5</span> Visibility Styles</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-1-5">
 <p>
 所有的全局变量和函数都具有一种可见样式
@@ -392,8 +496,13 @@ linkage类型为available_externally的全局值不会被释放到LLVM模块对�
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgd2c5e61" class="outline-3">
 <h3 id="orgd2c5e61"><span class="section-number-3">1.6</span> DLL Storage Classes</h3>
+=======
+<div id="outline-container-orgf732cbc" class="outline-3">
+<h3 id="orgf732cbc"><span class="section-number-3">1.6</span> DLL Storage Classes</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-1-6">
 <p>
 所有全局变量、函数和别名都具有一种DLL储存类型。
@@ -404,8 +513,13 @@ linkage类型为available_externally的全局值不会被释放到LLVM模块对�
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org7d5477d" class="outline-3">
 <h3 id="org7d5477d"><span class="section-number-3">1.7</span> Thread Local Storage Models</h3>
+=======
+<div id="outline-container-org52beee8" class="outline-3">
+<h3 id="org52beee8"><span class="section-number-3">1.7</span> Thread Local Storage Models</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-1-7">
 <p>
 TLS模型
@@ -420,16 +534,26 @@ TLS模型
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgb87aea5" class="outline-3">
 <h3 id="orgb87aea5"><span class="section-number-3">1.8</span> AllocaInst</h3>
+=======
+<div id="outline-container-org94a17f2" class="outline-3">
+<h3 id="org94a17f2"><span class="section-number-3">1.8</span> AllocaInst</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-1-8">
 <p>
 表示内存申请
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org94f583f" class="outline-3">
 <h3 id="org94f583f"><span class="section-number-3">1.9</span> GetElementPtrInst</h3>
+=======
+<div id="outline-container-orgb15195b" class="outline-3">
+<h3 id="orgb15195b"><span class="section-number-3">1.9</span> GetElementPtrInst</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-1-9">
 <p>
 表示获取数据结构中的子元素操作
@@ -444,8 +568,13 @@ GetElementPtrInst的第一个索引i访问从该地址开始的第i个元素，�
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org98cc820" class="outline-3">
 <h3 id="org98cc820"><span class="section-number-3">1.10</span> PHI</h3>
+=======
+<div id="outline-container-org7a82218" class="outline-3">
+<h3 id="org7a82218"><span class="section-number-3">1.10</span> PHI</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-1-10">
 <p>
 :PROPERTIES:
@@ -455,6 +584,7 @@ GetElementPtrInst的第一个索引i访问从该地址开始的第i个元素，�
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org66c83a1" class="outline-2">
 <h2 id="org66c83a1"><span class="section-number-2">2</span> IR</h2>
 <div class="outline-text-2" id="text-2">
@@ -465,6 +595,18 @@ GetElementPtrInst的第一个索引i访问从该地址开始的第i个元素，�
 </div>
 <div id="outline-container-orgb0071a5" class="outline-4">
 <h4 id="orgb0071a5"><span class="section-number-4">2.1.1</span> CreateCondBr</h4>
+=======
+<div id="outline-container-org63b2a45" class="outline-2">
+<h2 id="org63b2a45"><span class="section-number-2">2</span> IR</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-orgfd4185b" class="outline-3">
+<h3 id="orgfd4185b"><span class="section-number-3">2.1</span> IRBuilder</h3>
+<div class="outline-text-3" id="text-2-1">
+</div>
+<div id="outline-container-orgef8e1ff" class="outline-4">
+<h4 id="orgef8e1ff"><span class="section-number-4">2.1.1</span> CreateCondBr</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-2-1-1">
 <p>
 插入条件分支指令
@@ -480,8 +622,13 @@ GetElementPtrInst的第一个索引i访问从该地址开始的第i个元素，�
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org2db6b5d" class="outline-4">
 <h4 id="org2db6b5d"><span class="section-number-4">2.1.2</span> CreateStore</h4>
+=======
+<div id="outline-container-orgcbacf9b" class="outline-4">
+<h4 id="orgcbacf9b"><span class="section-number-4">2.1.2</span> CreateStore</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-2-1-2">
 <div class="org-src-container">
 <pre class="src src-C++"><span style="font-weight: bold; text-decoration: underline;">StoreInst</span> *<span style="font-weight: bold;">CreateStore</span>(<span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">Val</span>, <span style="font-weight: bold; text-decoration: underline;">Value</span> *<span style="font-weight: bold; font-style: italic;">Ptr</span>, <span style="font-weight: bold; text-decoration: underline;">bool</span> <span style="font-weight: bold; font-style: italic;">isVolatile</span> = <span style="font-weight: bold; text-decoration: underline;">false</span>) {
@@ -493,18 +640,28 @@ GetElementPtrInst的第一个索引i访问从该地址开始的第i个元素，�
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgeee9d0c" class="outline-2">
 <h2 id="orgeee9d0c"><span class="section-number-2">3</span> Important and useful LLVM APIS</h2>
 <div class="outline-text-2" id="text-3">
 </div>
 <div id="outline-container-orgefb85c4" class="outline-3">
 <h3 id="orgefb85c4"><span class="section-number-3">3.1</span> isa&lt;&gt;</h3>
+=======
+<div id="outline-container-org9191e5e" class="outline-2">
+<h2 id="org9191e5e"><span class="section-number-2">3</span> Important and useful LLVM APIS</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org686adad" class="outline-3">
+<h3 id="org686adad"><span class="section-number-3">3.1</span> isa&lt;&gt;</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-3-1">
 <p>
 类似Java的instanceof，判断变量是否为对应的类。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org11544aa" class="outline-3">
 <h3 id="org11544aa"><span class="section-number-3">3.2</span> cast&lt;&gt;</h3>
 <div class="outline-text-3" id="text-3-2">
@@ -512,24 +669,47 @@ GetElementPtrInst的第一个索引i访问从该地址开始的第i个元素，�
 </div>
 <div id="outline-container-orgfd0b78a" class="outline-3">
 <h3 id="orgfd0b78a"><span class="section-number-3">3.3</span> dyn_cast&lt;&gt;</h3>
+=======
+<div id="outline-container-orgad551fc" class="outline-3">
+<h3 id="orgad551fc"><span class="section-number-3">3.2</span> cast&lt;&gt;</h3>
+<div class="outline-text-3" id="text-3-2">
+</div>
+</div>
+<div id="outline-container-org9208ef0" class="outline-3">
+<h3 id="org9208ef0"><span class="section-number-3">3.3</span> dyn_cast&lt;&gt;</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-3-3">
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgeca69f3" class="outline-2">
 <h2 id="orgeca69f3"><span class="section-number-2">4</span> Scalar Evolution</h2>
+=======
+<div id="outline-container-orge9c3083" class="outline-2">
+<h2 id="orge9c3083"><span class="section-number-2">4</span> Scalar Evolution</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-4">
 <p>
 Scalar Evolution, 标量演化， 是一种现代化的高级编译优化技术。用来对循环中的变量进行优化，用于分析循环中变量是如何被更新，并优化。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org8e612f5" class="outline-2">
 <h2 id="org8e612f5"><span class="section-number-2">5</span> Module</h2>
 <div class="outline-text-2" id="text-5">
 </div>
 <div id="outline-container-org5f241d7" class="outline-3">
 <h3 id="org5f241d7"><span class="section-number-3">5.1</span> getOrInsertFunction</h3>
+=======
+<div id="outline-container-org562d424" class="outline-2">
+<h2 id="org562d424"><span class="section-number-2">5</span> Module</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org62f36d8" class="outline-3">
+<h3 id="org62f36d8"><span class="section-number-3">5.1</span> getOrInsertFunction</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-5-1">
 <p>
 获取或者创建函数。
@@ -537,26 +717,45 @@ Scalar Evolution, 标量演化， 是一种现代化的高级编译优化技术�
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgbda918c" class="outline-3">
 <h3 id="orgbda918c"><span class="section-number-3">5.2</span> getVoidTy</h3>
+=======
+<div id="outline-container-org201f9ac" class="outline-3">
+<h3 id="org201f9ac"><span class="section-number-3">5.2</span> getVoidTy</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-5-2">
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org2df0c81" class="outline-2">
 <h2 id="org2df0c81"><span class="section-number-2">6</span> StructType</h2>
 <div class="outline-text-2" id="text-6">
 </div>
 <div id="outline-container-orgab20d54" class="outline-3">
 <h3 id="orgab20d54"><span class="section-number-3">6.1</span> create</h3>
+=======
+<div id="outline-container-org944e624" class="outline-2">
+<h2 id="org944e624"><span class="section-number-2">6</span> StructType</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-orgcd6e903" class="outline-3">
+<h3 id="orgcd6e903"><span class="section-number-3">6.1</span> create</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-6-1">
 <p>
 创建结构体变量。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgce56c9f" class="outline-3">
 <h3 id="orgce56c9f"><span class="section-number-3">6.2</span> setBody</h3>
+=======
+<div id="outline-container-org40d3e40" class="outline-3">
+<h3 id="org40d3e40"><span class="section-number-3">6.2</span> setBody</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-6-2">
 <p>
 指定结构体成员的类型。
@@ -564,22 +763,40 @@ Scalar Evolution, 标量演化， 是一种现代化的高级编译优化技术�
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org517ad2c" class="outline-2">
 <h2 id="org517ad2c"><span class="section-number-2">7</span> ArrayType</h2>
 <div class="outline-text-2" id="text-7">
 </div>
 <div id="outline-container-org5d7f822" class="outline-3">
 <h3 id="org5d7f822"><span class="section-number-3">7.1</span> get</h3>
+=======
+<div id="outline-container-org7fd5dfa" class="outline-2">
+<h2 id="org7fd5dfa"><span class="section-number-2">7</span> ArrayType</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-orgb063544" class="outline-3">
+<h3 id="orgb063544"><span class="section-number-3">7.1</span> get</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-7-1">
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgd76d0f4" class="outline-2">
 <h2 id="orgd76d0f4"><span class="section-number-2">8</span> Metadata</h2>
 <div class="outline-text-2" id="text-8">
 </div>
 <div id="outline-container-org675d6b2" class="outline-3">
 <h3 id="org675d6b2"><span class="section-number-3">8.1</span> Instruction</h3>
+=======
+<div id="outline-container-orgc5b5b70" class="outline-2">
+<h2 id="orgc5b5b70"><span class="section-number-2">8</span> Metadata</h2>
+<div class="outline-text-2" id="text-8">
+</div>
+<div id="outline-container-org0bac862" class="outline-3">
+<h3 id="org0bac862"><span class="section-number-3">8.1</span> Instruction</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-8-1">
 <div class="org-src-container">
 <pre class="src src-C++">
@@ -627,8 +844,13 @@ Scalar Evolution, 标量演化， 是一种现代化的高级编译优化技术�
 </div>
 </div>
 
+<<<<<<< HEAD
 <div id="outline-container-org9c8b876" class="outline-2">
 <h2 id="org9c8b876"><span class="section-number-2">9</span> ModulePass</h2>
+=======
+<div id="outline-container-org7f7579d" class="outline-2">
+<h2 id="org7f7579d"><span class="section-number-2">9</span> ModulePass</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-9">
 <p>
 LLVM中最通用的Pass类。
@@ -637,12 +859,21 @@ LLVM中最通用的Pass类。
 </div>
 </div>
 
+<<<<<<< HEAD
 <div id="outline-container-org125aa50" class="outline-2">
 <h2 id="org125aa50"><span class="section-number-2">10</span> BasicBlock</h2>
 <div class="outline-text-2" id="text-10">
 </div>
 <div id="outline-container-org9cf8bf1" class="outline-3">
 <h3 id="org9cf8bf1"><span class="section-number-3">10.1</span> Create</h3>
+=======
+<div id="outline-container-org23b8dc3" class="outline-2">
+<h2 id="org23b8dc3"><span class="section-number-2">10</span> BasicBlock</h2>
+<div class="outline-text-2" id="text-10">
+</div>
+<div id="outline-container-org01cab69" class="outline-3">
+<h3 id="org01cab69"><span class="section-number-3">10.1</span> Create</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-10-1">
 <p>
 创建基本块，如果Parent不为空，则会插在函数的末尾;如果InsertBefore不为空，则会插在指定的基本块前面。
@@ -657,8 +888,13 @@ LLVM中最通用的Pass类。
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org29f9b39" class="outline-3">
 <h3 id="org29f9b39"><span class="section-number-3">10.2</span> getFirstInsertionPt</h3>
+=======
+<div id="outline-container-orgd64e4e8" class="outline-3">
+<h3 id="orgd64e4e8"><span class="section-number-3">10.2</span> getFirstInsertionPt</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-10-2">
 <p>
 返回一个能被插入non-PHI指令的指令迭代器。
@@ -667,12 +903,21 @@ LLVM中最通用的Pass类。
 </div>
 </div>
 
+<<<<<<< HEAD
 <div id="outline-container-orgc3000d7" class="outline-2">
 <h2 id="orgc3000d7"><span class="section-number-2">11</span> Instrumentation</h2>
 <div class="outline-text-2" id="text-11">
 </div>
 <div id="outline-container-org3d31af6" class="outline-3">
 <h3 id="org3d31af6"><span class="section-number-3">11.1</span> PrepareToSplitEntryBlock</h3>
+=======
+<div id="outline-container-orgbc5706f" class="outline-2">
+<h2 id="orgbc5706f"><span class="section-number-2">11</span> Instrumentation</h2>
+<div class="outline-text-2" id="text-11">
+</div>
+<div id="outline-container-orgf9ce73b" class="outline-3">
+<h3 id="orgf9ce73b"><span class="section-number-3">11.1</span> PrepareToSplitEntryBlock</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-11-1">
 <p>
 有些指令需要留在入口基本块处。
@@ -686,7 +931,12 @@ LLVM中最通用的Pass类。
 </div>
 </div>
 <div id="postamble" class="status">
+<<<<<<< HEAD
 <p class="date">Created: 2021-12-02 Thu 14:32</p>
+=======
+<p class="author">Author: theone</p>
+<p class="date">Created: 2021-11-25 四 18:25</p>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

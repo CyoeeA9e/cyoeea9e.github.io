@@ -3,11 +3,16 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
+<<<<<<< HEAD
 <!-- 2021-12-02 Thu 14:33 -->
+=======
+<!-- 2021-11-25 四 18:25 -->
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>SpecFuzz Bringing Spectre-type vulnerabilities to the surface</title>
 <meta name="generator" content="Org mode" />
+<meta name="author" content="theone" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -241,6 +246,7 @@ ul.no-bullet {list-style: none}
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
+<<<<<<< HEAD
 <li><a href="#org6fecf44">1. 摘要</a></li>
 <li><a href="#orgbcecabc">2. 现有工作</a></li>
 <li><a href="#org94e9019">3. SpecFuzz工作流程</a>
@@ -269,10 +275,41 @@ ul.no-bullet {list-style: none}
 <li><a href="#orge7a87f3">6.1.3. 长基本块</a></li>
 <li><a href="#org4bba421">6.1.4. 保存程序的运行状态</a></li>
 <li><a href="#org506402a">6.1.5. Code pointer checks</a></li>
+=======
+<li><a href="#orgcbc6a2c">1. 摘要</a></li>
+<li><a href="#orgb64447b">2. 现有工作</a></li>
+<li><a href="#org2b7c896">3. SpecFuzz工作流程</a>
+<ul>
+<li><a href="#org0a1395c">3.1. nested speculation</a></li>
+</ul>
+</li>
+<li><a href="#org5f49ebc">4. Bounds Checks Bypass</a></li>
+<li><a href="#orge9023f5">5. Speculation Exposure</a>
+<ul>
+<li><a href="#orgb5760e1">5.1. Speculation Exposure 组件</a></li>
+<li><a href="#orgcec728d">5.2. Nested Speculation Exposure</a></li>
+</ul>
+</li>
+<li><a href="#org5c6795a">6. SpecFuzz</a>
+<ul>
+<li>
+<ul>
+<li><a href="#org8699ceb">6.0.1. Prioritized Simulation: 优先模拟</a></li>
+</ul>
+</li>
+<li><a href="#orgbb8d7b6">6.1. 其他实现细节</a>
+<ul>
+<li><a href="#orgfdc319e">6.1.1. 外部调用和间接调用</a></li>
+<li><a href="#org10be8ed">6.1.2. Callback</a></li>
+<li><a href="#org2e7ac06">6.1.3. 长基本块</a></li>
+<li><a href="#orgcfcee85">6.1.4. 保存程序的运行状态</a></li>
+<li><a href="#org77080f6">6.1.5. Code pointer checks</a></li>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 </ul>
 </li>
 </ul>
 </li>
+<<<<<<< HEAD
 <li><a href="#org6a6a4ad">7. Fuzzing过程</a>
 <ul>
 <li><a href="#org07e49e1">7.1. 覆盖率和Fuzzing</a></li>
@@ -305,6 +342,40 @@ ul.no-bullet {list-style: none}
 <div class="outline-text-2" id="text-1">
 <p>
 提出了一种动态测试工具来测试预测执行。提出了<a href="#org1e9b4e2">Speculation Exposure</a>：通过插装来强制执行程序来模拟预测执行。
+=======
+<li><a href="#orgbf881f0">7. Fuzzing过程</a>
+<ul>
+<li><a href="#orgb0ac988">7.1. 覆盖率和Fuzzing</a></li>
+<li><a href="#org40f2e57">7.2. 对结果的统计</a></li>
+<li><a href="#org609a294">7.3. 漏洞分析</a></li>
+<li><a href="#org484e129">7.4. 漏洞修补</a></li>
+<li><a href="#org7954965">7.5. 研究漏洞</a></li>
+</ul>
+</li>
+<li><a href="#orge1b3156">8. 测试</a>
+<ul>
+<li><a href="#org850cb86">8.1. Fuzzing测试结果</a></li>
+<li><a href="#orga92441b">8.2. 补丁性能损耗</a></li>
+</ul>
+</li>
+<li><a href="#org14f6174">9. 其他的变种</a>
+<ul>
+<li><a href="#org887738f">9.1. Branch Target Injection</a></li>
+<li><a href="#org0ec426c">9.2. Return Address Misprediction</a></li>
+<li><a href="#org21b0298">9.3. Speculative Store Bypass</a></li>
+</ul>
+</li>
+<li><a href="#org4ac0832">10. 问题</a></li>
+<li><a href="#org5f5ab7e">11. 想法</a></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgcbc6a2c" class="outline-2">
+<h2 id="orgcbc6a2c"><span class="section-number-2">1</span> 摘要</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+提出了一种动态测试工具来测试预测执行。提出了<a href="#orge9023f5">Speculation Exposure</a>：通过插装来强制执行程序来模拟预测执行。
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 </p>
 
 <p>
@@ -316,8 +387,13 @@ ul.no-bullet {list-style: none}
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgbcecabc" class="outline-2">
 <h2 id="orgbcecabc"><span class="section-number-2">2</span> 现有工作</h2>
+=======
+<div id="outline-container-orgb64447b" class="outline-2">
+<h2 id="orgb64447b"><span class="section-number-2">2</span> 现有工作</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-2">
 <p>
 现有工具比较极端，或者高安全性但是低性能，或者低安全性但是高性能。
@@ -332,8 +408,13 @@ ul.no-bullet {list-style: none}
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org94e9019" class="outline-2">
 <h2 id="org94e9019"><span class="section-number-2">3</span> SpecFuzz工作流程</h2>
+=======
+<div id="outline-container-org2b7c896" class="outline-2">
+<h2 id="org2b7c896"><span class="section-number-2">3</span> SpecFuzz工作流程</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-3">
 <ol class="org-ol">
 <li><p>
@@ -388,8 +469,13 @@ ul.no-bullet {list-style: none}
 基于<a href="20211018152046-address_sanitizer.html#ID-c923e5a4-1f58-497f-b8f8-900d7f19275c">Address Sanitizer</a>开发。
 </p>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgb7df172" class="outline-3">
 <h3 id="orgb7df172"><span class="section-number-3">3.1</span> nested speculation</h3>
+=======
+<div id="outline-container-org0a1395c" class="outline-3">
+<h3 id="org0a1395c"><span class="section-number-3">3.1</span> nested speculation</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-3-1">
 <p>
 使用树来管理分支，每一个预测代表一个分支。问题是分支太多，导致速度很慢。作者设计了一个启发式算法来进行裁剪。
@@ -397,23 +483,38 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org36b4f46" class="outline-2">
 <h2 id="org36b4f46"><span class="section-number-2">4</span> Bounds Checks Bypass</h2>
+=======
+<div id="outline-container-org5f49ebc" class="outline-2">
+<h2 id="org5f49ebc"><span class="section-number-2">4</span> Bounds Checks Bypass</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-4">
 <p>
 又叫Spectre V1, 导致缓存区溢出，一般来说应当可以被<a href="20211018152046-address_sanitizer.html#ID-c923e5a4-1f58-497f-b8f8-900d7f19275c">Address Sanitizer</a>或者<a href="20211018152108-intel_mpx.html#ID-461eb9fe-b664-485f-a921-33bde77b71d2">Intel MPX</a>检测得到，但因为CPU发现错误预测后会会滚，导致这些措施无效。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org1e9b4e2" class="outline-2">
 <h2 id="org1e9b4e2"><span class="section-number-2">5</span> Speculation Exposure</h2>
+=======
+<div id="outline-container-orge9023f5" class="outline-2">
+<h2 id="orge9023f5"><span class="section-number-2">5</span> Speculation Exposure</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-5">
 <p>
 由于预测执行的内容被硬件隐藏，因此难以被软件发现，因此需要在软件中进行模拟。
 </p>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgefafb1c" class="outline-3">
 <h3 id="orgefafb1c"><span class="section-number-3">5.1</span> Speculation Exposure 组件</h3>
+=======
+<div id="outline-container-orgb5760e1" class="outline-3">
+<h3 id="orgb5760e1"><span class="section-number-3">5.1</span> Speculation Exposure 组件</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-5-1">
 <ul class="org-ul">
 <li>Checkpointing
@@ -434,8 +535,13 @@ CPU中会被消耗完的buffer：Recorder Buffer(ROB), Branch Order Buffer(BOB),
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org802ddf0" class="outline-3">
 <h3 id="org802ddf0"><span class="section-number-3">5.2</span> Nested Speculation Exposure</h3>
+=======
+<div id="outline-container-orgcec728d" class="outline-3">
+<h3 id="orgcec728d"><span class="section-number-3">5.2</span> Nested Speculation Exposure</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-5-2">
 <p>
 预测执行可能是嵌套的，也就是说预测执行过程中还会遇到新的预测执行。文章称其为模拟树，文章并不遍历所有可能的边。
@@ -452,12 +558,21 @@ CPU中会被消耗完的buffer：Recorder Buffer(ROB), Branch Order Buffer(BOB),
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org2fc4f20" class="outline-2">
 <h2 id="org2fc4f20"><span class="section-number-2">6</span> SpecFuzz</h2>
 <div class="outline-text-2" id="text-6">
 </div>
 <div id="outline-container-orgb82c18f" class="outline-4">
 <h4 id="orgb82c18f"><span class="section-number-4">6.0.1</span> Prioritized Simulation: 优先模拟</h4>
+=======
+<div id="outline-container-org5c6795a" class="outline-2">
+<h2 id="org5c6795a"><span class="section-number-2">6</span> SpecFuzz</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-org8699ceb" class="outline-4">
+<h4 id="org8699ceb"><span class="section-number-4">6.0.1</span> Prioritized Simulation: 优先模拟</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-6-0-1">
 <p>
 SpecFuzz的模拟思路是更多地测试低阶的路径，花费较少的时间在高阶的路径。
@@ -465,12 +580,21 @@ SpecFuzz的模拟思路是更多地测试低阶的路径，花费较少的时间
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org6e915c1" class="outline-3">
 <h3 id="org6e915c1"><span class="section-number-3">6.1</span> 其他实现细节</h3>
 <div class="outline-text-3" id="text-6-1">
 </div>
 <div id="outline-container-org72dee6f" class="outline-4">
 <h4 id="org72dee6f"><span class="section-number-4">6.1.1</span> 外部调用和间接调用</h4>
+=======
+<div id="outline-container-orgbb8d7b6" class="outline-3">
+<h3 id="orgbb8d7b6"><span class="section-number-3">6.1</span> 其他实现细节</h3>
+<div class="outline-text-3" id="text-6-1">
+</div>
+<div id="outline-container-orgfdc319e" class="outline-4">
+<h4 id="orgfdc319e"><span class="section-number-4">6.1.1</span> 外部调用和间接调用</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-6-1-1">
 <p>
 因为完整的插装函数并不能在编译期间了解，因此SpecFuzz先通过一次假编译获取函数列表，然后再进行插装。
@@ -481,32 +605,52 @@ SpecFuzz的模拟思路是更多地测试低阶的路径，花费较少的时间
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgf394c7e" class="outline-4">
 <h4 id="orgf394c7e"><span class="section-number-4">6.1.2</span> Callback</h4>
+=======
+<div id="outline-container-org10be8ed" class="outline-4">
+<h4 id="org10be8ed"><span class="section-number-4">6.1.2</span> Callback</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-6-1-2">
 <p>
 程序可能会出现未被插装的函数调用被插装的函数，导致程序错误，因此SpecFuzz不对外部调用进行模拟。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orge7a87f3" class="outline-4">
 <h4 id="orge7a87f3"><span class="section-number-4">6.1.3</span> 长基本块</h4>
+=======
+<div id="outline-container-org2e7ac06" class="outline-4">
+<h4 id="org2e7ac06"><span class="section-number-4">6.1.3</span> 长基本块</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-6-1-3">
 <p>
 在每个基本块的结束，SpecFuzz检查预测执行窗口是否已经满。但在长基本块中，如循环展开，可能导致模拟不必要的内容，因此在长基本块中每50条指令进行一次检查。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org4bba421" class="outline-4">
 <h4 id="org4bba421"><span class="section-number-4">6.1.4</span> 保存程序的运行状态</h4>
+=======
+<div id="outline-container-orgcfcee85" class="outline-4">
+<h4 id="orgcfcee85"><span class="section-number-4">6.1.4</span> 保存程序的运行状态</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-6-1-4">
 <p>
 SpecFuzz需要避免模拟过程中函数的调用对栈的影响，因此SpecFuzz在模拟过程中使用一块不相干的栈空间。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org506402a" class="outline-4">
 <h4 id="org506402a"><span class="section-number-4">6.1.5</span> Code pointer checks</h4>
+=======
+<div id="outline-container-org77080f6" class="outline-4">
+<h4 id="org77080f6"><span class="section-number-4">6.1.5</span> Code pointer checks</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-6-1-5">
 <p>
 由于预测执行过程，可能会修改函数的返回值，或者间接跳转的地址，导致函数返回或者跳转时，执行错误的代码，导致类似ROP的攻击。因此SpecFuzz在函数返回以及执行间接跳转时插
@@ -516,8 +660,13 @@ SpecFuzz需要避免模拟过程中函数的调用对栈的影响，因此SpecFu
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org6a6a4ad" class="outline-2">
 <h2 id="org6a6a4ad"><span class="section-number-2">7</span> Fuzzing过程</h2>
+=======
+<div id="outline-container-orgbf881f0" class="outline-2">
+<h2 id="orgbf881f0"><span class="section-number-2">7</span> Fuzzing过程</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-7">
 <p>
 整个过程如下：
@@ -529,24 +678,39 @@ SpecFuzz需要避免模拟过程中函数的调用对栈的影响，因此SpecFu
 <li>对除了白名单以外的分支打补丁。</li>
 </ol>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org07e49e1" class="outline-3">
 <h3 id="org07e49e1"><span class="section-number-3">7.1</span> 覆盖率和Fuzzing</h3>
+=======
+<div id="outline-container-orgb0ac988" class="outline-3">
+<h3 id="orgb0ac988"><span class="section-number-3">7.1</span> 覆盖率和Fuzzing</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-7-1">
 <p>
 现存的覆盖率检测工具并不适合SpecFuzz,因为SpecFuzz模拟了预测执行，而这不应该属于正常的程序执行。因此文章自己创建了一个。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgcd3375f" class="outline-3">
 <h3 id="orgcd3375f"><span class="section-number-3">7.2</span> 对结果的统计</h3>
+=======
+<div id="outline-container-org40f2e57" class="outline-3">
+<h3 id="org40f2e57"><span class="section-number-3">7.2</span> 对结果的统计</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-7-2">
 <p>
 文章每运行一次测试就进行一次统计。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgc89e2b5" class="outline-3">
 <h3 id="orgc89e2b5"><span class="section-number-3">7.3</span> 漏洞分析</h3>
+=======
+<div id="outline-container-org609a294" class="outline-3">
+<h3 id="org609a294"><span class="section-number-3">7.3</span> 漏洞分析</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-7-3">
 <p>
 在很多情况中，非法访问的地址不会随着输入的变化而变化，也就是这种漏洞无法控制，也就是无害的。SpecFuzz通过比较不同输入下的地址变化来判断漏洞是否可控。
@@ -569,8 +733,13 @@ SpecFuzz需要避免模拟过程中函数的调用对栈的影响，因此SpecFu
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org9906cd4" class="outline-3">
 <h3 id="org9906cd4"><span class="section-number-3">7.4</span> 漏洞修补</h3>
+=======
+<div id="outline-container-org484e129" class="outline-3">
+<h3 id="org484e129"><span class="section-number-3">7.4</span> 漏洞修补</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-7-4">
 <p>
 文章使用下面2种修补方式：
@@ -581,8 +750,13 @@ SpecFuzz需要避免模拟过程中函数的调用对栈的影响，因此SpecFu
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgb853be5" class="outline-3">
 <h3 id="orgb853be5"><span class="section-number-3">7.5</span> 研究漏洞</h3>
+=======
+<div id="outline-container-org7954965" class="outline-3">
+<h3 id="org7954965"><span class="section-number-3">7.5</span> 研究漏洞</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-7-5">
 <p>
 SpecFuzz保存的漏洞信息有：
@@ -606,8 +780,13 @@ SpecFuzz保存的漏洞信息有：
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgf0d6306" class="outline-2">
 <h2 id="orgf0d6306"><span class="section-number-2">8</span> 测试</h2>
+=======
+<div id="outline-container-orge1b3156" class="outline-2">
+<h2 id="orge1b3156"><span class="section-number-2">8</span> 测试</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-8">
 <p>
 文章测试对象：
@@ -628,8 +807,13 @@ SpecFuzz保存的漏洞信息有：
 <li>Respectre：也是静态分析工具。</li>
 </ul>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org8845ff3" class="outline-3">
 <h3 id="org8845ff3"><span class="section-number-3">8.1</span> Fuzzing测试结果</h3>
+=======
+<div id="outline-container-org850cb86" class="outline-3">
+<h3 id="org850cb86"><span class="section-number-3">8.1</span> Fuzzing测试结果</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-8-1">
 <p>
 和未插装程序相比，SpecFuzz的Fuzzing速度慢了不少，覆盖率则没有较大差异，差异主要由Callback导致。
@@ -640,8 +824,13 @@ SpecFuzz发现的漏洞中，绝大多数的漏洞都是不可控的漏洞。其
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org45582c7" class="outline-3">
 <h3 id="org45582c7"><span class="section-number-3">8.2</span> 补丁性能损耗</h3>
+=======
+<div id="outline-container-orga92441b" class="outline-3">
+<h3 id="orga92441b"><span class="section-number-3">8.2</span> 补丁性能损耗</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-8-2">
 <p>
 LFENCE带来的损耗大于SLH，是否对不可控漏洞进行修补带来的影响不大。
@@ -649,28 +838,47 @@ LFENCE带来的损耗大于SLH，是否对不可控漏洞进行修补带来的�
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgefece98" class="outline-2">
 <h2 id="orgefece98"><span class="section-number-2">9</span> 其他的变种</h2>
 <div class="outline-text-2" id="text-9">
 </div>
 <div id="outline-container-org5bfb253" class="outline-3">
 <h3 id="org5bfb253"><span class="section-number-3">9.1</span> Branch Target Injection</h3>
+=======
+<div id="outline-container-org14f6174" class="outline-2">
+<h2 id="org14f6174"><span class="section-number-2">9</span> 其他的变种</h2>
+<div class="outline-text-2" id="text-9">
+</div>
+<div id="outline-container-org887738f" class="outline-3">
+<h3 id="org887738f"><span class="section-number-3">9.1</span> Branch Target Injection</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-9-1">
 <p>
 SpecFuzz可以通过维护一个近期跳转地址列表来模拟跳转，但这种方法只能模拟攻击者只通过输入数据来训练跳转，而不能模拟攻击者通过一个核心里的其他程序训练跳转。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgd40b1eb" class="outline-3">
 <h3 id="orgd40b1eb"><span class="section-number-3">9.2</span> Return Address Misprediction</h3>
+=======
+<div id="outline-container-org0ec426c" class="outline-3">
+<h3 id="org0ec426c"><span class="section-number-3">9.2</span> Return Address Misprediction</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-9-2">
 <p>
 CPU维护了一个包含最近使用过的返回地址的缓存，而当这个缓存为空时会使用BTB。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgc9bf250" class="outline-3">
 <h3 id="orgc9bf250"><span class="section-number-3">9.3</span> Speculative Store Bypass</h3>
+=======
+<div id="outline-container-org21b0298" class="outline-3">
+<h3 id="org21b0298"><span class="section-number-3">9.3</span> Speculative Store Bypass</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-9-3">
 <p>
 微架构无视潜在的储存和读取指令之间的关系，在储存指令完成之前进行读取，导致读取到旧值，可以使用同样的思路进行模拟。
@@ -678,8 +886,13 @@ CPU维护了一个包含最近使用过的返回地址的缓存，而当这个�
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org73a0e84" class="outline-2">
 <h2 id="org73a0e84"><span class="section-number-2">10</span> 问题</h2>
+=======
+<div id="outline-container-org4ac0832" class="outline-2">
+<h2 id="org4ac0832"><span class="section-number-2">10</span> 问题</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-10">
 <ul class="org-ul">
 <li>嵌套模拟的复杂性。</li>
@@ -690,8 +903,13 @@ CPU维护了一个包含最近使用过的返回地址的缓存，而当这个�
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org44c977c" class="outline-2">
 <h2 id="org44c977c"><span class="section-number-2">11</span> 想法</h2>
+=======
+<div id="outline-container-org5f5ab7e" class="outline-2">
+<h2 id="org5f5ab7e"><span class="section-number-2">11</span> 想法</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-11">
 <ul class="org-ul">
 <li>文章考虑了在模拟过程中对栈内存变化的恢复，但没有充分考虑对堆的保护，如果，预测执行过程中释放了内存空间，是否会导致回滚后程序错误。</li>
@@ -714,7 +932,12 @@ CPU维护了一个包含最近使用过的返回地址的缓存，而当这个�
 </div>
 </div>
 <div id="postamble" class="status">
+<<<<<<< HEAD
 <p class="date">Created: 2021-12-02 Thu 14:33</p>
+=======
+<p class="author">Author: theone</p>
+<p class="date">Created: 2021-11-25 四 18:25</p>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

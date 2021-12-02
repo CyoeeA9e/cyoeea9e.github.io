@@ -3,11 +3,16 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
+<<<<<<< HEAD
 <!-- 2021-12-02 Thu 14:33 -->
+=======
+<!-- 2021-11-25 四 18:25 -->
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>SpecTaint:Speculative Taint Analysis for Discovering Spectre Gadgets</title>
 <meta name="generator" content="Org mode" />
+<meta name="author" content="theone" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -263,6 +268,7 @@ ul.no-bullet {list-style: none}
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
+<<<<<<< HEAD
 <li><a href="#org2b846c6">1. 摘要</a></li>
 <li><a href="#org3f75446">2. 介绍</a>
 <ul>
@@ -289,10 +295,39 @@ ul.no-bullet {list-style: none}
 <li><a href="#org21379e5">4.2.1. 执行状态回滚</a></li>
 <li><a href="#orge6bf745">4.2.2. 路径探索</a></li>
 <li><a href="#org615f663">4.2.3. 筛选路径</a></li>
+=======
+<li><a href="#org555be21">1. 摘要</a></li>
+<li><a href="#org314f529">2. 介绍</a>
+<ul>
+<li><a href="#orge3f8e4c">2.1. 相关工作的问题</a></li>
+<li><a href="#orgeddae27">2.2. 主要工作</a></li>
+</ul>
+</li>
+<li><a href="#org336a57b">3. 概述</a>
+<ul>
+<li><a href="#orgb7a00c2">3.1. 系统结构</a></li>
+<li><a href="#org72c4a82">3.2. 工作流程</a></li>
+<li><a href="#org7865b9c">3.3. 威胁模型和应用范围</a></li>
+</ul>
+</li>
+<li><a href="#orge0efe0a">4. 预测执行动态模拟</a>
+<ul>
+<li><a href="#orgdd14fe5">4.1. 错误预测模拟</a>
+<ul>
+<li><a href="#orgb38cbbb">4.1.1. 异常处理</a></li>
+</ul>
+</li>
+<li><a href="#orgb439e36">4.2. 预测执行路径探索</a>
+<ul>
+<li><a href="#org936088c">4.2.1. 执行状态回滚</a></li>
+<li><a href="#org157ecf0">4.2.2. 路径探索</a></li>
+<li><a href="#orgbef8370">4.2.3. 筛选路径</a></li>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 </ul>
 </li>
 </ul>
 </li>
+<<<<<<< HEAD
 <li><a href="#org8e13ee1">5. 检测</a>
 <ul>
 <li><a href="#org74f2606">5.1. 动态污点追踪</a></li>
@@ -317,12 +352,43 @@ ul.no-bullet {list-style: none}
 </ul>
 </li>
 <li><a href="#org3f44714">8. 存在的问题</a></li>
+=======
+<li><a href="#org15e03a0">5. 检测</a>
+<ul>
+<li><a href="#org1d10fd0">5.1. 动态污点追踪</a></li>
+<li><a href="#orgcf331fb">5.2. Spectre Gadgets 模型</a>
+<ul>
+<li><a href="#org89718be">5.2.1. BCB</a></li>
+<li><a href="#orgd4d6322">5.2.2. BSBS</a></li>
+<li><a href="#org80f7723">5.2.3. Gadget 分类</a></li>
+</ul>
+</li>
+<li><a href="#org9a14487">5.3. Gadget 检测</a></li>
+</ul>
+</li>
+<li><a href="#orgcb48f4d">6. 实现</a></li>
+<li><a href="#orgfc6698e">7. 实验</a>
+<ul>
+<li><a href="#org344d36a">7.1. V2数据集对比测试结果</a></li>
+<li><a href="#orgd56c59e">7.2. V1数据集对比测试结果</a></li>
+<li><a href="#orge28b309">7.3. 补丁的性能开销</a></li>
+<li><a href="#org693d7d7">7.4. 分析效率</a></li>
+<li><a href="#org1fd61cf">7.5. 案例学习</a></li>
+</ul>
+</li>
+<li><a href="#orge014474">8. 存在的问题</a></li>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 </ul>
 </div>
 </div>
 
+<<<<<<< HEAD
 <div id="outline-container-org2b846c6" class="outline-2">
 <h2 id="org2b846c6"><span class="section-number-2">1</span> 摘要</h2>
+=======
+<div id="outline-container-org555be21" class="outline-2">
+<h2 id="org555be21"><span class="section-number-2">1</span> 摘要</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-1">
 <p>
 软件补丁是用来对抗Spectre Attack的有效手段，他通过插入序列化指令来避免潜在Spectre gadgets中的预测执行。
@@ -338,12 +404,21 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 
+<<<<<<< HEAD
 <div id="outline-container-org3f75446" class="outline-2">
 <h2 id="org3f75446"><span class="section-number-2">2</span> 介绍</h2>
 <div class="outline-text-2" id="text-2">
 </div>
 <div id="outline-container-org6b95e02" class="outline-3">
 <h3 id="org6b95e02"><span class="section-number-3">2.1</span> 相关工作的问题</h3>
+=======
+<div id="outline-container-org314f529" class="outline-2">
+<h2 id="org314f529"><span class="section-number-2">2</span> 介绍</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-orge3f8e4c" class="outline-3">
+<h3 id="orge3f8e4c"><span class="section-number-3">2.1</span> 相关工作的问题</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li>Spectre V1 Scanner: 通过模式匹配进行检测。</li>
@@ -357,8 +432,13 @@ Spectre V1 gadgets也不一定产生越界访问。
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org2db4083" class="outline-3">
 <h3 id="org2db4083"><span class="section-number-3">2.2</span> 主要工作</h3>
+=======
+<div id="outline-container-orgeddae27" class="outline-3">
+<h3 id="orgeddae27"><span class="section-number-3">2.2</span> 主要工作</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
 <li>设计了一种能对预测执行进行动态污点分析的平台，并根据该平台部署了一种语意学的spectre gadget检测工具。</li>
@@ -368,20 +448,34 @@ Spectre V1 gadgets也不一定产生越界访问。
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org361b26d" class="outline-2">
 <h2 id="org361b26d"><span class="section-number-2">3</span> 概述</h2>
 <div class="outline-text-2" id="text-3">
 </div>
 <div id="outline-container-orge2415dc" class="outline-3">
 <h3 id="orge2415dc"><span class="section-number-3">3.1</span> 系统结构</h3>
+=======
+<div id="outline-container-org336a57b" class="outline-2">
+<h2 id="org336a57b"><span class="section-number-2">3</span> 概述</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgb7a00c2" class="outline-3">
+<h3 id="orgb7a00c2"><span class="section-number-3">3.1</span> 系统结构</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-3-1">
 <p>
 使用系统模拟器来模拟预测执行并对其进行动态污点分析。系统强制CPU模拟器执行预测路径，然后进行污点分析。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org010e3ba" class="outline-3">
 <h3 id="org010e3ba"><span class="section-number-3">3.2</span> 工作流程</h3>
+=======
+<div id="outline-container-org72c4a82" class="outline-3">
+<h3 id="org72c4a82"><span class="section-number-3">3.2</span> 工作流程</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-3-2">
 <p>
 工作分为2个阶段：正常执行阶段和预测执行阶段。正常执行阶段，SpecTaint通过外部模糊种子生成器来生成种子，并运行目标程序，来探索尽可能多的执行路径。
@@ -389,8 +483,13 @@ Spectre V1 gadgets也不一定产生越界访问。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org9cb1965" class="outline-3">
 <h3 id="org9cb1965"><span class="section-number-3">3.3</span> 威胁模型和应用范围</h3>
+=======
+<div id="outline-container-org7865b9c" class="outline-3">
+<h3 id="org7865b9c"><span class="section-number-3">3.3</span> 威胁模型和应用范围</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-3-3">
 <p>
 文章使用和其他检测工具相同的威胁模型。
@@ -401,15 +500,25 @@ Spectre V1 gadgets也不一定产生越界访问。
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org7a6c974" class="outline-2">
 <h2 id="org7a6c974"><span class="section-number-2">4</span> 预测执行动态模拟</h2>
+=======
+<div id="outline-container-orge0efe0a" class="outline-2">
+<h2 id="orge0efe0a"><span class="section-number-2">4</span> 预测执行动态模拟</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-4">
 <p>
 基于DECAF开发，基于虚拟机。
 </p>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org42f1b7a" class="outline-3">
 <h3 id="org42f1b7a"><span class="section-number-3">4.1</span> 错误预测模拟</h3>
+=======
+<div id="outline-container-orgdd14fe5" class="outline-3">
+<h3 id="orgdd14fe5"><span class="section-number-3">4.1</span> 错误预测模拟</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-4-1">
 <p>
 SpecTaint通过修改pc来修改跳转地址。
@@ -417,8 +526,13 @@ SpecTaint通过修改pc来修改跳转地址。
 当预测执行窗口达到上限时，模拟终止，回滚到检查点，或者发现序列化指令。
 </p>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org48906ad" class="outline-4">
 <h4 id="org48906ad"><span class="section-number-4">4.1.1</span> 异常处理</h4>
+=======
+<div id="outline-container-orgb38cbbb" class="outline-4">
+<h4 id="orgb38cbbb"><span class="section-number-4">4.1.1</span> 异常处理</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-4-1-1">
 <p>
 SpecFuzz使用的异常处理方法比较简单，直接结束模拟，但是可能会丢失异常后的Spectre gadgets，因为大多数的CPU都不会在触发预测执行过程中的异常时中断。
@@ -434,8 +548,13 @@ SpecTaint使用自定义的异常处理器来捕获预测执行过程中的异�
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org8034464" class="outline-3">
 <h3 id="org8034464"><span class="section-number-3">4.2</span> 预测执行路径探索</h3>
+=======
+<div id="outline-container-orgb439e36" class="outline-3">
+<h3 id="orgb439e36"><span class="section-number-3">4.2</span> 预测执行路径探索</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-4-2">
 <p>
 SE: Speculative Execution
@@ -449,8 +568,13 @@ NE: Normal Execution
 SpecTaint以深度优先探索预测执行路径。
 </p>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org21379e5" class="outline-4">
 <h4 id="org21379e5"><span class="section-number-4">4.2.1</span> 执行状态回滚</h4>
+=======
+<div id="outline-container-org936088c" class="outline-4">
+<h4 id="org936088c"><span class="section-number-4">4.2.1</span> 执行状态回滚</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-4-2-1">
 <p>
 SpecTaint在分支前保存当前执行状态。
@@ -463,8 +587,13 @@ SpecTaint使用动态污点追踪，因此还会记录执行过程中的污点�
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orge6bf745" class="outline-4">
 <h4 id="orge6bf745"><span class="section-number-4">4.2.2</span> 路径探索</h4>
+=======
+<div id="outline-container-org157ecf0" class="outline-4">
+<h4 id="org157ecf0"><span class="section-number-4">4.2.2</span> 路径探索</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-4-2-2">
 <p>
 考虑2种路径覆盖率。
@@ -478,8 +607,13 @@ SpecTaint将条件分支视为从普通执行转化为预测执行的切换点�
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org615f663" class="outline-4">
 <h4 id="org615f663"><span class="section-number-4">4.2.3</span> 筛选路径</h4>
+=======
+<div id="outline-container-orgbef8370" class="outline-4">
+<h4 id="orgbef8370"><span class="section-number-4">4.2.3</span> 筛选路径</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-4-2-3">
 <p>
 大多数路径爆炸是因为循环和递归函数。因此需要对路径进行筛选。SpecTaint限制同一条路径最有模拟5次。
@@ -490,12 +624,21 @@ SpecTaint将条件分支视为从普通执行转化为预测执行的切换点�
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org8e13ee1" class="outline-2">
 <h2 id="org8e13ee1"><span class="section-number-2">5</span> 检测</h2>
 <div class="outline-text-2" id="text-5">
 </div>
 <div id="outline-container-org74f2606" class="outline-3">
 <h3 id="org74f2606"><span class="section-number-3">5.1</span> 动态污点追踪</h3>
+=======
+<div id="outline-container-org15e03a0" class="outline-2">
+<h2 id="org15e03a0"><span class="section-number-2">5</span> 检测</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org1d10fd0" class="outline-3">
+<h3 id="org1d10fd0"><span class="section-number-3">5.1</span> 动态污点追踪</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-5-1">
 <p>
 使用DECAF进行动态污点追踪分析。对NE和SE均进行动态污点追踪。
@@ -504,8 +647,13 @@ SpecTaint将条件分支视为从普通执行转化为预测执行的切换点�
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgcec2900" class="outline-3">
 <h3 id="orgcec2900"><span class="section-number-3">5.2</span> Spectre Gadgets 模型</h3>
+=======
+<div id="outline-container-orgcf331fb" class="outline-3">
+<h3 id="orgcf331fb"><span class="section-number-3">5.2</span> Spectre Gadgets 模型</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-5-2">
 <p>
 文章定义了2种类型的Spectre V1 gadgets。
@@ -528,8 +676,13 @@ SpecTaint将条件分支视为从普通执行转化为预测执行的切换点�
 <li>\(\delta\) 表示预测执行窗口的大小。</li>
 </ul>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org0d2377f" class="outline-4">
 <h4 id="org0d2377f"><span class="section-number-4">5.2.1</span> BCB</h4>
+=======
+<div id="outline-container-org89718be" class="outline-4">
+<h4 id="org89718be"><span class="section-number-4">5.2.1</span> BCB</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-5-2-1">
 <p>
 BCB gadgets 包含一系列数组操作，并且后一个数组的索引和上一个数组之间存在数据依赖。
@@ -551,8 +704,13 @@ BCB gadget定义：
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgf47f3be" class="outline-4">
 <h4 id="orgf47f3be"><span class="section-number-4">5.2.2</span> BSBS</h4>
+=======
+<div id="outline-container-orgd4d6322" class="outline-4">
+<h4 id="orgd4d6322"><span class="section-number-4">5.2.2</span> BSBS</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-5-2-2">
 <p>
 在预测执行过程中对内存进行写入，通过控制数组索引，修改特定的内存数据，如返回地址。
@@ -566,8 +724,13 @@ BCBS gadget定义：
 \end{equation}
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org29c8ddd" class="outline-4">
 <h4 id="org29c8ddd"><span class="section-number-4">5.2.3</span> Gadget 分类</h4>
+=======
+<div id="outline-container-org80f7723" class="outline-4">
+<h4 id="org80f7723"><span class="section-number-4">5.2.3</span> Gadget 分类</h4>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-4" id="text-5-2-3">
 <p>
 文章的定义类似与oo7,但oo7认为分支应该被污染，并被输入控制。但分支预测的误导可以通过同一颗核心中的其他进程误导。
@@ -584,8 +747,13 @@ BCBS gadget定义：
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org023f0d6" class="outline-3">
 <h3 id="org023f0d6"><span class="section-number-3">5.3</span> Gadget 检测</h3>
+=======
+<div id="outline-container-org9a14487" class="outline-3">
+<h3 id="org9a14487"><span class="section-number-3">5.3</span> Gadget 检测</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-5-3">
 <p>
 gadget检测是用来检查预测执行过程指令追踪过程是否匹配gadgets模式。
@@ -597,8 +765,13 @@ gadget检测是用来检查预测执行过程指令追踪过程是否匹配gadge
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgc930d9c" class="outline-2">
 <h2 id="orgc930d9c"><span class="section-number-2">6</span> 实现</h2>
+=======
+<div id="outline-container-orgcb48f4d" class="outline-2">
+<h2 id="orgcb48f4d"><span class="section-number-2">6</span> 实现</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-6">
 <p>
 SpecTaint为DECAF的一个插件。
@@ -606,8 +779,13 @@ SpecTaint为DECAF的一个插件。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org077fd4d" class="outline-2">
 <h2 id="org077fd4d"><span class="section-number-2">7</span> 实验</h2>
+=======
+<div id="outline-container-orgfc6698e" class="outline-2">
+<h2 id="orgfc6698e"><span class="section-number-2">7</span> 实验</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-7">
 <p>
 实验目的：
@@ -657,11 +835,19 @@ precision(P) = \frac{TP}{TP+FP}，FP为false positive
 \end{equation}
 </div>
 
+<<<<<<< HEAD
 <div id="outline-container-org97f5304" class="outline-3">
 <h3 id="org97f5304"><span class="section-number-3">7.1</span> V2数据集对比测试结果</h3>
 <div class="outline-text-3" id="text-7-1">
 
 <div id="orga602cc5" class="figure">
+=======
+<div id="outline-container-org344d36a" class="outline-3">
+<h3 id="org344d36a"><span class="section-number-3">7.1</span> V2数据集对比测试结果</h3>
+<div class="outline-text-3" id="text-7-1">
+
+<div id="org800f61e" class="figure">
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p><img src="./images/spectaint_dataset_result.png" alt="spectaint_dataset_result.png" />
 </p>
 </div>
@@ -679,8 +865,13 @@ SpecFuzz未能发现部分Spectre gadgets,原因大致有2点：
 </ul>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org03e6be1" class="outline-3">
 <h3 id="org03e6be1"><span class="section-number-3">7.2</span> V1数据集对比测试结果</h3>
+=======
+<div id="outline-container-orgd56c59e" class="outline-3">
+<h3 id="orgd56c59e"><span class="section-number-3">7.2</span> V1数据集对比测试结果</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-7-2">
 <p>
 SpecTaint检测得到的gadgets要小于SpecFuzz检测得到的。但是SpecFuzz的FP很高。
@@ -692,33 +883,55 @@ SpecFuzz也未能发现部分SpecTaint发现的Spectre gadgets。原因可能是
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgfb2a1b6" class="outline-3">
 <h3 id="orgfb2a1b6"><span class="section-number-3">7.3</span> 补丁的性能开销</h3>
+=======
+<div id="outline-container-orge28b309" class="outline-3">
+<h3 id="orge28b309"><span class="section-number-3">7.3</span> 补丁的性能开销</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-7-3">
 <p>
 SpecTaint优于其他，因为它发现的gadgets更少，因此影响的范围更小。
 </p>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-org7160152" class="outline-3">
 <h3 id="org7160152"><span class="section-number-3">7.4</span> 分析效率</h3>
 <div class="outline-text-3" id="text-7-4">
 
 <div id="org08050a9" class="figure">
+=======
+<div id="outline-container-org693d7d7" class="outline-3">
+<h3 id="org693d7d7"><span class="section-number-3">7.4</span> 分析效率</h3>
+<div class="outline-text-3" id="text-7-4">
+
+<div id="orgb844cba" class="figure">
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p><img src="./images/spectaint_runtime_performance.png" alt="spectaint_runtime_performance.png" />
 </p>
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div id="outline-container-orgc722f34" class="outline-3">
 <h3 id="orgc722f34"><span class="section-number-3">7.5</span> 案例学习</h3>
+=======
+<div id="outline-container-org1fd61cf" class="outline-3">
+<h3 id="org1fd61cf"><span class="section-number-3">7.5</span> 案例学习</h3>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-3" id="text-7-5">
 <p>
 SpecTaint发现了11条SpecFuzz未能发现的gadgets,其中有10条是可以利用的。
 </p>
 
 
+<<<<<<< HEAD
 <div id="orgbd5dd77" class="figure">
+=======
+<div id="org6b9d5b1" class="figure">
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p><img src="./images/spectaint_bcb_brotli.png" alt="spectaint_bcb_brotli.png" />
 </p>
 </div>
@@ -726,8 +939,13 @@ SpecTaint发现了11条SpecFuzz未能发现的gadgets,其中有10条是可以利
 </div>
 </div>
 
+<<<<<<< HEAD
 <div id="outline-container-org3f44714" class="outline-2">
 <h2 id="org3f44714"><span class="section-number-2">8</span> 存在的问题</h2>
+=======
+<div id="outline-container-orge014474" class="outline-2">
+<h2 id="orge014474"><span class="section-number-2">8</span> 存在的问题</h2>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <div class="outline-text-2" id="text-8">
 <ul class="org-ul">
 <li>循环可能会将预测纠正，导致模拟时找到的gadgets并不能被利用。</li>
@@ -739,7 +957,12 @@ SpecTaint发现了11条SpecFuzz未能发现的gadgets,其中有10条是可以利
 </div>
 </div>
 <div id="postamble" class="status">
+<<<<<<< HEAD
 <p class="date">Created: 2021-12-02 Thu 14:33</p>
+=======
+<p class="author">Author: theone</p>
+<p class="date">Created: 2021-11-25 四 18:25</p>
+>>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

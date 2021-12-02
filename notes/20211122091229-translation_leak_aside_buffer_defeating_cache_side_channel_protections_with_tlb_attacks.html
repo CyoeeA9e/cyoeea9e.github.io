@@ -3,16 +3,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<<<<<<< HEAD
 <!-- 2021-12-02 Thu 14:32 -->
-=======
-<!-- 2021-11-26 五 09:45 -->
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Translation Leak-aside Buffer: Defeating Cache Side-channel Protections with TLB Attacks</title>
 <meta name="generator" content="Org mode" />
-<meta name="author" content="theone" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -268,7 +263,6 @@ ul.no-bullet {list-style: none}
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<<<<<<< HEAD
 <li><a href="#org4e1d14b">1. 背景</a>
 <ul>
 <li><a href="#org0f51ebc">1.1. Cache side-channel防御</a>
@@ -276,21 +270,10 @@ ul.no-bullet {list-style: none}
 <li><a href="#orgc2038c8">1.1.1. 隔离cache set</a></li>
 <li><a href="#org8869d0d">1.1.2. 隔离cache line</a></li>
 <li><a href="#orgca906ca">1.1.3. 在敏感函数执行时隐藏data cache。</a></li>
-=======
-<li><a href="#org96e4dea">1. TLBleed</a></li>
-<li><a href="#org32d4d3f">2. 背景</a>
-<ul>
-<li><a href="#orgcdaa86f">2.1. Cache side-channel防御</a>
-<ul>
-<li><a href="#org12b6eb6">2.1.1. 隔离cache set</a></li>
-<li><a href="#org7a837a8">2.1.2. 隔离cache line</a></li>
-<li><a href="#orgbfa0e71">2.1.3. 在敏感函数执行时隐藏data cache。</a></li>
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 </ul>
 </li>
 </ul>
 </li>
-<<<<<<< HEAD
 <li><a href="#orgb50a767">2. 威胁模型</a></li>
 <li><a href="#org951b0da">3. 攻击概述</a></li>
 <li><a href="#org392a3ce">4. 监控TLB</a>
@@ -306,35 +289,12 @@ ul.no-bullet {list-style: none}
 <ul>
 <li><a href="#org23eaf18">7.1. 信号分类</a></li>
 <li><a href="#orgac6b04f">7.2. 识别目标TLB set</a></li>
-=======
-<li><a href="#orgac54841">3. 威胁模型</a></li>
-<li><a href="#org4b37eb4">4. 攻击概述</a></li>
-<li><a href="#org4fdfbb0">5. 监控TLB</a>
-<ul>
-<li><a href="#org1276ceb">5.1. 线性映射TLB</a></li>
-<li><a href="#org611351c">5.2. 复杂映射TLB</a></li>
-<li><a href="#org3e97eab">5.3. <span class="todo TODO">TODO</span> TLB Caches之间的关系</a></li>
-</ul>
-</li>
-<li><a href="#orga1ec6f0">6. 超线程能否观察到TLB</a></li>
-<li><a href="#orgd49266f">7. 无特权TLB监控</a></li>
-<li><a href="#orgde430fd">8. 模拟</a>
-<ul>
-<li><a href="#orgaa5c920">8.1. TLB set 识别</a></li>
-<li><a href="#orgeefff85">8.2. 攻击EdDSA</a></li>
-<li><a href="#org9b43552">8.3. 攻击RSA</a></li>
-<li><a href="#orgc8a3d44">8.4. 对抗软件防御</a></li>
-<li><a href="#orgc1be5f7">8.5. 对抗Intel CAT</a></li>
-<li><a href="#org7a54932">8.6. 对抗Intel TSX</a></li>
-<li><a href="#org63c452f">8.7. TLB 转换通道</a></li>
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<<<<<<< HEAD
 <div id="outline-container-org4e1d14b" class="outline-2">
 <h2 id="org4e1d14b"><span class="section-number-2">1</span> 背景</h2>
 <div class="outline-text-2" id="text-1">
@@ -352,33 +312,6 @@ ul.no-bullet {list-style: none}
 <div id="outline-container-orgca906ca" class="outline-4">
 <h4 id="orgca906ca"><span class="section-number-4">1.1.3</span> 在敏感函数执行时隐藏data cache。</h4>
 <div class="outline-text-4" id="text-1-1-3">
-=======
-<div id="outline-container-org96e4dea" class="outline-2">
-<h2 id="org96e4dea"><span class="section-number-2">1</span> TLBleed</h2>
-<div class="outline-text-2" id="text-1">
-<p>
-文章给这种攻击取的名字
-</p>
-</div>
-</div>
-<div id="outline-container-org32d4d3f" class="outline-2">
-<h2 id="org32d4d3f"><span class="section-number-2">2</span> 背景</h2>
-<div class="outline-text-2" id="text-2">
-</div>
-<div id="outline-container-orgcdaa86f" class="outline-3">
-<h3 id="orgcdaa86f"><span class="section-number-3">2.1</span> Cache side-channel防御</h3>
-<div class="outline-text-3" id="text-2-1">
-</div>
-<div id="outline-container-org12b6eb6" class="outline-4">
-<h4 id="org12b6eb6"><span class="section-number-4">2.1.1</span> 隔离cache set</h4>
-</div>
-<div id="outline-container-org7a837a8" class="outline-4">
-<h4 id="org7a837a8"><span class="section-number-4">2.1.2</span> 隔离cache line</h4>
-</div>
-<div id="outline-container-orgbfa0e71" class="outline-4">
-<h4 id="orgbfa0e71"><span class="section-number-4">2.1.3</span> 在敏感函数执行时隐藏data cache。</h4>
-<div class="outline-text-4" id="text-2-1-3">
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p>
 <a href="20211123092929-strong_and_efficient_cache_side_channel_protection_using_hardware_transactional_memory.html#ID-07a01a11-185c-4625-afa2-cae566f9c9e2">Cloak</a>
 </p>
@@ -386,29 +319,17 @@ ul.no-bullet {list-style: none}
 </div>
 </div>
 </div>
-<<<<<<< HEAD
 <div id="outline-container-orgb50a767" class="outline-2">
 <h2 id="orgb50a767"><span class="section-number-2">2</span> 威胁模型</h2>
 <div class="outline-text-2" id="text-2">
-=======
-<div id="outline-container-orgac54841" class="outline-2">
-<h2 id="orgac54841"><span class="section-number-2">3</span> 威胁模型</h2>
-<div class="outline-text-2" id="text-3">
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p>
 受害者进程和攻击者进程共享一个核心。
 </p>
 </div>
 </div>
-<<<<<<< HEAD
 <div id="outline-container-org951b0da" class="outline-2">
 <h2 id="org951b0da"><span class="section-number-2">3</span> 攻击概述</h2>
 <div class="outline-text-2" id="text-3">
-=======
-<div id="outline-container-org4b37eb4" class="outline-2">
-<h2 id="org4b37eb4"><span class="section-number-2">4</span> 攻击概述</h2>
-<div class="outline-text-2" id="text-4">
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <ul class="org-ul">
 <li>如何监控TLB sets，或者虚拟内存在现代处理器中的多级TLBs中的映射方式。</li>
 <li>相同核心上的不同进程如何共享TLB sets。</li>
@@ -417,15 +338,9 @@ ul.no-bullet {list-style: none}
 </ul>
 </div>
 </div>
-<<<<<<< HEAD
 <div id="outline-container-org392a3ce" class="outline-2">
 <h2 id="org392a3ce"><span class="section-number-2">4</span> 监控TLB</h2>
 <div class="outline-text-2" id="text-4">
-=======
-<div id="outline-container-org4fdfbb0" class="outline-2">
-<h2 id="org4fdfbb0"><span class="section-number-2">5</span> 监控TLB</h2>
-<div class="outline-text-2" id="text-5">
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <ul class="org-ul">
 <li>使用Intel Performance Counters（PMCs）来获取TLB各级发生TLB miss时的细粒度信息。</li>
 <li>具体Linux perf 事件框架来监控。
@@ -435,15 +350,9 @@ ul.no-bullet {list-style: none}
 </ul></li>
 </ul>
 </div>
-<<<<<<< HEAD
 <div id="outline-container-orgc623c1a" class="outline-3">
 <h3 id="orgc623c1a"><span class="section-number-3">4.1</span> 线性映射TLB</h3>
 <div class="outline-text-3" id="text-4-1">
-=======
-<div id="outline-container-org1276ceb" class="outline-3">
-<h3 id="org1276ceb"><span class="section-number-3">5.1</span> 线性映射TLB</h3>
-<div class="outline-text-3" id="text-5-1">
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p>
 定义映射函数为hash函数
 </p>
@@ -466,15 +375,9 @@ targetset = page_{VA}\ mod\ s
 </p>
 </div>
 </div>
-<<<<<<< HEAD
 <div id="outline-container-org5041e32" class="outline-3">
 <h3 id="org5041e32"><span class="section-number-3">4.2</span> 复杂映射TLB</h3>
 <div class="outline-text-3" id="text-4-2">
-=======
-<div id="outline-container-org611351c" class="outline-3">
-<h3 id="org611351c"><span class="section-number-3">5.2</span> 复杂映射TLB</h3>
-<div class="outline-text-3" id="text-5-2">
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p>
 假设映射时使用xor获取虚拟地址的部分。
 </p>
@@ -494,15 +397,9 @@ targetset = page_{VA}\ mod\ s
 </p>
 </div>
 </div>
-<<<<<<< HEAD
 <div id="outline-container-orgb5e2250" class="outline-3">
 <h3 id="orgb5e2250"><span class="section-number-3">4.3</span> <span class="todo TODO">TODO</span> TLB Caches之间的关系</h3>
 <div class="outline-text-3" id="text-4-3">
-=======
-<div id="outline-container-org3e97eab" class="outline-3">
-<h3 id="org3e97eab"><span class="section-number-3">5.3</span> <span class="todo TODO">TODO</span> TLB Caches之间的关系</h3>
-<div class="outline-text-3" id="text-5-3">
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p>
 TLB caches之间是否存在包容关系，即L2 cache中是否有L1 cache中的内容。
 </p>
@@ -523,15 +420,9 @@ TLB caches之间是否存在包容关系，即L2 cache中是否有L1 cache中的
 </div>
 </div>
 
-<<<<<<< HEAD
 <div id="outline-container-orgf35d220" class="outline-2">
 <h2 id="orgf35d220"><span class="section-number-2">5</span> 超线程能否观察到TLB</h2>
 <div class="outline-text-2" id="text-5">
-=======
-<div id="outline-container-orga1ec6f0" class="outline-2">
-<h2 id="orga1ec6f0"><span class="section-number-2">6</span> 超线程能否观察到TLB</h2>
-<div class="outline-text-2" id="text-6">
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <ol class="org-ol">
 <li>找到一个TLB set，通过之前得到的映射关系能够很方便找到。</li>
 <li>在一个超线程中访问该TLB set, 在另一个超线程中访问所有的TLB set。</li>
@@ -549,15 +440,9 @@ TLB caches之间是否存在包容关系，即L2 cache中是否有L1 cache中的
 </div>
 </div>
 
-<<<<<<< HEAD
 <div id="outline-container-org7a64eca" class="outline-2">
 <h2 id="org7a64eca"><span class="section-number-2">6</span> 无特权TLB监控</h2>
 <div class="outline-text-2" id="text-6">
-=======
-<div id="outline-container-orgd49266f" class="outline-2">
-<h2 id="orgd49266f"><span class="section-number-2">7</span> 无特权TLB监控</h2>
-<div class="outline-text-2" id="text-7">
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p>
 performance counter需要超级用户。
 </p>
@@ -585,7 +470,6 @@ performance counter需要超级用户。
 </p>
 </div>
 </div>
-<<<<<<< HEAD
 <div id="outline-container-org3f2a572" class="outline-2">
 <h2 id="org3f2a572"><span class="section-number-2">7</span> 时间性分析</h2>
 <div class="outline-text-2" id="text-7">
@@ -619,131 +503,12 @@ performance counter需要超级用户。
 <p>
 因此需要对每个cache set进行测量，并识别出哪个cache set为目标set。
 </p>
-=======
-<div id="outline-container-orgde430fd" class="outline-2">
-<h2 id="orgde430fd"><span class="section-number-2">8</span> 模拟</h2>
-<div class="outline-text-2" id="text-8">
-</div>
-<div id="outline-container-orgaa5c920" class="outline-3">
-<h3 id="orgaa5c920"><span class="section-number-3">8.1</span> TLB set 识别</h3>
-<div class="outline-text-3" id="text-8-1">
-<p>
-实验结果表明：TLBleed能够有效地识别出目标set，也就表明能够对抗ASLR。
-</p>
-</div>
-</div>
-<div id="outline-container-orgeefff85" class="outline-3">
-<h3 id="orgeefff85"><span class="section-number-3">8.2</span> 攻击EdDSA</h3>
-<div class="outline-text-3" id="text-8-2">
-<p>
-EdDSA：一个高效的椭圆曲线算法。
-</p>
-
-<p>
-文章使用3分类器，识别duplication, addtion，和其他。对于其他，使用暴力遍历的方式进行猜测。
-</p>
-
-<p>
-文章监控2ms的TLB活动。
-</p>
-
-<p>
-实验结果：
-</p>
-<ul class="org-ul">
-<li>Skylake成功率99.8%</li>
-<li>Broadwell成功率98.2%</li>
-<li>Coffeelake成功率99.8%</li>
-</ul>
-</div>
-</div>
-<div id="outline-container-org9b43552" class="outline-3">
-<h3 id="org9b43552"><span class="section-number-3">8.3</span> 攻击RSA</h3>
-<div class="outline-text-3" id="text-8-3">
-<p>
-一种RSA实现，能够对抗FLUSH+RELOAD，但存在秘密依赖的数据追踪。
-</p>
-
-<p>
-实验结果：
-</p>
-<ul class="org-ul">
-<li>能够修复92%的RSA密钥。</li>
-</ul>
-</div>
-</div>
-<div id="outline-container-orgc8a3d44" class="outline-3">
-<h3 id="orgc8a3d44"><span class="section-number-3">8.4</span> 对抗软件防御</h3>
-<div class="outline-text-3" id="text-8-4">
-<p>
-测试程序活动与cache miss以及TLB miss之间是否存在依赖关系。
-</p>
-
-<p>
-测试结果：
-</p>
-<ul class="org-ul">
-<li>程序活动的增加对LLC miss没有影响。</li>
-<li>程序活动的增加会增加TLB的miss。</li>
-<li>TLBleed对LLC miss的影响很小。</li>
-<li>TLBleed对TLB的miss影响很大。</li>
-</ul>
-
-<p>
-结论：
-</p>
-<ul class="org-ul">
-<li>TLBleed会对LLC miss产生很小的影响，原因是因为TLB miss的增加导致MMU页表更频繁地访问cache。</li>
-<li>对LLC的保护不会影响TLB miss。</li>
-</ul>
-</div>
-</div>
-<div id="outline-container-orgc1be5f7" class="outline-3">
-<h3 id="orgc1be5f7"><span class="section-number-3">8.5</span> 对抗Intel CAT</h3>
-<div class="outline-text-3" id="text-8-5">
-<p>
-测试结果：
-</p>
-<ul class="org-ul">
-<li>Intel CAT 不能抵御TLBleed。</li>
-</ul>
-</div>
-</div>
-<div id="outline-container-org7a54932" class="outline-3">
-<h3 id="org7a54932"><span class="section-number-3">8.6</span> 对抗Intel TSX</h3>
-<div class="outline-text-3" id="text-8-6">
-<p>
-测试结果：
-</p>
-<ul class="org-ul">
-<li>Intel TSX 不能抵御TLBleed。</li>
-</ul>
-</div>
-</div>
-<div id="outline-container-org63c452f" class="outline-3">
-<h3 id="org63c452f"><span class="section-number-3">8.7</span> TLB 转换通道</h3>
-<div class="outline-text-3" id="text-8-7">
-<p>
-测试结果：
-</p>
-<ul class="org-ul">
-<li>在空闲状态下，\(2.0\times 10^{-5}\) 错误率。</li>
-<li>在高负载状态下，\(3.2\times 10^{-4}\) 错误率。</li>
-<li>空闲状态下，7kBit带宽。</li>
-<li>高负载状态下，3kBit带宽。</li>
-</ul>
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 </div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-<<<<<<< HEAD
 <p class="date">Created: 2021-12-02 Thu 14:32</p>
-=======
-<p class="author">Author: theone</p>
-<p class="date">Created: 2021-11-26 五 09:45</p>
->>>>>>> 0ca17bfdbaaf2e373c931cdfd53818ff1f120a72
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

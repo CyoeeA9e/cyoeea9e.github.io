@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-12-02 Thu 20:24 -->
+<!-- 2021-12-03 Fri 16:44 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Intel SGX</title>
@@ -243,6 +243,27 @@ ul.no-bullet {list-style: none}
 <ul>
 <li><a href="#orgf5811e0">1. Memory Isolation</a></li>
 <li><a href="#org609c679">2. Enclave Measurement</a></li>
+<li><a href="#org58fd131">3. EINITTOKEN</a></li>
+<li><a href="#org027f2a9">4. Intel Launch Enclave（LE）</a></li>
+<li><a href="#orgca5aa2a">5. egetkey</a></li>
+<li><a href="#org775d8b7">6. Launch Key</a></li>
+<li><a href="#org3807366">7. Einit</a></li>
+<li><a href="#org56d1f14">8. Message Authentication Code</a></li>
+<li><a href="#org53cbd10">9. Enclave initialize</a></li>
+<li><a href="#org8c492ab">10. Intel Quoting Enclave</a>
+<ul>
+<li><a href="#orgf4fcb28">10.1. Backgroud</a>
+<ul>
+<li><a href="#orga991dd2">10.1.1. quote</a></li>
+<li><a href="#orgb8207da">10.1.2. Provisioning Enclave(PE)</a></li>
+<li><a href="#orgdfec9f1">10.1.3. Quoting Enclave(QE)</a></li>
+<li><a href="#orgdf2903f">10.1.4. Intel Enhanced Privacy Identifier(EPID)</a></li>
+<li><a href="#org14929c5">10.1.5. provisioning seal key</a></li>
+</ul>
+</li>
+<li><a href="#org146b08e">10.2. 过程</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -269,9 +290,157 @@ ul.no-bullet {list-style: none}
 </ul>
 </div>
 </div>
+
+<div id="outline-container-org58fd131" class="outline-2">
+<h2 id="org58fd131"><span class="section-number-2">3</span> EINITTOKEN</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+用于认证过程
+</p>
+<ul class="org-ul">
+<li>MRENCLAVE</li>
+<li>MRSIGNER</li>
+<li>特征和属性</li>
+<li>随机的KEYID</li>
+<li><a href="#org56d1f14">MAC</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org027f2a9" class="outline-2">
+<h2 id="org027f2a9"><span class="section-number-2">4</span> Intel Launch Enclave（LE）</h2>
+<div class="outline-text-2" id="text-4">
+<ul class="org-ul">
+<li>MRSIGNER被硬编码到处理器中。</li>
+<li>通过egetkey来推导launch key。</li>
+<li>生成EINITTOKEN</li>
+</ul>
+
+<p>
+过程：
+</p>
+<ol class="org-ol">
+<li>LE生成一个随机的KEYID,申请一个tmp buffer, 并调用sgx_get_key来生成launch key。</li>
+<li>sgx_get_key内部调用do_egetkey，执行egetkey指令开推导出实际的launch key。</li>
+<li>将tmp buffer内容复制到key buffer中。</li>
+<li>覆盖tmp buffer，然后释放tmp buffer.</li>
+<li>LE使用launch key计算MAC，然后覆盖key buffer。</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orgca5aa2a" class="outline-2">
+<h2 id="orgca5aa2a"><span class="section-number-2">5</span> egetkey</h2>
+<div class="outline-text-2" id="text-5">
+<ul class="org-ul">
+<li>用来推导launch key。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org775d8b7" class="outline-2">
+<h2 id="org775d8b7"><span class="section-number-2">6</span> Launch Key</h2>
+<div class="outline-text-2" id="text-6">
+<ul class="org-ul">
+<li>被einit用来验证EINITTOKEN的正确性。</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org3807366" class="outline-2">
+<h2 id="org3807366"><span class="section-number-2">7</span> Einit</h2>
+<div class="outline-text-2" id="text-7">
+<ul class="org-ul">
+<li>einit通过Launch Key来验证EINITTOKEN的正确性，只初始化正确的token。</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org56d1f14" class="outline-2">
+<h2 id="org56d1f14"><span class="section-number-2">8</span> Message Authentication Code</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+确保完整性。
+</p>
+<ul class="org-ul">
+<li>通过Launch Key生成。</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org53cbd10" class="outline-2">
+<h2 id="org53cbd10"><span class="section-number-2">9</span> Enclave initialize</h2>
+<div class="outline-text-2" id="text-9">
+<ul class="org-ul">
+<li>需要从Intel Launch Enclave（LE）中获取<a href="#org58fd131">EINITTOKEN</a>。</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org8c492ab" class="outline-2">
+<h2 id="org8c492ab"><span class="section-number-2">10</span> Intel Quoting Enclave</h2>
+<div class="outline-text-2" id="text-10">
+</div>
+<div id="outline-container-orgf4fcb28" class="outline-3">
+<h3 id="orgf4fcb28"><span class="section-number-3">10.1</span> Backgroud</h3>
+<div class="outline-text-3" id="text-10-1">
+</div>
+<div id="outline-container-orga991dd2" class="outline-4">
+<h4 id="orga991dd2"><span class="section-number-4">10.1.1</span> quote</h4>
+<div class="outline-text-4" id="text-10-1-1">
+<p>
+被签名的认证报告。
+</p>
+</div>
+</div>
+<div id="outline-container-orgb8207da" class="outline-4">
+<h4 id="orgb8207da"><span class="section-number-4">10.1.2</span> Provisioning Enclave(PE)</h4>
+<div class="outline-text-4" id="text-10-1-2">
+<p>
+用来请求EPID私钥
+</p>
+</div>
+</div>
+<div id="outline-container-orgdfec9f1" class="outline-4">
+<h4 id="orgdfec9f1"><span class="section-number-4">10.1.3</span> Quoting Enclave(QE)</h4>
+<div class="outline-text-4" id="text-10-1-3">
+<p>
+验证本地认证报告，并使用私钥签名。
+</p>
+</div>
+</div>
+<div id="outline-container-orgdf2903f" class="outline-4">
+<h4 id="orgdf2903f"><span class="section-number-4">10.1.4</span> Intel Enhanced Privacy Identifier(EPID)</h4>
+</div>
+<div id="outline-container-org14929c5" class="outline-4">
+<h4 id="org14929c5"><span class="section-number-4">10.1.5</span> provisioning seal key</h4>
+<div class="outline-text-4" id="text-10-1-5">
+<p>
+由PE生成，用来保存长期认证密钥。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org146b08e" class="outline-3">
+<h3 id="org146b08e"><span class="section-number-3">10.2</span> 过程</h3>
+<div class="outline-text-3" id="text-10-2">
+<ol class="org-ol">
+<li>Provisioning Enclave 从Intel Provisioning Service获取EPID key，也被称作platform attestation key，并通过provisioning seal key对key进行加密，并存放在不可信的空间中。</li>
+<li>远程验证端发送一个挑战到Application Enclave。</li>
+<li>Application Enclave 执行ereport指令将挑战绑定到自身的报告中。</li>
+<li>不可信的程序上下文传递report到Quoting Enclave中。</li>
+<li>Quoting Enclave验证report的完整性。</li>
+<li>Quoting Enclave使用provisioning seal key解密得到platform attestation key。</li>
+<li>使用platform attestation key对报告进行签名，生成quote并发送给远程端。</li>
+<li>远程将quote提交到Intel's Attestation Service进行认证。</li>
+</ol>
+</div>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-12-02 Thu 20:24</p>
+<p class="date">Created: 2021-12-03 Fri 16:44</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

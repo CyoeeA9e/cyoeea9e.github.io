@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-12-02 Thu 20:24 -->
+<!-- 2021-12-03 Fri 16:45 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Foreshadow: Extracting the Keys to the Intel SGX Kingdom with Transient Out-of-Order Execution</title>
@@ -263,7 +263,13 @@ ul.no-bullet {list-style: none}
 <li><a href="#org7297af6">3.5. Reading Uncached Secrets</a></li>
 </ul>
 </li>
-<li><a href="#org9ae7259">4. 总结</a></li>
+<li><a href="#orge1f0de3">4. Attacking Intel Architectural Enclaves</a>
+<ul>
+<li><a href="#org438705f">4.1. Attacking the Intel Launch Enclave</a></li>
+<li><a href="#org1f9885e">4.2. Attacking the Intel Quoting Enclave</a></li>
+</ul>
+</li>
+<li><a href="#org9ae7259">5. 总结</a></li>
 </ul>
 </div>
 </div>
@@ -442,25 +448,67 @@ Secret被加载到cache后可能在后续的执行过程中被驱逐出cache,因
 </div>
 </div>
 </div>
-<div id="outline-container-org9ae7259" class="outline-2">
-<h2 id="org9ae7259"><span class="section-number-2">4</span> 总结</h2>
+<div id="outline-container-orge1f0de3" class="outline-2">
+<h2 id="orge1f0de3"><span class="section-number-2">4</span> Attacking Intel Architectural Enclaves</h2>
 <div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org438705f" class="outline-3">
+<h3 id="org438705f"><span class="section-number-3">4.1</span> Attacking the Intel Launch Enclave</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+和Controlled Channel攻击类似，通过缺页序列来确定启动过程。读取启动过程中的临时缓冲区来获取launch key。
+</p>
+</div>
+</div>
+<div id="outline-container-org1f9885e" class="outline-3">
+<h3 id="org1f9885e"><span class="section-number-3">4.2</span> Attacking the Intel Quoting Enclave</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+攻击者可以通过攻击Quoting Enclave验证本地报告的过程，可以使QE对任意飞地度量实现签名。
+</p>
+
+<p>
+或者攻击者可以攻击Provisioning Enclave,获取provisioning seal key,可以对任意enclave report进行签名。
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org9ae7259" class="outline-2">
+<h2 id="org9ae7259"><span class="section-number-2">5</span> 总结</h2>
+<div class="outline-text-2" id="text-5">
 <p>
 文章主要贡献：
 </p>
 <ul class="org-ul">
 <li>提出了一种类似meltdown的SGX攻击方式，foreshadow。</li>
-<li>foreshadow通过mprotect撤销enclave页的所有权限，让其不可见，从而绕过Intel的abort page semantics限制。</li>
-<li>文章提出了很多能够提高攻击效率的措施：
+<li>foreshadow通过mprotect撤销enclave页的所有权限，让其不可见，从而绕过Intel的abort page semantics限制, 实现无视权限的读取。
+<ol class="org-ol">
+<li>foreshadow需要确保想要读取的secret被加载到L1 cache中，否则无法触发瞬时执行。</li>
+<li>foreshadow使用与meltdown类似的通过读取不可访问的内存触发缺页异常，进入瞬时执行状态。在瞬时执行过程中将读取到的数据通过侧信道转换通道传递出去。</li>
+<li>当CPU发现这是个异常时，进入异常处理状态，在用户自定义的异常处理函数中接收侧信道信息。</li>
+</ol></li>
+<li>文章发现实际攻击过程中出现的问题，主要为上下文切换以及内核代码执行导致cache的变动，并提出了一些能够提高攻击效率的措施：
 <ul class="org-ul">
-<li></li>
+<li>通过page aliasing，避免调用mprotect时对cache的影响。</li>
+<li>使用TSX避免，内核异常处理对cache的影响。</li>
+<li>重复读取secret，确保secret在cache中的优先值，减少被驱逐的概率。</li>
+<li>限制CPU的其他活动，减少其他程序对L1,L2和L3的影响。</li>
+<li>对读取的数据进行判断，避免Zero Bias的影响。</li>
+</ul></li>
+<li>foreshadow攻击变种：
+<ul class="org-ul">
+<li>结合SGX-Step对SGX进程进行控制，实现单步执行。</li>
+<li>利用SGX在退出enclave时会将寄存器的值保存在SSA中的特点，来获取enclave中CPU寄存器的值。</li>
+<li>利用超线程持续获取cache中的值。</li>
+<li>利用ewb和eldu将内存页加载到cache中，实现对任意内存地址数据的读取。</li>
 </ul></li>
 </ul>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-12-02 Thu 20:24</p>
+<p class="date">Created: 2021-12-03 Fri 16:45</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

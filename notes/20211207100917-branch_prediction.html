@@ -6,7 +6,7 @@
 <!-- 2021-12-10 Fri 11:23 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Out-of-order Execution</title>
+<title>Branch Prediction</title>
 <meta name="generator" content="Org mode" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
@@ -236,26 +236,132 @@ ul.no-bullet {list-style: none}
 </head>
 <body>
 <div id="content">
-<h1 class="title">Out-of-order Execution</h1>
+<h1 class="title">Branch Prediction</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org31292fc">1. <span class="todo TODO">TODO</span> Tomasulo's algorithm</a></li>
-<li><a href="#orgc07c06e">2. Register Renaming</a></li>
+<li><a href="#orgf23f56f">1. Pipeline</a></li>
+<li><a href="#org1b3f601">2. Static Branch Prediction</a></li>
+<li><a href="#org8dfbba6">3. Branch Target Buffer(BTB)</a>
+<ul>
+<li><a href="#orgcfd54b5">3.1. Saturating counter</a></li>
+<li><a href="#orgca6d7f0">3.2. Adaptive two-level predictor</a></li>
+</ul>
+</li>
+<li><a href="#org32a16c4">4. Last Branch Record</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org31292fc" class="outline-2">
-<h2 id="org31292fc"><span class="section-number-2">1</span> <span class="todo TODO">TODO</span> Tomasulo's algorithm</h2>
+<div id="outline-container-orgf23f56f" class="outline-2">
+<h2 id="orgf23f56f"><span class="section-number-2">1</span> Pipeline</h2>
 <div class="outline-text-2" id="text-1">
+<ul class="org-ul">
+<li>fetch</li>
+<li>decoding</li>
+<li>register allocation</li>
+<li>renaming</li>
+<li>uop reordering</li>
+<li>execution</li>
+<li>retirement</li>
+</ul>
 </div>
 </div>
 
-<div id="outline-container-orgc07c06e" class="outline-2">
-<h2 id="orgc07c06e"><span class="section-number-2">2</span> Register Renaming</h2>
+<div id="outline-container-org1b3f601" class="outline-2">
+<h2 id="org1b3f601"><span class="section-number-2">2</span> Static Branch Prediction</h2>
 <div class="outline-text-2" id="text-2">
+<p>
+如果没有历史记录的话，进行静态预测，如果有则进行动态分支预测。
+</p>
+
+<p>
+预测规则：
+</p>
+<ul class="org-ul">
+<li>前向条件分支不会被接受，也就是条件分支默认不会向高地址跳转。</li>
+<li>反向条件分支会被接受，也就是条件分支默认会向低地址跳转。</li>
+<li>间接分支不会被接受。</li>
+<li>无条件分支会被接受。</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org8dfbba6" class="outline-2">
+<h2 id="org8dfbba6"><span class="section-number-2">3</span> Branch Target Buffer(BTB)</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+储存所有跳转的目标地址。
+</p>
+
+<p>
+目标地址会在第一次非条件跳转被执行以及第一次条件跳转发生时被保存。
+</p>
+</div>
+
+<div id="outline-container-orgcfd54b5" class="outline-3">
+<h3 id="orgcfd54b5"><span class="section-number-3">3.1</span> Saturating counter</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li>使用2bit计数。</li>
+<li>每次被接受则计数+1。</li>
+<li>每次不被接受则计数-1。</li>
+<li>计数&gt;=2，则接受。</li>
+<li>计数&lt;2, 则不接受。</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgca6d7f0" class="outline-3">
+<h3 id="orgca6d7f0"><span class="section-number-3">3.2</span> Adaptive two-level predictor</h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li>branch history register: n bit，表示过去预测是否被接受。</li>
+<li>pattern history table: 2^n 项，每一项都是Saturating counter, 不同的branch history register的值对应一项。</li>
+</ul>
+
+<p>
+根据branch history register的值找到对应的pattern history table，
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org32a16c4" class="outline-2">
+<h2 id="org32a16c4"><span class="section-number-2">4</span> Last Branch Record</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Intel CPU中的结构。
+</p>
+
+<p>
+记录了最近作出的分支预测。
+</p>
+
+<p>
+记录的信息包括：
+</p>
+<ul class="org-ul">
+<li>source</li>
+<li>destination</li>
+<li>是否预测错误。</li>
+<li>LBR项更新间隔。</li>
+</ul>
+
+<p>
+记录的分支类型包括：
+</p>
+<ul class="org-ul">
+<li>函数调用。</li>
+<li>函数返回。</li>
+<li>间接分支。</li>
+<li>条件分支。</li>
+</ul>
+
+<p>
+LBR能够选择记录在用户空间、内核空间中的分支。
+</p>
 </div>
 </div>
 </div>

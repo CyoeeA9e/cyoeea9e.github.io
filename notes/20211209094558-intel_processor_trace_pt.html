@@ -6,7 +6,7 @@
 <!-- 2021-12-10 Fri 11:23 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Out-of-order Execution</title>
+<title>Intel Processor Trace(PT)</title>
 <meta name="generator" content="Org mode" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
@@ -236,26 +236,39 @@ ul.no-bullet {list-style: none}
 </head>
 <body>
 <div id="content">
-<h1 class="title">Out-of-order Execution</h1>
+<h1 class="title">Intel Processor Trace(PT)</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org31292fc">1. <span class="todo TODO">TODO</span> Tomasulo's algorithm</a></li>
-<li><a href="#orgc07c06e">2. Register Renaming</a></li>
+<li><a href="#orgf4f804d">1. </a></li>
+<li><a href="#org59f2335">2. Conditional Branch Shadowing</a>
+<ul>
+<li><a href="#orgb04c179">2.1. Interring from execution trace</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
+<p>
+Technical details in Intel 64 and IA-32 Architectures Software Developer Manuals
+</p>
 
-<div id="outline-container-org31292fc" class="outline-2">
-<h2 id="org31292fc"><span class="section-number-2">1</span> <span class="todo TODO">TODO</span> Tomasulo's algorithm</h2>
-<div class="outline-text-2" id="text-1">
-</div>
+<div id="outline-container-orgf4f804d" class="outline-2">
+<h2 id="orgf4f804d"><span class="section-number-2">1</span> </h2>
 </div>
 
-<div id="outline-container-orgc07c06e" class="outline-2">
-<h2 id="orgc07c06e"><span class="section-number-2">2</span> Register Renaming</h2>
+<div id="outline-container-org59f2335" class="outline-2">
+<h2 id="org59f2335"><span class="section-number-2">2</span> Conditional Branch Shadowing</h2>
 <div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-orgb04c179" class="outline-3">
+<h3 id="orgb04c179"><span class="section-number-3">2.1</span> Interring from execution trace</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+Intel 会对一串条件和非条件分支聚合起来优化。
+</p>
+</div>
 </div>
 </div>
 </div>

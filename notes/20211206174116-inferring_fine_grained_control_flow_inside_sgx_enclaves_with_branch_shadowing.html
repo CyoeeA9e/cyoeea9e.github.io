@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-12-10 Fri 11:29 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inferring Fine-grained Control Flow Inside SGX Enclaves with Branch Shadowing</title>
+<meta name="generator" content="Org mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://www.gnu.org/software/emacs/manual.css">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Inferring Fine-grained Control Flow Inside SGX Enclaves with Branch Shadowing</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orge9d31de">1. Abstract</a></li>
+<li><a href="#org94e8d71">2. Introduction</a>
+<ul>
+<li><a href="#orgb963ff5">2.1. 根本原因</a></li>
+<li><a href="#org19d3ab3">2.2. 主要贡献</a></li>
+</ul>
+</li>
+<li><a href="#org4711983">3. Backgroud</a>
+<ul>
+<li><a href="#org2fd802e">3.1. Intel SGX</a></li>
+<li><a href="#org296b6a1">3.2. Last Branch Record(LBR)</a></li>
+</ul>
+</li>
+<li><a href="#org6e7bcef">4. Branch Shadowing Attacks</a>
+<ul>
+<li><a href="#org55b8776">4.1. Threat Model</a></li>
+<li><a href="#orgff001b3">4.2. Overview</a></li>
+<li><a href="#orged0d650">4.3. Conditional Branch Shadowing</a>
+<ul>
+<li><a href="#orgb7e3ef9">4.3.1. Interring through timing(RDTSC)</a></li>
+<li><a href="#orgc5c604e">4.3.2. Interring from execution traces(Intel PT)</a></li>
+<li><a href="#orgf5dd465">4.3.3. Precise leakage(LBR)</a></li>
+<li><a href="#orgd118d4d">4.3.4. Initializing branch states</a></li>
+</ul>
+</li>
+<li><a href="#org716df2f">4.4. Unconditional Branch Shadowing</a></li>
+<li><a href="#org855775a">4.5. Indirect Branch Shadowing</a></li>
+<li><a href="#org868215a">4.6. Frequent Interrupting and Probing</a>
+<ul>
+<li><a href="#org50c7400">4.6.1. APIC定时器</a></li>
+<li><a href="#org0147e16">4.6.2. Disabling the cache</a></li>
+</ul>
+</li>
+<li><a href="#orge8681bd">4.7. Virtual Address Manipulation</a></li>
+<li><a href="#orgdab3ee2">4.8. Victim Isolation</a></li>
+</ul>
+</li>
+<li><a href="#orgeb4d019">5. Evaluation</a>
+<ul>
+<li><a href="#org79b84da">5.1. Attacking RSA Exponentiation</a></li>
+</ul>
+</li>
+<li><a href="#org7705499">6. Countermeasures</a>
+<ul>
+<li><a href="#org991ae0e">6.1. Flushing Branch State</a></li>
+<li><a href="#org4801a2d">6.2. Obfuscating Branch</a></li>
+</ul>
+</li>
+<li><a href="#org12b0328">7. Discussion</a>
+<ul>
+<li><a href="#org10a7190">7.1. Limitations</a></li>
+</ul>
+</li>
+<li><a href="#org4bf9b49">8. 总结</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge9d31de" class="outline-2">
+<h2 id="orge9d31de"><span class="section-number-2">1</span> Abstract</h2>
+</div>
+
+<div id="outline-container-org94e8d71" class="outline-2">
+<h2 id="org94e8d71"><span class="section-number-2">2</span> Introduction</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+文章指出controlled-channel attack的粒度太粗。
+</p>
+
+<p>
+Intel SGX隐藏了所有和性能相关的信息，如分支历史和缓存命中和丢失。
+</p>
+</div>
+
+<div id="outline-container-orgb963ff5" class="outline-3">
+<h3 id="orgb963ff5"><span class="section-number-3">2.1</span> 根本原因</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+SGX在退出时不会清空分支历史，如BTB。
+</p>
+
+<p>
+因此enclave外的程序可以根据分支历史对enclave内的程序进行侧信道攻击。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org19d3ab3" class="outline-3">
+<h3 id="org19d3ab3"><span class="section-number-3">2.2</span> 主要贡献</h3>
+<div class="outline-text-3" id="text-2-2">
+<ul class="org-ul">
+<li>细粒度的攻击。能够细粒度地获取enclave中程序的控制流信息。</li>
+<li>精准攻击。
+<ul class="org-ul">
+<li>通过Intel PT 和 LBR正确地识别分支历史。</li>
+<li>通过APIC计时器，精确地控制程序的执行。</li>
+</ul></li>
+<li>防御方法。包括软件和硬件防御。</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4711983" class="outline-2">
+<h2 id="org4711983"><span class="section-number-2">3</span> Backgroud</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org2fd802e" class="outline-3">
+<h3 id="org2fd802e"><span class="section-number-3">3.1</span> Intel SGX</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+<a href="20211202193833-intel_sgx.html#ID-ce79be9a-efd9-492f-bd7d-400d36aecc15">Intel SGX</a>
+</p>
+</div>
+</div>
+<div id="outline-container-org296b6a1" class="outline-3">
+<h3 id="org296b6a1"><span class="section-number-3">3.2</span> Last Branch Record(LBR)</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+enclave不会对LBR进行修改。
+</p>
+
+<p>
+预测分为两步：预测是否跳转，以及预测跳转的目标地址。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org6e7bcef" class="outline-2">
+<h2 id="org6e7bcef"><span class="section-number-2">4</span> Branch Shadowing Attacks</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org55b8776" class="outline-3">
+<h3 id="org55b8776"><span class="section-number-3">4.1</span> Threat Model</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+攻击者拥有特权，能够控制整个系统。
+</p>
+</div>
+</div>
+<div id="outline-container-orgff001b3" class="outline-3">
+<h3 id="orgff001b3"><span class="section-number-3">4.2</span> Overview</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+攻击者利用CPU中的分支预测功能，通过在enclave外的分支指令是否预测成功来推断enclave中的分支，因此攻击者需要：
+</p>
+<ul class="org-ul">
+<li>攻击者需要能够知道enclave中对应分支指令的地址。</li>
+<li>攻击者需要知道相同地址上的分支是否进行预测。</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orged0d650" class="outline-3">
+<h3 id="orged0d650"><span class="section-number-3">4.3</span> Conditional Branch Shadowing</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+如何判断enclave外的分支是否成功预测。
+</p>
+</div>
+<div id="outline-container-orgb7e3ef9" class="outline-4">
+<h4 id="orgb7e3ef9"><span class="section-number-4">4.3.1</span> Interring through timing(RDTSC)</h4>
+<div class="outline-text-4" id="text-4-3-1">
+<p>
+噪声很大，难以区分分支是否成功预测。
+</p>
+</div>
+</div>
+<div id="outline-container-orgc5c604e" class="outline-4">
+<h4 id="orgc5c604e"><span class="section-number-4">4.3.2</span> Interring from execution traces(Intel PT)</h4>
+<div class="outline-text-4" id="text-4-3-2">
+<p>
+能够有效判断分支是否成功预测。
+</p>
+</div>
+</div>
+<div id="outline-container-orgf5dd465" class="outline-4">
+<h4 id="orgf5dd465"><span class="section-number-4">4.3.3</span> Precise leakage(LBR)</h4>
+<div class="outline-text-4" id="text-4-3-3">
+<p>
+攻击过程如下：
+情况1：
+</p>
+<ol class="org-ol">
+<li>enclave中进行分支跳转，并将分支跳转结果写入到BTB中。</li>
+<li>中断enclave的执行，控制权转移到enclave外。</li>
+<li>由于在BTB中存在分支预测的target，因此在enclave外，具有和enclave相同低位的地址处的分支会根据BTB进行预测执行，试图跳转到enclave中的地址。</li>
+<li>由于enclave中的地址不可访问，执行失败，然后跳转到正确的地址。</li>
+<li>虽然目标地址预测失败，但是是否跳转预测成功，因此LBR会记录下yes。</li>
+</ol>
+
+<p>
+情况2：
+</p>
+<ol class="org-ol">
+<li>enclave中没有进行分支跳转，因此BTB中没有跳转记录。</li>
+<li>中断enclave的执行，控制权转移到enclave外。</li>
+<li>因为BTB中没有内容,因此预测为不进行跳转，LBR中记录为No。</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orgd118d4d" class="outline-4">
+<h4 id="orgd118d4d"><span class="section-number-4">4.3.4</span> Initializing branch states</h4>
+<div class="outline-text-4" id="text-4-3-4">
+<p>
+攻击者在每次执行shadow code之后，需要对BPU进行初始化。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org716df2f" class="outline-3">
+<h3 id="org716df2f"><span class="section-number-3">4.4</span> Unconditional Branch Shadowing</h3>
+<div class="outline-text-3" id="text-4-4">
+<p>
+类似条件分支，但非条件分支的预测永远为yes,因此需要根据Cycles来判断是否预测错误。
+</p>
+
+<p>
+Cycles值大则表示预测错误，Cycles值小则表示预测正确。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org855775a" class="outline-3">
+<h3 id="org855775a"><span class="section-number-3">4.5</span> Indirect Branch Shadowing</h3>
+<div class="outline-text-3" id="text-4-5">
+<p>
+同条件分支
+</p>
+</div>
+</div>
+
+<div id="outline-container-org868215a" class="outline-3">
+<h3 id="org868215a"><span class="section-number-3">4.6</span> Frequent Interrupting and Probing</h3>
+<div class="outline-text-3" id="text-4-6">
+</div>
+<div id="outline-container-org50c7400" class="outline-4">
+<h4 id="org50c7400"><span class="section-number-4">4.6.1</span> APIC定时器</h4>
+<div class="outline-text-4" id="text-4-6-1">
+<p>
+文章的实验结果表明：APIC能够做到大概50个时钟周期进行一次中断。
+</p>
+</div>
+</div>
+<div id="outline-container-org0147e16" class="outline-4">
+<h4 id="org0147e16"><span class="section-number-4">4.6.2</span> Disabling the cache</h4>
+<div class="outline-text-4" id="text-4-6-2">
+<p>
+通过关闭cache，能够实现更频繁的中断，结合APIC定时器，能够做到每5个时钟周期完成一次中断。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orge8681bd" class="outline-3">
+<h3 id="orge8681bd"><span class="section-number-3">4.7</span> Virtual Address Manipulation</h3>
+<div class="outline-text-3" id="text-4-7">
+<p>
+由于攻击者能够控制操作系统，因此可以关闭ASLR和修改enclave的基地址。
+</p>
+</div>
+</div>
+<div id="outline-container-orgdab3ee2" class="outline-3">
+<h3 id="orgdab3ee2"><span class="section-number-3">4.8</span> Victim Isolation</h3>
+<div class="outline-text-3" id="text-4-8">
+<p>
+攻击者可以通过isolcpus 独立出一个核，将enclave运行在这个核上。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgeb4d019" class="outline-2">
+<h2 id="orgeb4d019"><span class="section-number-2">5</span> Evaluation</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org79b84da" class="outline-3">
+<h3 id="org79b84da"><span class="section-number-3">5.1</span> Attacking RSA Exponentiation</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+在一次执行中，能够复原66%的幂指数。
+</p>
+
+<p>
+相比较之下，Controlled-channel attack, 效果不如Branch Shadowing。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org7705499" class="outline-2">
+<h2 id="org7705499"><span class="section-number-2">6</span> Countermeasures</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-org991ae0e" class="outline-3">
+<h3 id="org991ae0e"><span class="section-number-3">6.1</span> Flushing Branch State</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+在退出encalve时，清洗BTB中的数据。
+</p>
+
+<p>
+显然，该操作会影响程序的运行速度。
+</p>
+
+<p>
+作者模拟了该操作。实验内容：每n次时钟周期，CPU会刷新一次BTB，然后进行benchmark。
+</p>
+
+<p>
+实验结果显示
+</p>
+<ul class="org-ul">
+<li>随着n的增加，对预测的正确率越高。</li>
+<li>当n=100时，预测的正确率大概只有50%。</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4801a2d" class="outline-3">
+<h3 id="org4801a2d"><span class="section-number-3">6.2</span> Obfuscating Branch</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+软件上的防御则是通过对分支指令进行混淆。
+</p>
+
+<p>
+具体为：
+</p>
+<ul class="org-ul">
+<li>将单条分支指令用多条分支代替。</li>
+<li>使用间接分支代替条件分支。因为间接分支利用难度大。CMOV指令能够代替条件跳转指令。</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org12b0328" class="outline-2">
+<h2 id="org12b0328"><span class="section-number-2">7</span> Discussion</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org10a7190" class="outline-3">
+<h3 id="org10a7190"><span class="section-number-3">7.1</span> Limitations</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+无法区分是预测不成功还是没有进行预测。
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org4bf9b49" class="outline-2">
+<h2 id="org4bf9b49"><span class="section-number-2">8</span> 总结</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+文章提出了一种利用分支预测对enclave中的程序进行侧信道攻击的方法。
+</p>
+
+<p>
+该攻击的原理：
+</p>
+<ul class="org-ul">
+<li>enclave在退出时不会刷新BTB,因此会泄漏程序在分支判断上的信息。</li>
+<li>由于BTB中的信息会影响分支预测的结果，因此攻击者通过重复enclave中的分支判断，能够获得enclave中的分支预测结果，从而判断控制流的方向。</li>
+</ul>
+
+<p>
+该攻击的优势：
+</p>
+<ul class="org-ul">
+<li>能够获取enclave中程序的分支结果，因此对程序控制流的还原更加准确。</li>
+</ul>
+
+<p>
+攻击存在的问题：
+</p>
+
+<ul class="org-ul">
+<li>需要通过APIC计时器等技术，细粒度地控制程序的运行状态。理想条件下，攻击者能够在enclave中的程序的每条分支执行完成后中断。这样能够对每条分支指令都进行判断。</li>
+<li>攻击者不能直接区分分支指令还未执行和分支不进行预测之间的差别，因此2种情况都不会在BTB中留下信息。</li>
+</ul>
+
+<p>
+防御方法：
+</p>
+<ul class="org-ul">
+<li>硬件防御: 在enclave退出时刷新BTB,避免泄漏enclave内部程序的信息。</li>
+<li>软件防御：对分支跳转指令进行混淆。</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2021-12-10 Fri 11:29</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

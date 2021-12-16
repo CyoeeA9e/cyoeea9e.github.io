@@ -3,10 +3,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-12-10 Fri 11:23 -->
+<!-- 2021-12-16 Thu 09:07 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Out-of-order Execution</title>
+<title>Directed Greybox Fuzzing</title>
 <meta name="generator" content="Org mode" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
@@ -233,34 +233,229 @@ ul.no-bullet {list-style: none}
     /*]]>*///-->
 // @license-end
 </script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="content">
-<h1 class="title">Out-of-order Execution</h1>
+<h1 class="title">Directed Greybox Fuzzing</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org31292fc">1. <span class="todo TODO">TODO</span> Tomasulo's algorithm</a></li>
-<li><a href="#orgc07c06e">2. Register Renaming</a></li>
+<li><a href="#org9609715">1. Technique</a>
+<ul>
+<li><a href="#orgb39ca07">1.1. Greybox Fuzzing</a></li>
+<li><a href="#orgf7924dd">1.2. A Measure of Distance between a Seed Input and Multiple Target Locations</a>
+<ul>
+<li><a href="#org0560eca">1.2.1. 函数之间的距离</a></li>
+<li><a href="#org2c9e921">1.2.2. 基本块之间的距离</a></li>
+<li><a href="#orgf9f8da5">1.2.3. 种子到目标基本块之间的距离</a></li>
+<li><a href="#org1453807">1.2.4. Annealing-based Power Schedules</a></li>
+</ul>
+</li>
+<li><a href="#org1bb1513">1.3. Scalability of Directed Greybox Fuzzing</a></li>
+</ul>
+</li>
+<li><a href="#orged788db">2. Evaluation Setup</a>
+<ul>
+<li><a href="#org5a9a501">2.1. Implementation</a>
+<ul>
+<li><a href="#org5748039">2.1.1. AFLGo Graph Extractor</a></li>
+<li><a href="#org733b937">2.1.2. AFLGo Distance Calculator</a></li>
+<li><a href="#org1c8ebca">2.1.3. AFLGo Instrumentor</a></li>
+<li><a href="#orgc9ab682">2.1.4. AFLGo Fuzzer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgf0a3f3a">3. Application 1: Patch Testing</a>
+<ul>
+<li><a href="#org664ec28">3.1. Patch Coverage</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org31292fc" class="outline-2">
-<h2 id="org31292fc"><span class="section-number-2">1</span> <span class="todo TODO">TODO</span> Tomasulo's algorithm</h2>
+<div id="outline-container-org9609715" class="outline-2">
+<h2 id="org9609715"><span class="section-number-2">1</span> Technique</h2>
 <div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-orgb39ca07" class="outline-3">
+<h3 id="orgb39ca07"><span class="section-number-3">1.1</span> Greybox Fuzzing</h3>
+</div>
+<div id="outline-container-orgf7924dd" class="outline-3">
+<h3 id="orgf7924dd"><span class="section-number-3">1.2</span> A Measure of Distance between a Seed Input and Multiple Target Locations</h3>
+<div class="outline-text-3" id="text-1-2">
+</div>
+<div id="outline-container-org0560eca" class="outline-4">
+<h4 id="org0560eca"><span class="section-number-4">1.2.1</span> 函数之间的距离</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<p>
+函数之间的距离计算：
+</p>
+<ul class="org-ul">
+<li>\(d_f(n, n')\) : 函数n与函数n'之间的距离，CG中的最短路径。</li>
+<li>\(T_f\) : 目标函数集合。</li>
+<li>\(d_f(n, T_f)\) : 函数n到所有目标函数的距离。</li>
+</ul>
+
+\begin{equation}
+d_f(n,T_f) = \begin{cases}
+undefined & \text{if $R(n,T_f) = \emptyset $} \\
+\left [ \sum_{t_f\in R(n,T_f)}d_f(n,t_f)^{-1} \right ]^{-1} & \text{otherwise} 
+\end{cases}
+\end{equation}
+
+<p>
+函数n到所有目标函数的距离等于函数n到各个目标函数距离的调和平均数。
+</p>
+</div>
+</div>
+<div id="outline-container-org2c9e921" class="outline-4">
+<h4 id="org2c9e921"><span class="section-number-4">1.2.2</span> 基本块之间的距离</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<ul class="org-ul">
+<li>\(d_b(m_1,m_2)\) : 基本块之间的距离。</li>
+<li>\(N(m)\) : 基本块m中调用的函数集合，需要满足：\(\forall n \in N(m).R(n, T_f) \neq \emptyset\) 。也就是m中调用的函数需要能够在CG中到达目标基本块所在函数。</li>
+<li>\(T\) : 能够满足N(m)条件的基本块，即：\(\forall m \in T.N(m) \neq \emptyset\) 。</li>
+</ul>
+
+\begin{equation}
+d_b{m,T_b} = \begin{cases}
+0 & \text{if $m \in T_b$ } \\
+c \cdot \min \limits_{n \in N(m)} (d_f(n,T_f)) & \text{if $m \in T$} \\
+\left [ \sum \limits_{t \in T} (d_b(m,t)+d_b(t,T_b))^{-1}\right ]^{-1} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+<p>
+如果基本块中调用了函数，那么计算基本块调用的函数到目标函数之间的距离。否则就是基本块到调用函数的基本块距离+函数到目标函数的距离。
+</p>
+</div>
+</div>
+<div id="outline-container-orgf9f8da5" class="outline-4">
+<h4 id="orgf9f8da5"><span class="section-number-4">1.2.3</span> 种子到目标基本块之间的距离</h4>
+<div class="outline-text-4" id="text-1-2-3">
+<p>
+种子经过路径上基本块到目标距离的平均值。
+</p>
+
+\begin{equation}
+d(s,T_b)=\frac{\sum_{m \in \xi (s)} d_b(m,T_b)}{|\xi (s)|}
+\end{equation}
+</div>
+</div>
+<div id="outline-container-org1453807" class="outline-4">
+<h4 id="org1453807"><span class="section-number-4">1.2.4</span> Annealing-based Power Schedules</h4>
+<div class="outline-text-4" id="text-1-2-4">
+<p>
+计算能量:
+</p>
+<ol class="org-ol">
+<li>计算当前温度，\(T_{exp}=T_0 \cdot \alpha ^ k\), k为迭代次数，\(\alpha\) 为常量，一般(0.8,0.99)。</li>
+<li>计算能量， \(p(s,T_b)=(1-\widetilde{d}(s,T_b))\cdot (1-T_{exp})+0.5T_{exp}\)</li>
+<li>将其作为系数用于AFL本身的能量计算中，\(\tilde{p}(s,T_b)=p_{afl}(s)\cdot 2^{10 \cdot p(s,T_b)-5}\)</li>
+</ol>
+<p>
+AFL会通过能量高低判断是否优先用于测试。
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org1bb1513" class="outline-3">
+<h3 id="org1bb1513"><span class="section-number-3">1.3</span> Scalability of Directed Greybox Fuzzing</h3>
+<div class="outline-text-3" id="text-1-3">
+<ul class="org-ul">
+<li>在编译时，分析各个基本块与目标之间的距离，并插装到程序中。</li>
+<li>在运行时，收集路径信息，并计算种子距离。</li>
+</ul>
+<p>
+将分析过程放到了编译时，从而提高运行时的效率。
+</p>
+</div>
 </div>
 </div>
 
-<div id="outline-container-orgc07c06e" class="outline-2">
-<h2 id="orgc07c06e"><span class="section-number-2">2</span> Register Renaming</h2>
+<div id="outline-container-orged788db" class="outline-2">
+<h2 id="orged788db"><span class="section-number-2">2</span> Evaluation Setup</h2>
 <div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org5a9a501" class="outline-3">
+<h3 id="org5a9a501"><span class="section-number-3">2.1</span> Implementation</h3>
+<div class="outline-text-3" id="text-2-1">
+</div>
+<div id="outline-container-org5748039" class="outline-4">
+<h4 id="org5748039"><span class="section-number-4">2.1.1</span> AFLGo Graph Extractor</h4>
+<div class="outline-text-4" id="text-2-1-1">
+<p>
+生成call graph和CFG。
+</p>
+</div>
+</div>
+<div id="outline-container-org733b937" class="outline-4">
+<h4 id="org733b937"><span class="section-number-4">2.1.2</span> AFLGo Distance Calculator</h4>
+<div class="outline-text-4" id="text-2-1-2">
+<p>
+计算各个基本块距离目标的距离。
+</p>
+</div>
+</div>
+<div id="outline-container-org1c8ebca" class="outline-4">
+<h4 id="org1c8ebca"><span class="section-number-4">2.1.3</span> AFLGo Instrumentor</h4>
+<div class="outline-text-4" id="text-2-1-3">
+<p>
+将距离，以及统计代码插装到程序中。
+</p>
+</div>
+</div>
+<div id="outline-container-orgc9ab682" class="outline-4">
+<h4 id="orgc9ab682"><span class="section-number-4">2.1.4</span> AFLGo Fuzzer</h4>
+<div class="outline-text-4" id="text-2-1-4">
+<p>
+进行模糊测试，并且计算种子距离。
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf0a3f3a" class="outline-2">
+<h2 id="orgf0a3f3a"><span class="section-number-2">3</span> Application 1: Patch Testing</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org664ec28" class="outline-3">
+<h3 id="org664ec28"><span class="section-number-3">3.1</span> Patch Coverage</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+文章对Binutils和Diffutils的patch进行了测试。测试结果显示，覆盖率较低，原因是很多补丁与架构、系统相关，因此并不能被访问到。
+</p>
+</div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-12-10 Fri 11:23</p>
+<p class="date">Created: 2021-12-16 Thu 09:07</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

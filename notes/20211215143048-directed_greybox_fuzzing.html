@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-12-16 Thu 09:07 -->
+<!-- 2021-12-16 Thu 16:07 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Directed Greybox Fuzzing</title>
@@ -375,7 +375,8 @@ d(s,T_b)=\frac{\sum_{m \in \xi (s)} d_b(m,T_b)}{|\xi (s)|}
 </p>
 <ol class="org-ol">
 <li>计算当前温度，\(T_{exp}=T_0 \cdot \alpha ^ k\), k为迭代次数，\(\alpha\) 为常量，一般(0.8,0.99)。</li>
-<li>计算能量， \(p(s,T_b)=(1-\widetilde{d}(s,T_b))\cdot (1-T_{exp})+0.5T_{exp}\)</li>
+<li>距离正则化：\(\widetilde{d}(s,T_b)=(d_b(s,T_b)-minD)/(maxD-minD)\) .</li>
+<li>计算能量，\(p(s,T_b)=(1-\widetilde{d}(s,T_b))\cdot (1-T_{exp})+0.5T_{exp}\)</li>
 <li>将其作为系数用于AFL本身的能量计算中，\(\tilde{p}(s,T_b)=p_{afl}(s)\cdot 2^{10 \cdot p(s,T_b)-5}\)</li>
 </ol>
 <p>
@@ -455,7 +456,7 @@ AFL会通过能量高低判断是否优先用于测试。
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2021-12-16 Thu 09:07</p>
+<p class="date">Created: 2021-12-16 Thu 16:07</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
